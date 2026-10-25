@@ -459,7 +459,7 @@ assert.notEqual(databaseEnd, -1, "could not find the default stratagem database 
 const bundledIcons = [...indexSource.slice(databaseStart, databaseEnd).matchAll(/\bicon:\s*'([^']+)'/g)].map(
   (match) => match[1],
 );
-assert.ok(bundledIcons.length >= 100, "expected the bundled stratagem icon catalog");
+assert.ok(bundledIcons.length >= 103, "expected the bundled stratagem icon catalog synced to v11");
 for (const icon of new Set(bundledIcons)) {
   assert.equal(safeImageSource(icon), icon, `bundled icon should be accepted: ${icon}`);
   assert.ok(fs.existsSync(path.join(root, "ui", icon)), `bundled icon is missing: ${icon}`);
@@ -709,7 +709,7 @@ assert.doesNotMatch(mainSource, /check_for_updates|open_release_download|notices
 assert.match(networkSource, /WinHttpSetTimeouts/);
 assert.match(catalogSource, /update\.unsnow\.online/);
 assert.match(catalogSource, /Catalog signature verification failed/);
-assert.match(catalogSource, /BUNDLED_CATALOG_VERSION:\s*u64\s*=\s*1/);
+assert.match(catalogSource, /BUNDLED_CATALOG_VERSION:\s*u64\s*=\s*11/);
 
 const overlayToggleStart = indexSource.indexOf("window.handleToggleOverlay = async");
 const overlayToggleEnd = indexSource.indexOf("window.unlockOverlaySafely", overlayToggleStart);
