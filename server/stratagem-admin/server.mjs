@@ -148,6 +148,41 @@ export async function validateBundledIcons(store, bundledIconRoot) {
 
 export function createCatalogServer({ store, access, bundledIconRoot, publicOrigin, adminDisabled = false }) {
   const resolvedIcons = path.resolve(bundledIconRoot);
+
+  // Startup validation rejects catalogs that reference bundled icons missing
+  // from disk, so a publish referencing one would only brick the next restart.
+  // Enforce the same constraint before the version is ever accepted.
+  async function assertBundledIconsExist(items) {
+    const missing = [];
+    const filenames = [...new Set(
+      (Array.isArray(items) ? items : [])
+        .filter((item) => item && typeof item === "object" && item.icon?.kind === "bundled")
+        .map((item) => item.icon.value),
+    )];
+    for (const filename of filenames) {
+      if (!BUNDLED_ICON_PATTERN.test(filename)) {
+        missing.push(filename);
+        continue;
+      }
+      const iconPath = path.resolve(resolvedIcons, filename);
+      if (path.dirname(iconPath) !== resolvedIcons) {
+        missing.push(filename);
+        continue;
+      }
+      try {
+        if (!(await stat(iconPath)).isFile()) missing.push(filename);
+      } catch (error) {
+        if (isMissingFile(error)) missing.push(filename);
+        else throw error;
+      }
+    }
+    if (missing.length > 0) {
+      const error = new TypeError(`bundled icons are missing from the server: ${missing.slice(0, 5).join(", ")}`);
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
   return createServer(async (request, response) => {
     const requestUrl = new URL(request.url, publicOrigin);
     const pathname = requestUrl.pathname;
@@ -161,7 +196,13 @@ export function createCatalogServer({ store, access, bundledIconRoot, publicOrig
       }
       const catalogMatch = pathname.match(/^\/api\/v1\/stratagems\/catalog\/(\d{1,10})$/);
       if (request.method === "GET" && catalogMatch) {
-        const { bytes } = await store.version(Number(catalogMatch[1]));
+        let bytes;
+        try {
+          ({ bytes } = await store.version(Number(catalogMatch[1])));
+        } catch (error) {
+          if (isMissingFile(error)) return json(response, 404, { error: "not_found" });
+          throw error;
+        }
         securityHeaders(response, "public, max-age=31536000, immutable");
         response.statusCode = 200;
         response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -212,6 +253,7 @@ export function createCatalogServer({ store, access, bundledIconRoot, publicOrig
       if (request.method === "PUT" && pathname === "/admin/api/catalog") {
         requireMutationHeaders(request, publicOrigin);
         const body = await readJsonBody(request);
+        await assertBundledIconsExist(body.items);
         const result = await store.publish({
           baseVersion: Number(body.baseVersion),
           items: body.items,
@@ -223,6 +265,14 @@ export function createCatalogServer({ store, access, bundledIconRoot, publicOrig
       if (request.method === "POST" && pathname === "/admin/api/rollback") {
         requireMutationHeaders(request, publicOrigin);
         const body = await readJsonBody(request, 64 * 1024);
+        let targetItems;
+        try {
+          targetItems = (await store.version(Number(body.targetVersion))).catalog.items;
+        } catch (error) {
+          if (isMissingFile(error)) return json(response, 404, { error: "not_found" });
+          throw error;
+        }
+        await assertBundledIconsExist(targetItems);
         const result = await store.rollback({
           baseVersion: Number(body.baseVersion),
           targetVersion: Number(body.targetVersion),

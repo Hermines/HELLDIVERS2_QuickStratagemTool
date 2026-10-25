@@ -71,6 +71,12 @@ chmod -R u=rwX,go=rX "$release_root"
 installed_private="$data_root/keys/catalog-signing-private.pem"
 installed_public="$data_root/keys/catalog-signing-public.pem"
 if [[ ! -f "$installed_private" || ! -f "$installed_public" ]]; then
+  # Partial key loss must not silently rotate the signing key: a replacement
+  # pair would strand every deployed client on the old embedded public key.
+  if [[ -f "$installed_public" && -f "$public_key" ]] && ! cmp -s "$public_key" "$installed_public"; then
+    printf 'refusing to rotate the catalog signing key while the installed private key is missing\n' >&2
+    exit 1
+  fi
   [[ -f "$private_key" && -f "$public_key" ]]
   install -m 0600 -o hd2-catalog -g hd2-catalog "$private_key" "$installed_private"
   install -m 0644 -o hd2-catalog -g hd2-catalog "$public_key" "$installed_public"

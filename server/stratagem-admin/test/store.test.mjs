@@ -39,6 +39,16 @@ test("store initializes, signs and verifies the seed snapshot", async (t) => {
   assert.match(await readFile(path.join(directory, "keys", "public.pem"), "utf8"), /PUBLIC KEY/);
 });
 
+test("initialize refuses to regenerate signing keys after data has been published", async (t) => {
+  const { directory } = await fixture(t);
+  await rm(path.join(directory, "keys"), { recursive: true, force: true });
+  const reopened = reopenStore(directory);
+  await assert.rejects(
+    reopened.initialize(),
+    /signing keys are missing while published catalog data exists/,
+  );
+});
+
 test("publication is serialized and stale writers are rejected", async (t) => {
   const { store } = await fixture(t);
   const { catalog } = await store.current();

@@ -88,11 +88,31 @@ export class CatalogStore {
 
   async initialize() {
     await mkdir(this.versionsRoot, { recursive: true, mode: 0o750 });
-    if (!existsSync(this.privateKeyPath) || !existsSync(this.publicKeyPath)) {
+    const keysWereMissing = !existsSync(this.privateKeyPath) || !existsSync(this.publicKeyPath);
+    if (keysWereMissing) {
+      if (existsSync(this.manifestPath)) {
+        // Deployed clients verify catalogs against the public key compiled into
+        // the app. Silently generating a replacement pair after publication
+        // would strand every client on the old key, so require an explicit
+        // restore of the original pair instead.
+        throw new Error(
+          `Catalog signing keys are missing while published catalog data exists (${this.manifestPath}). ` +
+            `Restore the original key pair (expected at ${this.privateKeyPath} and ${this.publicKeyPath}) ` +
+            `before restarting; a generated replacement would make every published catalog unverifiable.`,
+        );
+      }
       await generateSigningKeyPair(this.privateKeyPath, this.publicKeyPath);
     }
     this.privateKey = createPrivateKey(await readFile(this.privateKeyPath));
     this.publicKey = createPublicKey(await readFile(this.publicKeyPath));
+    if (keysWereMissing) {
+      const fingerprint = createHash("sha256").update(this.publicKeyPem()).digest("hex").slice(0, 16);
+      console.warn(
+        `[catalog-store] generated a new ed25519 signing key pair for first boot ` +
+          `(public key sha256 fingerprint ${fingerprint}…); catalogs signed with it are only ` +
+          `verifiable by clients that embed this key`,
+      );
+    }
     if (!existsSync(this.manifestPath)) {
       const seed = JSON.parse(await readFile(this.seedPath, "utf8"));
       await this.publish({

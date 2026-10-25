@@ -45,6 +45,13 @@ test("public manifest and immutable catalog are available", async (t) => {
   assert.match(catalogResponse.headers.get("cache-control"), /immutable/);
 });
 
+test("unknown catalog versions respond with 404 instead of 500", async (t) => {
+  const { base } = await fixture(t);
+  const response = await fetch(`${base}/api/v1/stratagems/catalog/9999999999`);
+  assert.equal(response.status, 404);
+  assert.equal((await response.json()).error, "not_found");
+});
+
 test("admin publishes with CSRF checks and optimistic concurrency", async (t) => {
   const { base } = await fixture(t);
   const current = await (await fetch(`${base}/admin/api/catalog`)).json();
@@ -65,6 +72,26 @@ test("admin publishes with CSRF checks and optimistic concurrency", async (t) =>
   });
   assert.equal(published.status, 200);
   assert.equal((await published.json()).manifest.catalogVersion, 2);
+});
+
+test("publishing an item whose bundled icon is missing from the server is rejected", async (t) => {
+  const { base } = await fixture(t);
+  const current = await (await fetch(`${base}/admin/api/catalog`)).json();
+  const items = structuredClone(current.catalog.items);
+  items[0].icon = { kind: "bundled", value: "Definitely_Not_Present.svg" };
+  const rejected = await fetch(`${base}/admin/api/catalog`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+      "x-hd2-admin": "1",
+      origin: "https://update.example.test",
+    },
+    body: JSON.stringify({ baseVersion: current.manifest.catalogVersion, items }),
+  });
+  assert.equal(rejected.status, 400);
+  assert.match((await rejected.json()).message, /Definitely_Not_Present\.svg/);
+  const unchanged = await (await fetch(`${base}/admin/api/catalog`)).json();
+  assert.equal(unchanged.manifest.catalogVersion, current.manifest.catalogVersion);
 });
 
 test("admin serves only allowlisted assets and safe bundled icon names", async (t) => {
