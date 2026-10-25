@@ -10,6 +10,7 @@
   window.electronAPI = Object.freeze({
     minimize: () => invoke("window_minimize"),
     tray: () => invoke("window_tray"),
+    showMainWindow: () => invoke("show_main_window"),
     close: async () => {
       // Arm the native watchdog before awaiting renderer-side storage. A
       // wedged WebView or file-system request must not make exit hang forever.
@@ -34,6 +35,7 @@
     toggleOverlay: () => invoke("toggle_overlay"),
     lockOverlay: () => invoke("lock_overlay"),
     unlockOverlay: () => invoke("unlock_overlay"),
+    clearSavedOverlayPosition: () => invoke("clear_saved_overlay_position"),
     resizeOverlay: (width, height) => invoke("resize_overlay", { width, height }),
     setOverlayPosition: (position) => invoke("set_overlay_position", { position }),
     updateOverlaySettings: (settings) => invoke("update_overlay_settings", { settings }),
@@ -57,25 +59,14 @@
     getLastToast: () => invoke("get_last_toast"),
     onShowToast: (callback) => subscribe("show-toast", callback),
 
-    takeStartupStarReminder: () => invoke("take_startup_star_reminder"),
-    dismissStarReminders: () => invoke("dismiss_star_reminders"),
-    openGitHubRepository: () => invoke("open_github_repository"),
-    shouldShowFreeNotice: () => invoke("should_show_free_notice"),
-    acknowledgeFreeNotice: () => invoke("acknowledge_free_notice"),
-    loadCachedFreeNotice: () => invoke("load_cached_free_notice"),
-    checkFreeNoticeUpdates: () => invoke("check_free_notice_updates"),
-    openBilibiliPage: () => invoke("open_bilibili_page"),
-
     openOcrHelp: (language) => invoke("open_ocr_help", { language }),
     closeOcrHelpWindow: () => invoke("close_ocr_help_window"),
     getOcrHelpLanguage: () => invoke("get_ocr_help_language"),
     onOcrHelpLang: (callback) => subscribe("ocr-help-lang", callback),
 
     getAppVersion: () => invoke("get_app_version"),
-    checkForUpdates: () => invoke("check_for_updates"),
     loadCachedStratagemCatalog: () => invoke("load_cached_stratagem_catalog"),
     checkStratagemCatalogUpdates: () => invoke("check_stratagem_catalog_updates"),
-    openReleaseDownload: () => invoke("open_release_download"),
 
     getOcrDisplays: () => invoke("get_ocr_displays"),
     startOcrRegionSelect: (displayId) => invoke("start_ocr_region_select", { displayId: displayId == null ? null : Number(displayId) }),

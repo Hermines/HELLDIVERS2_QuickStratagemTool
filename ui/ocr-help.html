@@ -5,13 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCR Help</title>
     <style>
+        /* Fluent Design tokens shared with the main window; dark is the default. */
         :root {
-            --hd-yellow: #ffe80a;
-            --hd-bg: #050505;
-            --hd-panel: #101010;
-            --hd-border: rgba(255, 232, 10, 0.28);
-            --hd-text: #f5f2d0;
-            --hd-muted: rgba(245, 242, 208, 0.68);
+            color-scheme: dark;
+            --accent-text: #4CC2FF;
+            --bg: #1C1C1C;
+            --bg-titlebar: #232323;
+            --fill-control-hover: rgba(255, 255, 255, 0.0837);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7843);
+            --divider: rgba(255, 255, 255, 0.0837);
+            --stroke-control: rgba(255, 255, 255, 0.0698);
+            --window-edge: rgba(255, 255, 255, 0.1221);
+            --danger: #C42B1C;
+            --code-bg: rgba(255, 255, 255, 0.0558);
+            --scrollbar-thumb: rgba(255, 255, 255, 0.2259);
+        }
+
+        html[data-theme="light"] {
+            color-scheme: light;
+            --accent-text: #005FB8;
+            --bg: #F9F9F9;
+            --bg-titlebar: #F0F0F0;
+            --fill-control-hover: rgba(0, 0, 0, 0.0373);
+            --text-primary: #1B1B1B;
+            --text-secondary: rgba(0, 0, 0, 0.6063);
+            --divider: rgba(0, 0, 0, 0.0803);
+            --stroke-control: rgba(0, 0, 0, 0.0578);
+            --window-edge: rgba(0, 0, 0, 0.2269);
+            --danger: #C42B1C;
+            --code-bg: rgba(0, 0, 0, 0.0472);
+            --scrollbar-thumb: rgba(0, 0, 0, 0.3311);
         }
 
         * { box-sizing: border-box; }
@@ -21,10 +45,11 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: var(--hd-bg);
-            color: var(--hd-text);
-            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
-            border: 1px solid var(--hd-border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            border: 1px solid var(--window-edge);
         }
 
         #titlebar {
@@ -33,16 +58,16 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 0 0 16px;
-            background: var(--hd-panel);
-            border-bottom: 1px solid var(--hd-border);
+            background: var(--bg-titlebar);
+            border-bottom: 1px solid var(--divider);
             -webkit-app-region: drag;
         }
 
         #title {
-            color: var(--hd-yellow);
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: 0;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
             white-space: nowrap;
         }
 
@@ -54,13 +79,14 @@
             align-items: center;
             justify-content: center;
             background: transparent;
-            color: var(--hd-text);
+            color: var(--text-secondary);
             cursor: pointer;
+            transition: background 0.16s cubic-bezier(0.1, 0.9, 0.2, 1), color 0.16s cubic-bezier(0.1, 0.9, 0.2, 1);
             -webkit-app-region: no-drag;
         }
 
         #close-btn:hover {
-            background: #b91c1c;
+            background: var(--danger);
             color: #fff;
         }
 
@@ -77,8 +103,6 @@
             overflow-y: auto;
             line-height: 1.72;
             font-size: 14px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 232, 10, 0.65) rgba(255, 255, 255, 0.06);
         }
 
         #content::-webkit-scrollbar {
@@ -86,60 +110,61 @@
         }
 
         #content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.06);
-            border-left: 1px solid rgba(255, 255, 255, 0.06);
+            background: transparent;
         }
 
         #content::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(255, 232, 10, 0.85), rgba(255, 232, 10, 0.45));
-            border: 2px solid #050505;
+            background: var(--scrollbar-thumb);
+            border: 3px solid var(--bg);
             border-radius: 999px;
         }
 
         #content::-webkit-scrollbar-thumb:hover {
-            background: var(--hd-yellow);
+            background: var(--accent-text);
         }
 
         #content h1,
         #content h2,
         #content h3 {
-            color: var(--hd-yellow);
+            color: var(--accent-text);
             line-height: 1.3;
             margin: 18px 0 10px;
-            letter-spacing: 0;
+            letter-spacing: 0.1px;
+            font-weight: 600;
         }
 
         #content h1 { font-size: 22px; margin-top: 0; }
         #content h2 { font-size: 18px; }
-        #content h3 { font-size: 16px; color: var(--hd-text); }
+        #content h3 { font-size: 15px; color: var(--text-primary); }
         #content p { margin: 10px 0; }
-        #content strong { color: var(--hd-yellow); font-weight: 900; }
+        #content strong { color: var(--accent-text); font-weight: 600; }
 
         #content code {
-            background: rgba(255, 232, 10, 0.08);
-            border: 1px solid rgba(255, 232, 10, 0.18);
+            background: var(--code-bg);
+            border: 1px solid var(--stroke-control);
             border-radius: 4px;
             padding: 2px 5px;
-            color: var(--hd-yellow);
-            font-family: Consolas, "Cascadia Mono", monospace;
+            color: var(--accent-text);
+            font-family: "Cascadia Mono", Consolas, monospace;
         }
 
         #content pre {
             margin: 12px 0;
             padding: 12px;
             overflow-x: auto;
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--code-bg);
+            border: 1px solid var(--stroke-control);
             border-radius: 6px;
-            color: var(--hd-muted);
+            color: var(--text-secondary);
         }
 
         #content pre code {
             padding: 0;
             border: 0;
             background: transparent;
-            color: var(--hd-text);
+            color: var(--text-primary);
         }
+
     </style>
 </head>
 <body>
@@ -197,13 +222,7 @@
 一个战备识别出两个战备
 \`\`\`
 
-如果出现这种问题，建议多尝试几次。
-
-如果某个战备完全无法被识别，请通过 B 站评论或私信向我反馈：
-
-**作者 B 站 UID：86682017**
-
-请记住，尽管作者可能会协助你解决你自己的使用问题，但她实际上并没有这种义务。`,
+如果出现这种问题，建议多尝试几次。`,
             en: `# 1. OCR Stratagem Auto Equip (Beta)
 
 OCR stratagem recognition has been added as a beta feature. You can now open **Settings - OCR Auto Loadout** to select a recognition area and set an OCR hotkey.
@@ -244,10 +263,6 @@ Some stratagems may be recognized incorrectly
 \`\`\`
 
 Please try multiple times if recognition fails.
-
-If a stratagem cannot be recognized at all, please report it through Bilibili comments or private messages:
-
-**Author Bilibili UID: 86682017**
 
 Other stratagems should generally work fine.`
         };
@@ -331,6 +346,17 @@ Other stratagems should generally work fine.`
         document.getElementById('close-btn').addEventListener('click', () => {
             window.electronAPI.closeOcrHelpWindow();
         });
+
+        // The window is recreated on every open, so pulling the persisted theme
+        // at load time keeps it in sync with the main window's theme toggle.
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+        }
+        if (window.electronAPI && window.electronAPI.loadData) {
+            window.electronAPI.loadData('settings.json')
+                .then(settings => { applyTheme(settings && settings.theme); })
+                .catch(() => {});
+        }
 
         window.electronAPI.onOcrHelpLang(render);
         window.electronAPI.getOcrHelpLanguage().then(render).catch(() => render('zh'));

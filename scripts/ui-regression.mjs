@@ -28,11 +28,11 @@ checkInlineScripts("ocr-select.html");
 const indexSource = readUiFile("index.html");
 const overlaySource = readUiFile("overlay.html");
 const ocrHelpSource = readUiFile("ocr-help.html");
+const toastSource = readUiFile("toast.html");
 const mainSource = fs.readFileSync(path.join(root, "src-tauri", "src", "main.rs"), "utf8");
 const hooksSource = fs.readFileSync(path.join(root, "src-tauri", "src", "hooks.rs"), "utf8");
 const inputSource = fs.readFileSync(path.join(root, "src-tauri", "src", "input.rs"), "utf8");
 const windowsSource = fs.readFileSync(path.join(root, "src-tauri", "src", "windows.rs"), "utf8");
-const updatesSource = fs.readFileSync(path.join(root, "src-tauri", "src", "updates.rs"), "utf8");
 const networkSource = fs.readFileSync(path.join(root, "src-tauri", "src", "network.rs"), "utf8");
 const catalogSource = fs.readFileSync(path.join(root, "src-tauri", "src", "catalog.rs"), "utf8");
 
@@ -42,6 +42,147 @@ assert.match(overlaySource, /<div id="drag-bar" data-tauri-drag-region="deep">/)
 assert.match(overlaySource, /<button class="lock-btn" data-tauri-drag-region="false"/);
 assert.match(ocrHelpSource, /<div id="titlebar" data-tauri-drag-region="deep">/);
 assert.match(ocrHelpSource, /<button id="close-btn" data-tauri-drag-region="false"/);
+assert.match(ocrHelpSource, /html\[data-theme="light"\]\s*\{/, "the OCR help window must ship a light theme token set");
+assert.match(
+  ocrHelpSource,
+  /loadData\('settings\.json'\)[\s\S]{0,200}applyTheme\(settings && settings\.theme\)/,
+  "the OCR help window must adopt the persisted theme at load time",
+);
+
+// Light-theme readability and Fluent styling of the remaining surfaces.
+assert.match(
+  indexSource,
+  /html\[data-theme="light"\] \.arrow-img \{ filter: invert\(1\)/,
+  "the white direction arrows must be inverted on the light theme",
+);
+assert.match(
+  indexSource,
+  /--slider-track:/,
+  "the opacity slider must use theme-aware track colors with enough contrast",
+);
+assert.match(
+  indexSource,
+  /\.toggle-option\.active \{ color: var\(--text-on-accent\); \}/,
+  "the selected segment must use the accent fill so on/off switches stay readable in both themes",
+);
+assert.match(
+  indexSource,
+  /\.toggle-option\.active::before \{ opacity: 1; transform: scale\(1\); \}/,
+  "switching segments must animate the selection pill in and out",
+);
+assert.match(
+  indexSource,
+  /\.toggle-box \{[^}]*border: 1px solid var\(--stroke-strong\);/,
+  "the segmented switch container must keep a clearly visible border in both themes",
+);
+assert.match(toastSource, /html\[data-theme="light"\]/, "toast bubbles must ship a light theme token set");
+assert.match(toastSource, /loadData\('settings\.json'\)/, "toast bubbles must adopt the persisted theme");
+assert.match(
+  overlaySource,
+  /#drag-bar\s*\{[\s\S]{0,400}#4CC2FF/,
+  "the overlay drag bar must use the Fluent accent instead of the legacy yellow",
+);
+
+// Focus rings, listening-state hint contrast, and overlay text hotkey styling.
+assert.match(
+  indexSource,
+  /\.set-input:focus \{ background: var\(--bg-input-focus\); border-color: var\(--stroke-strong\); box-shadow: inset 0 -2px 0 var\(--accent\); \}/,
+  "focused text fields must keep their visible neutral border and add only the accent underline",
+);
+assert.doesNotMatch(
+  indexSource,
+  /input:focus-visible/,
+  "text inputs must not draw the outer keyboard-focus ring; the accent underline already marks focus",
+);
+assert.match(
+  indexSource,
+  /--bg-input-focus:/,
+  "text field fills must be theme-aware and recessed at rest",
+);
+assert.match(
+  indexSource,
+  /--shadow-btn:/,
+  "neutral buttons must carry theme-aware elevation shadows",
+);
+assert.match(
+  indexSource,
+  /\.set-btn \{[\s\S]{0,400}box-shadow: var\(--shadow-btn\)/,
+  "settings action buttons (unlock, reset position, key binds) must be elevated",
+);
+assert.match(
+  indexSource,
+  /\.set-btn:hover \{ background: var\(--fill-control-hover\); transform: translateY\(-1px\); box-shadow: var\(--shadow-btn-hover\); \}/,
+  "settings action buttons must lift on hover",
+);
+assert.match(
+  indexSource,
+  /select\.set-input option \{ background-color: var\(--bg-solid-strong\); color: var\(--text-primary\); \}/,
+  "native dropdown options must stay readable in both themes",
+);
+assert.match(
+  indexSource,
+  /\.btn-square\.primary \{[\s\S]{0,300}box-shadow: 0 1px 2px rgba\(0, 0, 0, 0\.35\)/,
+  "primary buttons must carry elevation shadow for depth",
+);
+assert.match(
+  indexSource,
+  /\.btn-square\.primary:hover \{ background-color: var\(--accent-hover\); transform: translateY\(-1px\);/,
+  "primary button hover must give clear lift feedback",
+);
+assert.match(
+  indexSource,
+  /\.bind-btn\.listening \.bind-subtext \{ color: var\(--text-on-accent\); font-size: 11px; \}/,
+  "the chord-capture hint must stay readable on the accent-filled listening button",
+);
+assert.match(
+  overlaySource,
+  /\.hotkey-text \{[\s\S]{0,300}#1A86D8/,
+  "text-style hotkey hints in the overlay must use the deeper Fluent blue",
+);
+assert.doesNotMatch(overlaySource, />MOVE</, "the overlay drag bar must not show the MOVE label");
+
+// The title bar exposes a persisted light/dark theme toggle.
+assert.match(
+  indexSource,
+  /<button class="window-btn theme-btn" id="btn-theme" onclick="toggleTheme\(\)"/,
+  "the title bar must expose the theme toggle button",
+);
+assert.match(
+  indexSource,
+  /theme:\s*'dark',/,
+  "the persisted theme must default to dark so old configurations keep the previous look",
+);
+assert.match(
+  indexSource,
+  /gameSettings\.theme = gameSettings\.theme === 'light' \? 'light' : 'dark';/,
+  "malformed persisted theme values must normalize to dark instead of silently enabling light mode",
+);
+assert.match(
+  indexSource,
+  /function applyTheme\(\) \{[\s\S]{0,200}documentElement\.dataset\.theme/,
+  "the saved theme must drive the html data-theme attribute consumed by the theme token sets",
+);
+assert.match(indexSource, /html\[data-theme="light"\]\s*\{/, "a light theme token set must exist");
+assert.match(indexSource, /themeToLight: "切换到浅色主题"/);
+assert.match(indexSource, /themeToDark: "切换到深色主题"/);
+assert.match(indexSource, /themeToLight: "Switch to light theme"/);
+assert.match(indexSource, /themeToDark: "Switch to dark theme"/);
+
+// The main window uses a landscape layout with the primary actions in a sidebar.
+assert.match(indexSource, /<nav id="app-sidebar" aria-label="Main navigation">/);
+assert.doesNotMatch(indexSource, /class="top-controls"/, "the top button row must stay replaced by the sidebar");
+assert.match(indexSource, /<button class="sidebar-btn" id="btn-top-settings" onclick="openSettings\(\)">/);
+assert.match(indexSource, /<button class="sidebar-btn" id="btn-top-presets" onclick="openPresets\(\)">/);
+assert.match(indexSource, /<button class="sidebar-btn" id="btn-top-overlay" onclick="handleToggleOverlay\(\)">/);
+assert.match(indexSource, /<button class="sidebar-btn primary" id="btn-top-lib" onclick="openLibrary\(\)">/);
+assert.match(
+  indexSource,
+  /querySelector\('\.sidebar-label'\)\.textContent = lang\.btnSettings/,
+  "sidebar localization must update the label span without erasing the button icon",
+);
+assert.match(indexSource, /<div id="main-panel">\s*<div class="main-panel-title" id="txt-main-title">/);
+assert.match(indexSource, /mainLoadoutTitle: "当前装配"/);
+assert.match(indexSource, /mainLoadoutTitle: "CURRENT LOADOUT"/);
 
 assert.match(
   indexSource,
@@ -54,13 +195,85 @@ assert.match(
   "startup content must remain hidden while settings are loading",
 );
 assert.match(indexSource, /function finishUiStartup\(\)[\s\S]*dataset\.uiReady = 'true'/);
+assert.match(
+  indexSource,
+  /function updateI18n\(\) \{[\s\S]{0,80}documentElement\.lang = currentLang === 'zh' \? 'zh-CN' : 'en';/,
+  "every localization refresh must sync the <html lang> attribute, including runtime language switches",
+);
+// Loadout drag reordering must preview live: the dragged row follows the mouse
+// and the affected rows shift smoothly to their projected slots.
+assert.match(
+  indexSource,
+  /function applyDragPreview\(dropIndex, clientY\) \{/,
+  "the loadout drag must render a live reorder preview",
+);
+assert.match(
+  indexSource,
+  /sourceRow\.style\.transform = `translateY\(\$\{clientY - mouseDrag\.startY \+ dragScrollDelta\(\)\}px\) scale\(1\.02\)`;/,
+  "the dragged row must follow the cursor without a transition",
+);
+assert.match(
+  indexSource,
+  /body\.is-dragging \.list-row\.dragging \{ pointer-events: none; \}/,
+  "the floating drag row must not intercept pointer input",
+);
+assert.match(
+  indexSource,
+  /\.list-row\.dragging \{[\s\S]{0,120}transition: none;/,
+  "the dragged row must track the cursor without transition lag",
+);
+assert.match(
+  indexSource,
+  /function dropIndexAt\(clientX, clientY\) \{[\s\S]{0,600}for \(const rect of mouseDrag\.rowRects\)/,
+  "drop lookup must use the captured row geometry instead of transformed hit-testing",
+);
+assert.match(
+  indexSource,
+  /row\.style\.transform = shift \? `translateY\(\$\{shift\}px\)` : '';/,
+  "affected rows must shift to their projected slots and reset when the preview collapses",
+);
+assert.match(
+  indexSource,
+  /if \(mouseDrag\) finishLoadoutDrag\(\);\s*[\s\S]{0,260}style\.transition = 'none';[\s\S]{0,120}style\.transform = '';/,
+  "a new drag must hard-reset any in-flight settle animation before capturing the baseline geometry",
+);
+assert.match(
+  indexSource,
+  /if \(mouseDrag\) finishLoadoutDrag\(\);[\s\S]{0,600}?dragSrcIndex = sourceIndex;/,
+  "the source index must be assigned after the stale-drag reset, which clears it",
+);
+assert.match(
+  indexSource,
+  /function dragScrollDelta\(\) \{[\s\S]{0,300}main-panel[\s\S]{0,120}scrollTop - mouseDrag\.startScrollTop/,
+  "wheel-scrolling the panel during a drag must be compensated in the captured geometry",
+);
+assert.match(
+  indexSource,
+  /const y = clientY \+ dragScrollDelta\(\);/,
+  "the drop lookup must map the cursor back onto the captured row centers after scrolling",
+);
+assert.match(
+  indexSource,
+  /clientY - mouseDrag\.startY \+ dragScrollDelta\(\)/,
+  "the floating row must stay glued to the cursor across mid-drag scrolling",
+);
+assert.match(
+  indexSource,
+  /!sourceRow\.classList\.contains\('dragging'\)\) \{ finishLoadoutDrag\(\); return; \}/,
+  "a mid-drag list re-render must end the drag gracefully instead of continuing headless",
+);
 const initDataStart = indexSource.indexOf("async function initData()");
 const initDataEnd = indexSource.indexOf("window.handleToggleOverlay", initDataStart);
 assert.notEqual(initDataStart, -1, "could not find main UI initialization");
 assert.notEqual(initDataEnd, -1, "could not find main UI initialization end marker");
 const initDataSource = indexSource.slice(initDataStart, initDataEnd);
+const firstThemeApply = initDataSource.indexOf("applyTheme();");
 const firstI18nUpdate = initDataSource.indexOf("updateI18n();");
 const slowStartupIo = initDataSource.indexOf("await Promise.all([");
+assert.ok(
+  firstThemeApply > -1 && firstThemeApply < firstI18nUpdate,
+  "the saved theme must be applied before the first localization pass",
+);
 assert.ok(
   firstI18nUpdate > -1 && firstI18nUpdate < slowStartupIo,
   "the saved language must be applied before slower startup I/O",
@@ -81,12 +294,41 @@ const tauriConfig = JSON.parse(
 );
 const installerHooks = tauriConfig.bundle?.windows?.nsis?.installerHooks;
 assert.equal(installerHooks, "windows/installer-hooks.nsh");
-assert.equal(tauriConfig.version, "2.0.7", "the bundled version must match the application version");
+const cargoVersion = fs
+  .readFileSync(path.join(root, "src-tauri", "Cargo.toml"), "utf8")
+  .match(/^version\s*=\s*"([^"]+)"/m)?.[1];
+assert.ok(cargoVersion, "Cargo.toml must declare a package version");
+assert.equal(tauriConfig.version, cargoVersion, "the bundled version must match the application version");
+const mainWindowConfig = tauriConfig.app?.windows?.find((window) => window.label === "main");
+assert.ok(mainWindowConfig, "the main window must remain declared in tauri.conf.json");
+assert.ok(
+  mainWindowConfig.width > mainWindowConfig.height,
+  "the main window must default to a landscape size for the sidebar layout",
+);
+assert.ok(
+  mainWindowConfig.minWidth >= 860 && mainWindowConfig.minHeight >= 600,
+  "the landscape window must keep a usable minimum size for the sidebar layout",
+);
+assert.equal(
+  mainWindowConfig.transparent,
+  true,
+  "the main window must stay transparent so the rounded corners reveal the desktop instead of the webview background",
+);
+assert.equal(
+  mainWindowConfig.backgroundColor,
+  undefined,
+  "an opaque webview background would bleed through the rounded window corners as dark wedges",
+);
+assert.equal(
+  mainWindowConfig.visible,
+  false,
+  "the main window must start hidden and be revealed by the renderer so startup never flashes a blank frame",
+);
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const packageLock = JSON.parse(fs.readFileSync(path.join(root, "package-lock.json"), "utf8"));
-assert.equal(packageJson.version, "2.0.7");
-assert.equal(packageLock.version, "2.0.7");
-assert.equal(packageLock.packages[""].version, "2.0.7");
+assert.equal(packageJson.version, cargoVersion);
+assert.equal(packageLock.version, cargoVersion);
+assert.equal(packageLock.packages[""].version, cargoVersion);
 const installerHookSource = fs.readFileSync(path.join(root, "src-tauri", installerHooks), "utf8");
 assert.match(installerHookSource, /CheckIfAppIsRunning "HD2 Macro Terminal\.exe"/);
 assert.match(installerHookSource, /CheckIfAppIsRunning "HD2-Trigger\.exe"/);
@@ -112,6 +354,11 @@ assert.match(
   indexSource,
   /\.modal-overlay\s*{[\s\S]{0,500}visibility:\s*hidden;[\s\S]{0,500}\.modal-overlay\.active\s*{[^}]*visibility:\s*visible;/,
   "inactive full-window blur layers must be excluded from rendering",
+);
+assert.match(
+  indexSource,
+  /\.modal-overlay\s*{[\s\S]{0,600}transform: translateY\(14px\);/,
+  "modal transitions must include a Fluent-style slide-up entrance",
 );
 assert.match(
   indexSource,
@@ -390,8 +637,8 @@ assert.match(bridgeSource, /getInputDiagnostics:.*get_input_diagnostics/);
 assert.match(bridgeSource, /onNativeShortcut:.*native-shortcut/);
 assert.match(bridgeSource, /onNativeMacroStarted:.*native-macro-started/);
 assert.match(bridgeSource, /onNativeMacroFinished:.*native-macro-finished/);
-assert.match(bridgeSource, /checkForUpdates:.*check_for_updates/);
-assert.match(bridgeSource, /openReleaseDownload:.*open_release_download/);
+assert.doesNotMatch(bridgeSource, /check_for_updates|open_release_download|open_bilibili_page|load_cached_free_notice|check_free_notice_updates|should_show_free_notice|acknowledge_free_notice/);
+assert.doesNotMatch(indexSource, /free-notice|freeSoftwareNotice|id="update-modal"|checkForStartupUpdate|pendingUpdateInfo|goToUpdateDownload|openReleaseDownload/);
 assert.match(indexSource, /pendingGlobalInputFilter/);
 assert.match(indexSource, /config:\s*buildNativeShortcutConfig\(\)/);
 assert.match(indexSource, /payload:\s*buildMacroPayload\(item\)/);
@@ -435,20 +682,32 @@ assert.match(
   /if \(gameSettings\.autoLockOverlay === true\) \{[\s\S]{0,300}await window\.electronAPI\.lockOverlay\(\);/,
   "every overlay show must honor the explicit auto-lock setting",
 );
+assert.match(indexSource, /id="btn-reset-overlay-position"[^>]*onclick="resetOverlayPosition\(\)"/);
+assert.match(indexSource, /resetOverlayPosition: "重置位置"/);
+assert.match(indexSource, /resetOverlayPosition: "RESET POSITION"/);
+assert.match(
+  indexSource,
+  /window\.resetOverlayPosition = async[\s\S]{0,700}toggleOverlay\(\);[\s\S]{0,400}clearSavedOverlayPosition\(\);[\s\S]{0,600}await window\.handleToggleOverlay\(\);/,
+  "the overlay must be hidden before the persisted position is cleared and shown again",
+);
+assert.match(
+  indexSource,
+  /window\.setOverlayStyle = \(mode\) => \{[\s\S]{0,600}updateOverlaySettings\(\{ opacity: gameSettings\.ovOpacity, style: gameSettings\.ovStyle \}\);[\s\S]{0,300}updateOverlay\(activeLoadout\);[\s\S]{0,200}updateSelection\(overlaySelectedIndex\);/,
+  "switching the hotkey style must persist and push the style together with a fresh render",
+);
+assert.doesNotMatch(
+  overlaySource,
+  /onOverlaySettings\(async/,
+  "the overlay settings handler must stay synchronous: re-renders are driven by render-overlay events",
+);
 assert.match(hooksSource, /pressed_inputs:\s*Vec</, "native events must include the held-input snapshot");
-assert.match(indexSource, /id="txt-update-title">检测到新版本</);
-assert.match(indexSource, /id="btn-update-download"[^>]*>前往下载</);
-assert.match(indexSource, /id="btn-update-later"[^>]*>暂不</);
-assert.match(indexSource, /void prepareStartupStarReminder\(\)/, "startup notifications must not block UI readiness");
-assert.match(indexSource, /Promise\.allSettled\(\[[\s\S]{0,250}checkForStartupUpdate\(\)/, "the reminder must preserve the independent update check");
-assert.match(indexSource, /messageElement\.textContent = message/, "server text must never be injected as HTML");
-assert.match(updatesSource, /update\.unsnow\.online/);
-assert.match(updatesSource, /QuickStratagemTool\/releases\/latest/);
-assert.match(networkSource, /WinHttpSetTimeouts/);
-assert.match(updatesSource, /latest_version <= current_version/);
+assert.match(indexSource, /void checkForStratagemCatalogUpdate\(\)/, "startup notifications must not block UI readiness");
 assert.match(indexSource, /id="txt-catalog-update-title">战备数据库已更新</);
-assert.match(indexSource, /Promise\.allSettled\(\[[\s\S]{0,250}checkForStratagemCatalogUpdate\(\)/);
 assert.match(indexSource, /strat\.enabled !== false/);
+assert.match(indexSource, /getElementById\('txt-catalog-update-msg'\)\.textContent =/, "modal text must never be injected as HTML");
+assert.doesNotMatch(mainSource, /check_for_updates|open_release_download|notices::|should_show_free_notice|acknowledge_free_notice|load_cached_free_notice|check_free_notice_updates|open_bilibili_page|take_startup_star_reminder|dismiss_star_reminders|open_github_repository/);
+assert.match(networkSource, /WinHttpSetTimeouts/);
+assert.match(catalogSource, /update\.unsnow\.online/);
 assert.match(catalogSource, /Catalog signature verification failed/);
 assert.match(catalogSource, /BUNDLED_CATALOG_VERSION:\s*u64\s*=\s*1/);
 
@@ -509,75 +768,74 @@ await overlayContext.overlayHarness.toggle();
 assert.equal(overlayContext.overlayHarness.visible(), true, "a lock failure must not mark a visible overlay as hidden");
 assert.equal(overlayToasts.at(-1).isError, true, "an auto-lock failure must be visible to the user");
 
-const updateHelperStart = indexSource.indexOf("function updateUpdateModalText");
-const updateHelperEnd = indexSource.indexOf("window.openGitHubRepository", updateHelperStart);
-assert.notEqual(updateHelperStart, -1, "could not find update modal helpers");
-assert.notEqual(updateHelperEnd, -1, "could not find update modal helper end marker");
-const updateElements = new Map();
-for (const id of [
-  "txt-update-title",
-  "txt-update-msg",
-  "btn-update-download",
-  "btn-update-later",
-  "update-modal",
-]) {
-  const classes = new Set();
-  updateElements.set(id, {
-    textContent: "",
-    focused: false,
-    focus() { this.focused = true; },
-    classList: {
-      add(value) { classes.add(value); },
-      remove(value) { classes.delete(value); },
-      contains(value) { return classes.has(value); },
+const resetStart = indexSource.indexOf("window.resetOverlayPosition = async");
+const resetEnd = indexSource.indexOf("function saveCurrentLoadoutToCache", resetStart);
+assert.notEqual(resetStart, -1, "could not find the overlay position reset handler");
+assert.notEqual(resetEnd, -1, "could not find the overlay position reset handler end marker");
+const resetCalls = [];
+const resetToasts = [];
+let failClear = false;
+const resetContext = vm.createContext({
+  console: { ...console, error() {} },
+  window: { electronAPI: {
+    async clearSavedOverlayPosition() {
+      resetCalls.push("clear");
+      if (failClear) throw new Error("disk full");
     },
-  });
-}
-let updateResponse = null;
-let openedReleasePage = 0;
-const updateContext = vm.createContext({
-  console: { debug() {} },
-  document: { getElementById: (id) => updateElements.get(id) },
-  showInlineStatus() {},
-  window: {
-    electronAPI: {
-      async checkForUpdates() { return updateResponse; },
-      async openReleaseDownload() { openedReleasePage += 1; },
+    // The native hide persists the live window position, so the saved value
+    // only becomes clearable after the overlay is hidden.
+    async toggleOverlay() {
+      resetCalls.push("toggle");
+      const visible = resetCalls.filter((call) => call === "toggle").length % 2 === 1;
+      if (!visible) resetContext.resetHarness.settings.overlayPosition = { x: 2439, y: 726 };
+      return visible;
     },
-  },
+  } },
 });
 vm.runInContext(
   `
-    let currentLang = "zh";
+    let isOverlayVisible = true;
+    const gameSettings = { overlayPosition: { x: 2439, y: 726 } };
+    const currentLang = "zh";
     const i18n = { zh: {
-      updateTitle: "检测到新版本",
-      updateMessage: "当前版本 {current}，最新版本 {latest}。是否前往 GitHub Release 下载？",
-      updateDownload: "前往下载",
-      updateLater: "暂不",
-      msgUpdateOpenFailed: "打开下载页面失败"
+      resetOverlayDone: "悬浮窗位置已重置",
+      resetOverlayFailed: "重置悬浮窗位置失败: {error}"
     } };
-    let pendingUpdateInfo = null;
-    ${indexSource.slice(updateHelperStart, updateHelperEnd)}
-    globalThis.updateHarness = {
-      checkForStartupUpdate,
-      closeUpdateModal: window.closeUpdateModal,
-      goToUpdateDownload: window.goToUpdateDownload
+    window.handleToggleOverlay = async () => { resetCalls.push("handleToggleOverlay"); isOverlayVisible = true; };
+    function showToast(message, isError) { resetToasts.push({ message, isError }); }
+    ${indexSource.slice(resetStart, resetEnd)}
+    globalThis.resetHarness = {
+      run: window.resetOverlayPosition,
+      settings: gameSettings,
+      visible: () => isOverlayVisible,
     };
   `,
-  updateContext,
-  { filename: "index.html:update-modal" },
+  Object.assign(resetContext, { resetCalls, resetToasts }),
+  { filename: "index.html:overlay-position-reset" },
 );
-await updateContext.updateHarness.checkForStartupUpdate();
-assert.equal(updateElements.get("update-modal").classList.contains("active"), false);
-updateResponse = { currentVersion: "2.0.1", version: "2.0.2" };
-await updateContext.updateHarness.checkForStartupUpdate();
-assert.equal(updateElements.get("txt-update-title").textContent, "检测到新版本");
-assert.match(updateElements.get("txt-update-msg").textContent, /2\.0\.1.*2\.0\.2/);
-assert.equal(updateElements.get("update-modal").classList.contains("active"), true);
-assert.equal(updateElements.get("btn-update-download").focused, true);
-await updateContext.updateHarness.goToUpdateDownload();
-assert.equal(openedReleasePage, 1);
-assert.equal(updateElements.get("update-modal").classList.contains("active"), false);
+await resetContext.resetHarness.run();
+assert.deepEqual(resetCalls, ["toggle", "clear", "handleToggleOverlay"], "the overlay must be hidden (which persists the live position) before the clear runs");
+assert.equal(resetContext.resetHarness.settings.overlayPosition, null, "the in-memory position must be cleared after the native save");
+assert.equal(resetContext.resetHarness.visible(), true, "the overlay must be shown again after the reset");
+assert.equal(resetToasts.at(-1)?.isError ?? false, false, "a successful reset must be confirmed to the user");
+assert.match(bridgeSource, /clearSavedOverlayPosition:\s*\(\)\s*=>\s*invoke\("clear_saved_overlay_position"\)/);
+assert.match(bridgeSource, /showMainWindow:\s*\(\)\s*=>\s*invoke\("show_main_window"\)/);
+assert.match(mainSource, /fn\s+show_main_window\s*\(/);
+assert.match(mainSource, /main_window_shown/);
+assert.match(
+  indexSource,
+  /function finishUiStartup\(\)[\s\S]{0,500}showMainWindow\(\)/,
+  "the UI-ready handler must reveal the hidden main window",
+);
+
+resetCalls.length = 0;
+failClear = true;
+resetContext.resetHarness.settings.overlayPosition = { x: 2439, y: 726 };
+await resetContext.resetHarness.run();
+assert.deepEqual(resetCalls, ["toggle", "clear"], "a failed clear may hide the overlay but must never show it with a stale position");
+assert.deepEqual(resetContext.resetHarness.settings.overlayPosition, { x: 2439, y: 726 }, "a failed clear must keep the in-memory position");
+assert.equal(resetContext.resetHarness.visible(), false, "the overlay must stay hidden when the clear fails");
+assert.equal(resetToasts.at(-1).isError, true, "a failed reset must be visible to the user");
 
 const bridgeCalls = [];
 let releaseBlockedFlush;
@@ -602,13 +860,6 @@ assert.deepEqual(bridgeCalls, ["begin_exit"], "native exit watchdog must start b
 releaseBlockedFlush();
 await blockedClose;
 assert.deepEqual(bridgeCalls, ["begin_exit", "window_close"]);
-await bridgeContext.window.electronAPI.checkForUpdates();
-await bridgeContext.window.electronAPI.openReleaseDownload();
-assert.deepEqual(bridgeCalls.slice(-2), ["check_for_updates", "open_release_download"]);
-await bridgeContext.window.electronAPI.takeStartupStarReminder();
-await bridgeContext.window.electronAPI.dismissStarReminders();
-await bridgeContext.window.electronAPI.openGitHubRepository();
-assert.deepEqual(bridgeCalls.slice(-3), ["take_startup_star_reminder", "dismiss_star_reminders", "open_github_repository"]);
 
 const rejectedBridgeCalls = [];
 const rejectedBridgeContext = vm.createContext({
@@ -636,7 +887,5 @@ assert.deepEqual(
   "rejected native operations must preserve the original error without diagnostics IPC",
 );
 
-await import("./support-regression.mjs");
 await import("./library-favorites-regression.mjs");
-await import("./free-notice-regression.mjs");
 console.log(`UI, native-window, and ${new Set(bundledIcons).size} icon regression tests passed.`);

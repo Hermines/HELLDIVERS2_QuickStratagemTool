@@ -13,14 +13,15 @@
       {
         "label": "main",
         "title": "HD2 Macro Terminal",
-        "width": 715,
-        "height": 1030,
-        "minWidth": 715,
-        "minHeight": 1030,
+        "width": 1024,
+        "height": 720,
+        "minWidth": 860,
+        "minHeight": 600,
         "decorations": false,
         "resizable": true,
         "shadow": true,
-        "backgroundColor": "#000000"
+        "transparent": true,
+        "visible": false
       }
     ],
     "security": {

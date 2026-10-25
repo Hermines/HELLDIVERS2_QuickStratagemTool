@@ -7,11 +7,8 @@ mod hooks;
 mod input;
 mod legacy;
 mod network;
-mod notices;
 mod ocr;
-mod support;
 mod tray;
-mod updates;
 mod windows;
 
 use config::MigrationReport;
@@ -28,7 +25,6 @@ use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 
 struct AppState {
     data_dir: PathBuf,
-    first_install: bool,
     data_io: Mutex<()>,
     ocr_model_dir: PathBuf,
     migration_report: MigrationReport,
@@ -39,10 +35,10 @@ struct AppState {
     ocr_selection_display: Mutex<Option<ocr::OcrDisplay>>,
     window_creation: Mutex<()>,
     window_payloads: Mutex<WindowPayloads>,
+    main_window_shown: AtomicBool,
     overlay_snapshot: Mutex<OverlaySnapshot>,
     last_toast: Mutex<Option<Value>>,
     toast_generation: AtomicU64,
-    startup_usage: Mutex<support::StartupUsage>,
 }
 
 struct WindowPayloads {
@@ -184,6 +180,27 @@ fn preserve_overlay_position(data_dir: &std::path::Path, mut data: Value) -> Res
     Ok(data)
 }
 
+/// The settings save path re-inserts any saved overlay position, so a cleared
+/// position can only be expressed through this dedicated command.
+#[tauri::command]
+fn clear_saved_overlay_position(state: State<'_, AppState>) -> Result<(), String> {
+    let _data_io = state
+        .data_io
+        .lock()
+        .map_err(|_| "Data storage is unavailable".to_owned())?;
+    let data_dir = state.data_dir.clone();
+    let Some(mut settings) = config::load_json(&data_dir, "settings.json")? else {
+        return Ok(());
+    };
+    let Some(values) = settings.as_object_mut() else {
+        return Err("Saved settings are not a JSON object".to_owned());
+    };
+    if values.remove("overlayPosition").is_none() {
+        return Ok(());
+    }
+    config::save_json(&data_dir, "settings.json", &settings)
+}
+
 fn load_overlay_position_from_value(value: Option<&Value>) -> Option<windows::OverlayPosition> {
     let position = value?;
     let x = i32::try_from(position.get("x")?.as_i64()?).ok()?;
@@ -267,6 +284,27 @@ fn window_minimize(app: AppHandle) -> Result<(), String> {
 #[tauri::command]
 fn window_tray(app: AppHandle) -> Result<(), String> {
     windows::hide_main(&app)
+}
+
+// The main window starts hidden (tauri.conf.json) so the transparent WebView
+// never flashes a blank frame at startup. The renderer reveals it once the UI
+// is ready; the flag makes the reveal idempotent for the fallback thread.
+fn reveal_main_window(app: &AppHandle, state: &AppState) -> Result<(), String> {
+    if state.main_window_shown.load(Ordering::Acquire) {
+        return Ok(());
+    }
+    let window = app
+        .get_webview_window("main")
+        .ok_or_else(|| "Main window is unavailable".to_owned())?;
+    window.show().map_err(|error| error.to_string())?;
+    window.set_focus().map_err(|error| error.to_string())?;
+    state.main_window_shown.store(true, Ordering::Release);
+    Ok(())
+}
+
+#[tauri::command]
+fn show_main_window(app: AppHandle, state: State<'_, AppState>) -> Result<(), String> {
+    reveal_main_window(&app, &state)
 }
 
 #[tauri::command]
@@ -477,98 +515,6 @@ async fn execute_macro(payload: input::MacroPayload) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn take_startup_star_reminder(app: AppHandle) -> Result<Option<u32>, String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<AppState>();
-        let result = state
-            .startup_usage
-            .lock()
-            .map_err(|_| "Usage storage is unavailable".to_owned())?
-            .take_reminder(&state.data_dir);
-        result
-    })
-    .await
-    .map_err(|error| format!("Usage task failed: {error}"))?
-}
-
-#[tauri::command]
-async fn dismiss_star_reminders(app: AppHandle) -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<AppState>();
-        let result = state
-            .startup_usage
-            .lock()
-            .map_err(|_| "Usage storage is unavailable".to_owned())?
-            .dismiss(&state.data_dir);
-        result
-    })
-    .await
-    .map_err(|error| format!("Usage task failed: {error}"))?
-}
-
-#[tauri::command]
-async fn open_github_repository() -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(updates::open_repository_page)
-        .await
-        .map_err(|error| format!("Open GitHub task failed: {error}"))?
-}
-
-#[tauri::command]
-async fn should_show_free_notice(app: AppHandle) -> Result<bool, String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<AppState>();
-        let result = state
-            .startup_usage
-            .lock()
-            .map_err(|_| "Usage storage is unavailable".to_owned())?
-            .should_show_free_notice(&state.data_dir, state.first_install);
-        result
-    })
-    .await
-    .map_err(|error| error.to_string())?
-}
-
-#[tauri::command]
-async fn acknowledge_free_notice(app: AppHandle) -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<AppState>();
-        let result = state
-            .startup_usage
-            .lock()
-            .map_err(|_| "Usage storage is unavailable".to_owned())?
-            .acknowledge_free_notice(&state.data_dir);
-        result
-    })
-    .await
-    .map_err(|error| error.to_string())?
-}
-
-#[tauri::command]
-async fn load_cached_free_notice(app: AppHandle) -> Result<Option<notices::NoticeContent>, String> {
-    let data_dir = app.state::<AppState>().data_dir.clone();
-    tauri::async_runtime::spawn_blocking(move || notices::load_cached(&data_dir))
-        .await
-        .map_err(|error| error.to_string())?
-}
-
-#[tauri::command]
-async fn check_free_notice_updates(
-    app: AppHandle,
-) -> Result<Option<notices::NoticeContent>, String> {
-    let data_dir = app.state::<AppState>().data_dir.clone();
-    tauri::async_runtime::spawn_blocking(move || notices::check_for_update(&data_dir))
-        .await
-        .map_err(|error| error.to_string())?
-}
-
-#[tauri::command]
-async fn open_bilibili_page() -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(updates::open_bilibili_page)
-        .await
-        .map_err(|error| error.to_string())?
-}
-
-#[tauri::command]
 async fn open_ocr_help(
     app: AppHandle,
     state: State<'_, AppState>,
@@ -616,23 +562,6 @@ fn get_app_version() -> &'static str {
 }
 
 #[tauri::command]
-async fn check_for_updates() -> Option<updates::UpdateInfo> {
-    match tauri::async_runtime::spawn_blocking(updates::check_for_update).await {
-        Ok(Ok(update)) => update,
-        Ok(Err(_error)) => {
-            #[cfg(debug_assertions)]
-            eprintln!("Update check skipped: {_error}");
-            None
-        }
-        Err(_error) => {
-            #[cfg(debug_assertions)]
-            eprintln!("Update check task failed: {_error}");
-            None
-        }
-    }
-}
-
-#[tauri::command]
 async fn load_cached_stratagem_catalog(
     state: State<'_, AppState>,
 ) -> Result<Option<catalog::CatalogPayload>, String> {
@@ -670,11 +599,6 @@ async fn check_stratagem_catalog_updates(
             Ok(None)
         }
     }
-}
-
-#[tauri::command]
-fn open_release_download() -> Result<(), String> {
-    updates::open_releases_page()
 }
 
 #[tauri::command]
@@ -852,13 +776,8 @@ fn main() {
             let ocr_model_dir = resolve_ocr_model_dir(app.handle());
             let migration_report =
                 config::initialize_data_directory(&data_dir).map_err(std::io::Error::other)?;
-            let first_install = !config::LEGACY_FILES
-                .iter()
-                .any(|name| data_dir.join(name).exists())
-                && !data_dir.join("support-state.json").exists();
             app.manage(AppState {
                 data_dir,
-                first_install,
                 data_io: Mutex::new(()),
                 ocr_model_dir,
                 migration_report,
@@ -871,6 +790,7 @@ fn main() {
                 window_payloads: Mutex::new(WindowPayloads {
                     ocr_help_language: "zh".to_owned(),
                 }),
+                main_window_shown: AtomicBool::new(false),
                 overlay_snapshot: Mutex::new(OverlaySnapshot {
                     settings: Value::Object(serde_json::Map::new()),
                     data: Value::Array(Vec::new()),
@@ -879,10 +799,20 @@ fn main() {
                 }),
                 last_toast: Mutex::new(None),
                 toast_generation: AtomicU64::new(0),
-                startup_usage: Mutex::new(support::StartupUsage::default()),
             });
             tray::create(app.handle())?;
             hooks::start(app.handle().clone()).map_err(std::io::Error::other)?;
+            // Bounded fallback: if the renderer crashes before it can reveal
+            // the hidden main window, surface it anyway instead of leaving the
+            // app running with no visible window.
+            let fallback_handle = app.handle().clone();
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_secs(5));
+                let state = fallback_handle.state::<AppState>();
+                if let Err(error) = reveal_main_window(&fallback_handle, &state) {
+                    eprintln!("Main window fallback reveal failed: {error}");
+                }
+            });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -894,10 +824,12 @@ fn main() {
             toggle_overlay,
             window_minimize,
             window_tray,
+            show_main_window,
             begin_exit,
             window_close,
             lock_overlay,
             unlock_overlay,
+            clear_saved_overlay_position,
             resize_overlay,
             set_overlay_position,
             update_overlay_settings,
@@ -909,22 +841,12 @@ fn main() {
             hide_toast,
             get_last_toast,
             execute_macro,
-            take_startup_star_reminder,
-            dismiss_star_reminders,
-            open_github_repository,
-            should_show_free_notice,
-            acknowledge_free_notice,
-            load_cached_free_notice,
-            check_free_notice_updates,
-            open_bilibili_page,
             open_ocr_help,
             close_ocr_help_window,
             get_ocr_help_language,
             get_app_version,
-            check_for_updates,
             load_cached_stratagem_catalog,
             check_stratagem_catalog_updates,
-            open_release_download,
             ocr_model_status,
             recognize_ocr_region,
             get_ocr_displays,
@@ -969,6 +891,49 @@ mod tests {
             Some(windows::OverlayPosition { x: 320, y: 240 })
         );
         assert_eq!(merged.get("ovOpacity"), Some(&Value::from(55)));
+
+        fs::remove_dir_all(data_dir).expect("temporary app data directory should be removable");
+    }
+
+    #[test]
+    fn cleared_overlay_position_survives_later_settings_saves() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system clock should be after epoch")
+            .as_nanos();
+        let data_dir = std::env::temp_dir().join(format!(
+            "hd2-macro-terminal-rust-overlay-clear-{unique}-{}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&data_dir).expect("temporary app data directory should be creatable");
+        config::save_json(
+            &data_dir,
+            "settings.json",
+            &json!({ "overlayPosition": { "x": 2439, "y": 726 }, "ovOpacity": 60 }),
+        )
+        .expect("saved overlay position should be writable");
+
+        // Mirror the command body: the state accessor is unavailable in tests,
+        // but the clear path itself only needs the data directory.
+        let settings = config::load_json(&data_dir, "settings.json")
+            .expect("settings should be readable")
+            .expect("settings should exist");
+        let mut settings = settings;
+        settings
+            .as_object_mut()
+            .expect("settings should be an object")
+            .remove("overlayPosition");
+        config::save_json(&data_dir, "settings.json", &settings)
+            .expect("cleared settings should be writable");
+
+        assert_eq!(load_overlay_position(&data_dir).unwrap(), None);
+        // The resurrect-on-save behavior must not bring the old position back.
+        let merged = preserve_overlay_position(&data_dir, json!({ "ovOpacity": 55 }))
+            .expect("settings merge should succeed");
+        assert_eq!(
+            load_overlay_position_from_value(merged.get("overlayPosition")),
+            None
+        );
 
         fs::remove_dir_all(data_dir).expect("temporary app data directory should be removable");
     }

@@ -8,43 +8,44 @@
         body { background: transparent; color: #FFE80A; overflow: hidden; transition: opacity 0.3s ease; }
         
 
+        /* The in-game list stays dark for game readability; the drag bar is a
+           configuration surface and uses the Fluent dark palette instead. */
         #drag-bar {
-            -webkit-app-region: drag; 
-            background: rgba(10, 10, 12, 0.95); 
-            border: 1px solid rgba(255, 232, 10, 0.3); 
-            border-left: 4px solid #FFE80A;
+            -webkit-app-region: drag;
+            background: rgba(43, 43, 43, 0.97);
+            border: 1px solid rgba(255, 255, 255, 0.0698);
+            border-left: 3px solid #4CC2FF;
             margin: 8px 8px 12px 8px;
             border-radius: 6px;
-            padding: 6px 8px 6px 10px; 
+            padding: 6px 8px 6px 10px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.22);
         }
 
         .drag-info {
             display: flex; align-items: center; gap: 8px;
-            color: #FFE80A; font-family: system-ui, -apple-system, sans-serif; 
-            font-size: 11px; font-weight: 700; letter-spacing: 1px;
-            opacity: 0.85;
+            color: rgba(255, 255, 255, 0.7843);
+            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
         }
 
 
-        .lock-btn { 
-            -webkit-app-region: no-drag; 
-            background: rgba(255, 69, 58, 0.1); 
-            color: #ff453a; 
-            border: 1px solid rgba(255, 69, 58, 0.3); 
-            border-radius: 4px; 
-            cursor: pointer; 
-            width: 26px; height: 26px; 
+        .lock-btn {
+            -webkit-app-region: no-drag;
+            background: rgba(255, 255, 255, 0.0605);
+            color: rgba(255, 255, 255, 0.7843);
+            border: 1px solid rgba(255, 255, 255, 0.2259);
+            border-radius: 4px;
+            cursor: pointer;
+            width: 26px; height: 26px;
             display: flex; justify-content: center; align-items: center;
-            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.16s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
-        
-        .lock-btn:hover { 
-            background: #ff453a; 
-            color: #ffffff; 
-            border-color: #ff453a;
-            box-shadow: 0 0 10px rgba(255, 69, 58, 0.6);
+
+        .lock-btn:hover {
+            background: #C42B1C;
+            color: #ffffff;
+            border-color: #C42B1C;
             transform: scale(1.05);
         }
 
@@ -77,7 +78,12 @@
         .icon { width: 40px; height: 40px; object-fit: contain; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; background: rgba(0,0,0,0.8); padding: 2px; }
         
 
-        .hotkey-text { font-size: 20px; text-shadow: 2px 2px 0px #000; -webkit-text-stroke: 1px black; }
+        .hotkey-text {
+            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+            font-size: 20px; font-weight: 600; letter-spacing: 0.5px;
+            color: #1A86D8;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+        }
 
 
         .hotkey-icon {
@@ -99,7 +105,6 @@
 <body>
     <div id="drag-bar" data-tauri-drag-region="deep">
         <div class="drag-info">
-
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="5 9 2 12 5 15"></polyline>
                 <polyline points="9 5 12 2 15 5"></polyline>
@@ -108,7 +113,6 @@
                 <line x1="2" y1="12" x2="22" y2="12"></line>
                 <line x1="12" y1="2" x2="12" y2="22"></line>
             </svg>
-            <span>MOVE</span>
         </div>
         
         <button class="lock-btn" data-tauri-drag-region="false" onclick="lockOverlay()" title="Lock Overlay">
