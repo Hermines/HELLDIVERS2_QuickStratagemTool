@@ -118,7 +118,7 @@ function evaluate(context, expression) {
   );
 }
 
-// Intentional legacy rule 3: clear unlocked slots before returning no-space.
+// Regression rule 3: a no-space rejection must leave the loadout untouched.
 {
   const context = matcherContext({
     stratagems: [],
@@ -135,8 +135,43 @@ function evaluate(context, expression) {
     ),
   );
   assert.deepEqual(result, { ok: false, reason: "no-space", count: 0 });
-  assert.equal(evaluate(context, "activeLoadout[0].strat"), null);
+  assert.equal(
+    evaluate(context, "activeLoadout[0].strat.id"),
+    "old-unlocked",
+    "a no-space rejection must not clear unlocked slots",
+  );
   assert.equal(evaluate(context, "activeLoadout[1].strat.id"), "locked");
+  assert.equal(
+    evaluate(context, "committed"),
+    false,
+    "a no-space rejection must not commit a partially cleared loadout",
+  );
+}
+
+// The success path still clears unlocked slots, skips locked ones, and keeps
+// already-locked stratagems equipped.
+{
+  const context = matcherContext({
+    stratagems: [],
+    maxSlots: 3,
+    loadout: [
+      { locked: true, strat: { id: "locked" } },
+      { locked: false, strat: { id: "old" } },
+      { locked: false, strat: { id: "old2" } },
+    ],
+  });
+  const result = JSON.parse(
+    evaluate(
+      context,
+      "JSON.stringify(applyOcrLoadout([{ id: 'new-a' }, { id: 'locked' }]))",
+    ),
+  );
+  assert.deepEqual(result, { ok: true, count: 1 });
+  assert.equal(evaluate(context, "activeLoadout[0].strat.id"), "locked");
+  assert.equal(evaluate(context, "activeLoadout[1].strat.id"), "new-a");
+  assert.equal(evaluate(context, "activeLoadout[2].strat"), null);
+  assert.equal(evaluate(context, "committed"), true);
+  assert.equal(evaluate(context, "overlaySelectedIndex"), 0);
 }
 
 console.log("OCR matcher legacy-regression tests passed.");

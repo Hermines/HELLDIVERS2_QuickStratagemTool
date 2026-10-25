@@ -1434,6 +1434,36 @@
             return { catalogVersion: payload.catalogVersion, items };
         }
 
+        // custom_strats.json is written by this app but also migrated verbatim
+        // from the legacy Electron data directory, so treat every entry as
+        // untrusted and drop malformed ones instead of letting them break
+        // rendering, shortcut config building, or OCR matching.
+        function normalizeCustomStratagems(entries) {
+            if (!Array.isArray(entries)) return [];
+            const groups = new Set(['support', 'orbital', 'eagle', 'emplacement', 'sentry', 'backpack', 'vehicle', 'mission']);
+            const ids = new Set();
+            const valid = [];
+            for (const entry of entries) {
+                if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+                if (typeof entry.id !== 'string' || !/^custom_[A-Za-z0-9_.-]{5,99}$/.test(entry.id) || ids.has(entry.id.toLowerCase())) continue;
+                if (!groups.has(entry.grp)) continue;
+                if (!entry.name || typeof entry.name.zh !== 'string' || !entry.name.zh.trim() || typeof entry.name.en !== 'string' || !entry.name.en.trim()) continue;
+                if (entry.name.zh.length > MAX_CUSTOM_NAME_LENGTH || entry.name.en.length > MAX_CUSTOM_NAME_LENGTH) continue;
+                if (!Array.isArray(entry.seq) || entry.seq.length < 1 || entry.seq.length > MAX_CUSTOM_SEQUENCE_LENGTH || !entry.seq.every(key => key === 'W' || key === 'A' || key === 'S' || key === 'D')) continue;
+                ids.add(entry.id.toLowerCase());
+                valid.push({
+                    id: entry.id,
+                    grp: entry.grp,
+                    name: { zh: entry.name.zh, en: entry.name.en },
+                    aliases: Array.isArray(entry.aliases) ? entry.aliases.map(String) : [],
+                    ocr: Array.isArray(entry.ocr) ? entry.ocr.map(String) : [],
+                    seq: [...entry.seq],
+                    icon: typeof entry.icon === 'string' && entry.icon ? entry.icon : EMPTY_IMAGE_SOURCE
+                });
+            }
+            return valid;
+        }
+
         function rebuildStratagemDatabase() {
             const base = remoteCatalogItems.length ? remoteCatalogItems : defaultStratagemDB;
             stratagemDB = [...base, ...customStratagems];
@@ -1871,6 +1901,15 @@
             }
         };
 
+        // The overlay position is owned by the native layer, which persists it
+        // on drag/exit. Strip it from renderer saves so a stale startup snapshot
+        // can never overwrite a position the user dragged later; the native
+        // save path re-inserts the persisted value when the key is absent.
+        function persistSettings() {
+            const { overlayPosition, ...settings } = gameSettings;
+            return saveDataToLocal('settings.json', settings, 'hd2_macro_settings');
+        }
+
         if (window.electronAPI && window.electronAPI.onQuitRequested) {
             window.electronAPI.onQuitRequested(() => {
                 window.electronAPI.close().catch(error => {
@@ -2002,11 +2041,15 @@
             settingsChanged = migrateOcrRegionToPhysicalPixels() || settingsChanged;
 
             if (settingsChanged) {
-                await saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+                await persistSettings();
             }
 
             if (cacheCustom && Array.isArray(cacheCustom)) {
-                customStratagems = cacheCustom;
+                customStratagems = normalizeCustomStratagems(cacheCustom);
+                if (customStratagems.length !== cacheCustom.length) {
+                    console.warn(`Discarded ${cacheCustom.length - customStratagems.length} invalid custom stratagem entries`);
+                    saveDataToLocal('custom_strats.json', customStratagems, 'hd2_custom_stratagems');
+                }
                 ensureOcrFields(customStratagems);
             }
             if (cachedCatalog) {
@@ -2111,7 +2154,7 @@
         window.toggleLanguage = () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             gameSettings.language = currentLang;
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
             updateI18n(); renderMainList();
             if (document.getElementById('library-modal').classList.contains('active')) {
                 const keyword = document.getElementById('lib-search-input').value;
@@ -2138,7 +2181,7 @@
             gameSettings.theme = gameSettings.theme === 'light' ? 'dark' : 'light';
             applyTheme();
             updateThemeButton();
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
         }
 
         function updateI18n() {
@@ -2437,7 +2480,7 @@
         window.closeCatalogUpdateModal = () => {
             if (Number.isSafeInteger(pendingCatalogNoticeVersion)) {
                 gameSettings.catalogNoticeVersion = Math.max(gameSettings.catalogNoticeVersion || 1, pendingCatalogNoticeVersion);
-                saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+                persistSettings();
             }
             pendingCatalogNoticeVersion = null;
             document.getElementById('catalog-update-modal').classList.remove('active');
@@ -2460,7 +2503,7 @@
             const wasFavorite = favorites.delete(id);
             if (!wasFavorite) favorites.add(id);
             gameSettings.favoriteStratagemIds = [...favorites];
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
             renderLibrary(document.getElementById('lib-search-input').value);
             if (!wasFavorite) document.getElementById('lib-content').scrollTop = 0;
             showToast(i18n[currentLang][wasFavorite ? 'favoriteRemoved' : 'favoriteAdded']);
@@ -2593,7 +2636,7 @@
             if (mode !== 'text' && mode !== 'svg') return;
             gameSettings.ovStyle = mode;
             updateSettingsUI();
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
             if (window.electronAPI?.updateOverlaySettings) {
                 // Push the style and re-send the current loadout together: the
                 // overlay only applies the style during a render, and re-sending
@@ -2724,7 +2767,7 @@
             gameSettings.ocrDisplayId = displayId ? Number(displayId) : null;
             gameSettings.ocrRegion = null;
             gameSettings.ocrRegionCoordinateSpace = null;
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
             updateSettingsUI();
         }
 
@@ -2741,7 +2784,7 @@
             window.electronAPI.onOcrRegionSelected((region) => {
                 gameSettings.ocrRegion = region;
                 gameSettings.ocrRegionCoordinateSpace = OCR_REGION_COORDINATE_SPACE;
-                saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+                persistSettings();
                 updateSettingsUI();
                 showToast(i18n[currentLang].msgOcrRegionSaved);
             });
@@ -2771,7 +2814,7 @@
             gameSettings.ovWidth = widthVal;
             gameSettings.ovHeight = heightVal;
 
-            saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+            persistSettings();
             
             if(window.electronAPI && window.electronAPI.resizeOverlay) {
                 window.electronAPI.resizeOverlay(gameSettings.ovWidth, gameSettings.ovHeight);
@@ -2877,10 +2920,18 @@
                 result = action();
             } catch (error) {
                 bindingFilterTransition = false;
+                // Re-sync even when the action fails midway so the native
+                // filter cannot stay stuck in capture-all mode and leave every
+                // native shortcut unrouted.
+                syncGlobalInputFilter();
                 throw error;
             }
             Promise.resolve(result)
                 .then(() => syncGlobalInputFilter())
+                .catch(error => {
+                    console.error('Failed to finish the shortcut binding transition:', error);
+                    syncGlobalInputFilter();
+                })
                 .finally(() => { bindingFilterTransition = false; });
         }
 
@@ -3105,17 +3156,17 @@
             const lockedIds = new Set(activeLoadout.filter(item => item.locked && item.strat).map(item => item.strat.id));
             const equipTargets = matches.filter(strat => !lockedIds.has(strat.id));
             const availableIndexes = [];
-
             for (let i = 0; i < maxSlots; i++) {
-                if (activeLoadout[i].locked) continue;
-                activeLoadout[i].strat = null;
-                availableIndexes.push(i);
+                if (!activeLoadout[i].locked) availableIndexes.push(i);
             }
-
+            // Validate capacity before mutating anything so a no-space result
+            // leaves the current loadout completely untouched.
             if (equipTargets.length > availableIndexes.length) {
                 return { ok: false, reason: 'no-space', count: 0 };
             }
-
+            for (const index of availableIndexes) {
+                activeLoadout[index].strat = null;
+            }
             equipTargets.forEach((strat, index) => {
                 activeLoadout[availableIndexes[index]].strat = strat;
             });
@@ -3456,7 +3507,7 @@
                 saveDataToLocal('custom_strats.json', customStratagems, 'hd2_custom_stratagems');
                 if (gameSettings.favoriteStratagemIds.includes(idToRemove)) {
                     gameSettings.favoriteStratagemIds = gameSettings.favoriteStratagemIds.filter(id => id !== idToRemove);
-                    saveDataToLocal('settings.json', gameSettings, 'hd2_macro_settings');
+                    persistSettings();
                 }
                 
                 rebuildStratagemDatabase();

@@ -47,6 +47,7 @@ vm.runInContext(`
   let pendingDelete = { type: 'custom', payload: 'custom_a' };
   function rebuildStratagemDatabase() { stratagemDB = stratagemDB.filter(s => !s.id.startsWith('custom_')).concat(customStratagems); }
   ${section("function normalizeFavoriteStratagemIds", "window.closeModals =")}
+  ${section("function persistSettings", "if (window.electronAPI && window.electronAPI.onQuitRequested)")}
   ${section("window.executeDelete =", "let currentUploadBase64")}
 `, context);
 const run = script => vm.runInContext(script, context);
@@ -79,7 +80,11 @@ assert.match(cards()[0].innerHTML, /★/);
 assert.deepEqual(clicks, [], "favoriting must not equip or delete a stratagem");
 assert.equal(saves.at(-1).filename, "settings.json");
 assert.equal(saves.at(-1).data.menuKey, "ControlLeft");
-assert.deepEqual(saves.at(-1).data.overlayPosition, { x: 12, y: 34 });
+assert.equal(
+  saves.at(-1).data.overlayPosition,
+  undefined,
+  "renderer settings saves must not resurrect a stale overlay position",
+);
 
 context.persisted = saves.at(-1).data;
 run("gameSettings = JSON.parse(JSON.stringify(persisted)); gameSettings.favoriteStratagemIds = normalizeFavoriteStratagemIds(gameSettings.favoriteStratagemIds); renderLibrary()");

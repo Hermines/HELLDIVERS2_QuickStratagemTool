@@ -386,6 +386,8 @@ vm.runInContext(
   `
     const MAX_PRESET_NAME_LENGTH = 40;
     const MAX_SLOT_COUNT = 14;
+    const MAX_CUSTOM_NAME_LENGTH = 64;
+    const MAX_CUSTOM_SEQUENCE_LENGTH = 32;
     const EMPTY_IMAGE_SOURCE = "empty-image";
     ${indexSource.slice(helperStart, helperEnd)}
     globalThis.helpers = {
@@ -396,7 +398,8 @@ vm.runInContext(
       bindingChordFromInput,
       escapeHtml,
       safeImageSource,
-      normalizeImportedPreset
+      normalizeImportedPreset,
+      normalizeCustomStratagems
     };
   `,
   context,
@@ -412,6 +415,7 @@ const {
   escapeHtml,
   safeImageSource,
   normalizeImportedPreset,
+  normalizeCustomStratagems,
 } = context.helpers;
 assert.equal(canonicalGlobalKeyName("W"), "KeyW");
 assert.equal(canonicalGlobalKeyName("Up"), "ArrowUp");
@@ -451,6 +455,47 @@ assert.equal(escapeHtml('<img src=x onerror="boom">'), "&lt;img src=x onerror=&q
 assert.equal(safeImageSource("Machine_Gun_Stratagem_Icon.svg"), "Machine_Gun_Stratagem_Icon.svg");
 assert.equal(safeImageSource("javascript:alert(1)"), "empty-image");
 assert.equal(safeImageSource("https://tracker.invalid/icon.svg"), "empty-image");
+
+// Hand-edited, corrupted, or legacy-migrated custom stratagem files must be
+// normalized on load instead of crashing rendering or shortcut config builds.
+const normalizeCustom = (value) => JSON.parse(JSON.stringify(normalizeCustomStratagems(value)));
+assert.deepEqual(normalizeCustom("not-an-array"), []);
+const validCustomEntry = {
+  id: "custom_1712345678_abc123",
+  grp: "support",
+  name: { zh: "自定义", en: "Custom" },
+  aliases: [],
+  ocr: ["自定义"],
+  seq: ["W", "A"],
+  icon: "data:image/png;base64,aGVsbG8=",
+};
+assert.deepEqual(
+  normalizeCustom([validCustomEntry]),
+  [validCustomEntry],
+  "valid custom entries must survive normalization unchanged",
+);
+assert.deepEqual(
+  normalizeCustom([
+    { ...validCustomEntry, id: "wpn_not_custom" },
+    { ...validCustomEntry, grp: "not-a-group" },
+    { ...validCustomEntry, name: { zh: "", en: "Custom" } },
+    { ...validCustomEntry, name: { zh: "自定义", en: 42 } },
+    { ...validCustomEntry, seq: "WASD" },
+    { ...validCustomEntry, seq: ["W", "X"] },
+    { ...validCustomEntry, seq: [] },
+    validCustomEntry,
+    { ...validCustomEntry, id: validCustomEntry.id },
+    null,
+    "scalar",
+  ]),
+  [validCustomEntry],
+  "malformed and duplicate custom entries must be dropped",
+);
+assert.equal(
+  normalizeCustom([{ ...validCustomEntry, icon: 42 }])[0].icon,
+  "empty-image",
+  "a non-string icon must fall back to the empty image source",
+);
 
 const databaseStart = indexSource.indexOf("const defaultStratagemDB = [");
 const databaseEnd = indexSource.indexOf("let stratagemDB", databaseStart);
@@ -547,11 +592,13 @@ const saveContext = vm.createContext({
 vm.runInContext(
   `
     ${indexSource.slice(saveActorStart, saveActorEnd)}
+    globalThis.gameSettings = { language: "zh", menuKey: "ControlLeft", overlayPosition: { x: 320, y: 240 } };
     globalThis.saveActor = {
       saveDataToLocal,
       loadWithMigration,
       nativeSaveFallbackKey,
-      pendingDataSaves
+      pendingDataSaves,
+      persistSettings
     };
   `,
   saveContext,
@@ -578,6 +625,23 @@ assert.deepEqual(
 );
 assert.equal(saveContext.saveActor.pendingDataSaves.size, 0, "the save actor should fully drain");
 assert.equal(fallbackWrites.size, 0, "successful native saves should not use localStorage fallback");
+
+// Renderer settings saves must never resurrect a stale overlay position: the
+// native layer owns that field and re-inserts the persisted value itself.
+await saveContext.saveActor.persistSettings();
+const persistedSettings = durableWrites.at(-1);
+assert.equal(persistedSettings.filename, "settings.json");
+assert.equal(persistedSettings.data.language, "zh", "persistSettings must keep unrelated settings");
+assert.equal(
+  "overlayPosition" in persistedSettings.data,
+  false,
+  "persistSettings must strip overlayPosition from the saved payload",
+);
+assert.deepEqual(
+  JSON.parse(JSON.stringify(saveContext.gameSettings.overlayPosition)),
+  { x: 320, y: 240 },
+  "stripping on save must not mutate the in-memory settings object",
+);
 
 saveContext.window.electronAPI.saveData = async () => {
   throw new Error("simulated native write failure");
@@ -619,6 +683,38 @@ await assert.rejects(
   /Failed to save presets\.json to native storage or local fallback/,
   "shutdown flush must surface a double persistence failure",
 );
+
+// A binding transition that fails midway must still re-sync the native input
+// filter; otherwise it stays in capture-all mode and native shortcuts stop
+// routing until the next unrelated action happens to re-sync it.
+const settleStart = indexSource.indexOf("function settleBindingTransition");
+const settleEnd = indexSource.indexOf("function captureBindingInput", settleStart);
+assert.notEqual(settleStart, -1, "could not find the binding transition helper");
+assert.notEqual(settleEnd, -1, "could not find the binding transition helper end marker");
+const settleContext = vm.createContext({ console: { ...console, error() {} } });
+vm.runInContext(
+  `
+    ${indexSource.slice(settleStart, settleEnd)}
+    let bindingFilterTransition = false;
+    let filterSyncs = 0;
+    function syncGlobalInputFilter() { filterSyncs += 1; return Promise.resolve(); }
+    globalThis.settleState = () => ({ bindingFilterTransition, filterSyncs });
+    globalThis.settle = settleBindingTransition;
+  `,
+  settleContext,
+  { filename: "index.html:binding-transition" },
+);
+assert.throws(() => settleContext.settle(() => { throw new Error("cancel path failed"); }), /cancel path failed/);
+assert.equal(settleContext.settleState().filterSyncs, 1, "a throwing action must still re-sync the input filter");
+assert.equal(settleContext.settleState().bindingFilterTransition, false, "a throwing action must release the transition flag");
+settleContext.settle(() => "recorded");
+await new Promise((resolve) => setImmediate(resolve));
+assert.equal(settleContext.settleState().filterSyncs, 2, "a successful action must re-sync the input filter");
+assert.equal(settleContext.settleState().bindingFilterTransition, false);
+settleContext.settle(() => Promise.reject(new Error("late failure")));
+await new Promise((resolve) => setImmediate(resolve));
+assert.equal(settleContext.settleState().filterSyncs, 3, "a rejected action must still re-sync the input filter");
+assert.equal(settleContext.settleState().bindingFilterTransition, false, "a rejected action must release the transition flag");
 
 assert.match(
   indexSource,
