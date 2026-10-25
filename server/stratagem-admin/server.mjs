@@ -184,9 +184,12 @@ export function createCatalogServer({ store, access, bundledIconRoot, publicOrig
   }
 
   return createServer(async (request, response) => {
-    const requestUrl = new URL(request.url, publicOrigin);
-    const pathname = requestUrl.pathname;
     try {
+      // Parse inside the handler: a malformed request target such as "//[" makes
+      // new URL throw, and an exception here would escape the async callback as
+      // an unhandled rejection that kills the whole process.
+      const requestUrl = new URL(request.url, publicOrigin);
+      const pathname = requestUrl.pathname;
       if (request.method === "GET" && pathname === "/health") {
         return json(response, 200, { status: "ok", service: "hd2-stratagem-catalog" });
       }

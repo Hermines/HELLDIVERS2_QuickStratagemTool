@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
+import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -54,6 +55,37 @@ test("unknown catalog versions respond with 404 instead of 500", async (t) => {
   const response = await fetch(`${base}/api/v1/stratagems/catalog/9999999999`);
   assert.equal(response.status, 404);
   assert.equal((await response.json()).error, "not_found");
+});
+
+function rawRequest(port, requestText) {
+  return new Promise((resolve, reject) => {
+    const socket = net.connect(port, "127.0.0.1");
+    socket.on("error", reject);
+    socket.on("connect", () => socket.write(requestText));
+    let response = "";
+    socket.on("data", (chunk) => {
+      response += chunk.toString("latin1");
+    });
+    socket.on("close", () => resolve(response));
+    setTimeout(() => {
+      socket.destroy();
+      resolve(response);
+    }, 2000);
+  });
+}
+
+test("a malformed request target gets a 400 and does not kill the process", async (t) => {
+  const { base } = await fixture(t);
+  const url = new URL(base);
+  // fetch would reject this target locally, so the raw request has to be
+  // written to the socket to prove the server survives parsing it.
+  const response = await rawRequest(
+    Number(url.port),
+    "GET //[ HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n",
+  );
+  assert.match(response, /^HTTP\/1\.1 400/);
+  const health = await fetch(`${base}/health`);
+  assert.equal(health.status, 200);
 });
 
 test("admin publishes with CSRF checks and optimistic concurrency", async (t) => {

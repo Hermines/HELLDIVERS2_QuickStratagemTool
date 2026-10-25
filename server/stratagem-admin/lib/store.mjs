@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import {
   chmod,
   mkdir,
@@ -114,6 +114,16 @@ export class CatalogStore {
       );
     }
     if (!existsSync(this.manifestPath)) {
+      if (readdirSync(this.versionsRoot).length > 0) {
+        // Published snapshots without a manifest mean the manifest was lost or
+        // deleted. Republishing the seed here would silently roll every client
+        // back to the bundled catalog, so recovery must be explicit.
+        throw new Error(
+          `Catalog manifest is missing while published versions exist (${this.versionsRoot}). ` +
+            `Restore manifest.json from backup, or rebuild it from the highest published version, ` +
+            `before restarting; the seed catalog must not silently replace published data.`,
+        );
+      }
       const seed = JSON.parse(await readFile(this.seedPath, "utf8"));
       await this.publish({
         baseVersion: 0,
@@ -170,7 +180,18 @@ export class CatalogStore {
   async #auditEvents() {
     if (!existsSync(this.auditPath)) return [];
     const lines = (await readFile(this.auditPath, "utf8")).trim().split("\n").filter(Boolean);
-    return lines.map((line) => JSON.parse(line));
+    const events = [];
+    for (const line of lines) {
+      try {
+        events.push(JSON.parse(line));
+      } catch {
+        // A torn final line (power loss or a full disk mid-append) must not
+        // make every later startup fail; the recovered-entry logic below
+        // re-records any version whose audit line was lost.
+        console.warn("[catalog-store] skipped an unreadable audit line (torn write or corruption)");
+      }
+    }
+    return events;
   }
 
   async #repairAudit() {

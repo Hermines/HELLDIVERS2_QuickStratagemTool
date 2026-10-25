@@ -122,3 +122,33 @@ test("an interrupted uncommitted snapshot cannot block the next publication", as
   assert.equal(result.manifest.catalogVersion, 3);
   assert.deepEqual((await reopened.history()).map((entry) => entry.version), [3, 1]);
 });
+
+test("a torn audit line must not prevent startup or later publication", async (t) => {
+  const { store, directory } = await fixture(t);
+  const { catalog } = await store.current();
+  await store.publish({ baseVersion: 1, items: catalog.items, actor: "admin@example.com" });
+  const auditPath = path.join(directory, "audit.ndjson");
+  const intact = await readFile(auditPath, "utf8");
+  await writeFile(auditPath, `${intact}{"version":3,"actor":"adm`);
+
+  const reopened = reopenStore(directory);
+  await reopened.initialize();
+  assert.deepEqual((await reopened.history()).map((entry) => entry.version), [2, 1]);
+  const { catalog: current } = await reopened.current();
+  const result = await reopened.publish({
+    baseVersion: 2,
+    items: current.items,
+    actor: "admin@example.com",
+  });
+  assert.equal(result.manifest.catalogVersion, 3);
+});
+
+test("initialize refuses to reseed the catalog when the manifest is lost after publication", async (t) => {
+  const { directory } = await fixture(t);
+  await rm(path.join(directory, "manifest.json"), { force: true });
+  const reopened = reopenStore(directory);
+  await assert.rejects(
+    reopened.initialize(),
+    /manifest is missing while published versions exist/,
+  );
+});
