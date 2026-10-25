@@ -4,39 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCR Help</title>
+    <link rel="stylesheet" href="./tokens.css">
     <style>
-        /* Fluent Design tokens shared with the main window; dark is the default. */
-        :root {
-            color-scheme: dark;
-            --accent-text: #4CC2FF;
-            --bg: #1C1C1C;
-            --bg-titlebar: #232323;
-            --fill-control-hover: rgba(255, 255, 255, 0.0837);
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.7843);
-            --divider: rgba(255, 255, 255, 0.0837);
-            --stroke-control: rgba(255, 255, 255, 0.0698);
-            --window-edge: rgba(255, 255, 255, 0.1221);
-            --danger: #C42B1C;
-            --code-bg: rgba(255, 255, 255, 0.0558);
-            --scrollbar-thumb: rgba(255, 255, 255, 0.2259);
-        }
-
-        html[data-theme="light"] {
-            color-scheme: light;
-            --accent-text: #005FB8;
-            --bg: #F9F9F9;
-            --bg-titlebar: #F0F0F0;
-            --fill-control-hover: rgba(0, 0, 0, 0.0373);
-            --text-primary: #1B1B1B;
-            --text-secondary: rgba(0, 0, 0, 0.6063);
-            --divider: rgba(0, 0, 0, 0.0803);
-            --stroke-control: rgba(0, 0, 0, 0.0578);
-            --window-edge: rgba(0, 0, 0, 0.2269);
-            --danger: #C42B1C;
-            --code-bg: rgba(0, 0, 0, 0.0472);
-            --scrollbar-thumb: rgba(0, 0, 0, 0.3311);
-        }
+        /* Code blocks are a help-window-local surface. */
+        :root { --code-bg: rgba(255, 255, 255, 0.0558); }
+        html[data-theme="light"] { --code-bg: rgba(0, 0, 0, 0.0472); }
 
         * { box-sizing: border-box; }
 
@@ -45,35 +17,35 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: var(--bg);
+            background: var(--bg-solid);
             color: var(--text-primary);
-            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+            font-family: var(--font-ui);
             -webkit-font-smoothing: antialiased;
             border: 1px solid var(--window-edge);
         }
 
         #titlebar {
-            height: 42px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 0 0 16px;
-            background: var(--bg-titlebar);
+            padding: 0 4px 0 16px;
+            background: var(--modal-header-bg);
             border-bottom: 1px solid var(--divider);
             -webkit-app-region: drag;
         }
 
         #title {
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 0.2px;
             white-space: nowrap;
         }
 
         #close-btn {
-            width: 46px;
-            height: 42px;
+            width: 32px;
+            height: 32px;
             border: 0;
             display: flex;
             align-items: center;
@@ -81,7 +53,8 @@
             background: transparent;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.16s cubic-bezier(0.1, 0.9, 0.2, 1), color 0.16s cubic-bezier(0.1, 0.9, 0.2, 1);
+            border-radius: var(--radius-sm);
+            transition: background 0.16s var(--motion-decelerate), color 0.16s var(--motion-decelerate);
             -webkit-app-region: no-drag;
         }
 
@@ -91,36 +64,18 @@
         }
 
         #close-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
             stroke: currentColor;
-            stroke-width: 2.2;
+            stroke-width: 2;
         }
 
         #content {
-            height: calc(100vh - 42px);
+            height: calc(100vh - 40px);
             padding: 20px 24px 28px;
             overflow-y: auto;
             line-height: 1.72;
             font-size: 14px;
-        }
-
-        #content::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        #content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        #content::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb);
-            border: 3px solid var(--bg);
-            border-radius: 999px;
-        }
-
-        #content::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-text);
         }
 
         #content h1,
@@ -133,9 +88,9 @@
             font-weight: 600;
         }
 
-        #content h1 { font-size: 22px; margin-top: 0; }
-        #content h2 { font-size: 18px; }
-        #content h3 { font-size: 15px; color: var(--text-primary); }
+        #content h1 { font-size: 20px; margin-top: 0; }
+        #content h2 { font-size: 16px; }
+        #content h3 { font-size: 14px; color: var(--text-primary); }
         #content p { margin: 10px 0; }
         #content strong { color: var(--accent-text); font-weight: 600; }
 

@@ -29,6 +29,8 @@ const indexSource = readUiFile("index.html");
 const overlaySource = readUiFile("overlay.html");
 const ocrHelpSource = readUiFile("ocr-help.html");
 const toastSource = readUiFile("toast.html");
+const ocrSelectSource = readUiFile("ocr-select.html");
+const tokensSource = readUiFile("tokens.css");
 const mainSource = fs.readFileSync(path.join(root, "src-tauri", "src", "main.rs"), "utf8");
 const hooksSource = fs.readFileSync(path.join(root, "src-tauri", "src", "hooks.rs"), "utf8");
 const inputSource = fs.readFileSync(path.join(root, "src-tauri", "src", "input.rs"), "utf8");
@@ -42,7 +44,74 @@ assert.match(overlaySource, /<div id="drag-bar" data-tauri-drag-region="deep">/)
 assert.match(overlaySource, /<button class="lock-btn" data-tauri-drag-region="false"/);
 assert.match(ocrHelpSource, /<div id="titlebar" data-tauri-drag-region="deep">/);
 assert.match(ocrHelpSource, /<button id="close-btn" data-tauri-drag-region="false"/);
-assert.match(ocrHelpSource, /html\[data-theme="light"\]\s*\{/, "the OCR help window must ship a light theme token set");
+
+// Every window shares one Fluent token sheet so per-window copies cannot drift.
+for (const [filename, source] of [
+  ["index.html", indexSource],
+  ["overlay.html", overlaySource],
+  ["toast.html", toastSource],
+  ["ocr-help.html", ocrHelpSource],
+  ["ocr-select.html", ocrSelectSource],
+]) {
+  assert.match(
+    source,
+    /<link rel="stylesheet" href="\.\/tokens\.css">/,
+    `${filename} must consume the shared Fluent token sheet`,
+  );
+}
+assert.match(tokensSource, /:root\s*\{/, "the shared token sheet must define the default dark set");
+assert.match(tokensSource, /html\[data-theme="light"\]\s*\{/, "the shared token sheet must define a light theme set");
+assert.match(
+  tokensSource,
+  /html\[data-theme="light"\]\s*\{[\s\S]{0,2000}?--fill-control:\s*rgba\(0, 0, 0, 0\.04\);/,
+  "light rest fills must sit darker than the near-white surfaces so buttons and tracks stay visible",
+);
+assert.match(
+  tokensSource,
+  /html\[data-theme="light"\]\s*\{[\s\S]{0,2000}?--fill-control-hover:\s*rgba\(0, 0, 0, 0\.065\);/,
+  "the light hover fill must be a visible dark tint, not a near-white fill that vanishes on light surfaces",
+);
+assert.match(
+  tokensSource,
+  /--fill-control-pressed:/,
+  "both themes must define a dedicated pressed fill so pressed never reads lighter than hover",
+);
+assert.doesNotMatch(
+  tokensSource,
+  /--glow-/,
+  "neutral buttons must stay halo-free: their depth comes from compact elevation, a tight ring, and bevel highlights",
+);
+assert.match(
+  tokensSource,
+  /--primary-top-light:\s*rgba\(255, 255, 255, 0\.16\);/,
+  "the primary top highlight must be an edge token so it can ride the border itself",
+);
+assert.match(
+  tokensSource,
+  /--shadow-primary:\s*0 1px 2px rgba\(0, 0, 0, 0\.35\), 0 0 0 1px rgba\(76, 194, 255, 0\.30\), 0 0 14px rgba\(76, 194, 255, 0\.16\);/,
+  "primary buttons keep their signature light touch: base elevation, accent ring, and soft halo — without the offset inset top light",
+);
+assert.match(
+  indexSource,
+  /\.btn-square\.primary \{[\s\S]{0,300}border-top-color: var\(--primary-top-light\);/,
+  "the primary highlight must hug the top border: inset shadows start at the padding edge and leave a visible gap",
+);
+assert.match(tokensSource, /--shadow-primary-hover:/, "primary buttons need a hover depth shadow in both themes");
+assert.match(
+  tokensSource,
+  /--shadow-btn-pressed:\s*inset 0 2px 4px/,
+  "pressing a button must swap elevation for an inset dip so the key travels down",
+);
+assert.match(
+  tokensSource,
+  /--segment-selected-bg:\s*#5C5C5C;\s*\n\s*--segment-selected-text:\s*#FFFFFF;/,
+  "the selected segment pill must be a neutral surface in the dark theme",
+);
+assert.match(
+  tokensSource,
+  /--segment-selected-bg:\s*#FFFFFF;\s*\n\s*--segment-selected-text:\s*#1B1B1B;/,
+  "the selected segment pill must be a neutral surface in the light theme",
+);
 assert.match(
   ocrHelpSource,
   /loadData\('settings\.json'\)[\s\S]{0,200}applyTheme\(settings && settings\.theme\)/,
@@ -56,31 +125,41 @@ assert.match(
   "the white direction arrows must be inverted on the light theme",
 );
 assert.match(
-  indexSource,
+  tokensSource,
   /--slider-track:/,
   "the opacity slider must use theme-aware track colors with enough contrast",
 );
 assert.match(
   indexSource,
-  /\.toggle-option\.active \{ color: var\(--text-on-accent\); \}/,
-  "the selected segment must use the accent fill so on/off switches stay readable in both themes",
+  /\.toggle-option\.active \{ color: var\(--segment-selected-text\); \}/,
+  "the selected segment must use the neutral pill fill so on/off switches stay readable in both themes",
 );
 assert.match(
   indexSource,
-  /\.toggle-option\.active::before \{ opacity: 1; transform: scale\(1\); \}/,
-  "switching segments must animate the selection pill in and out",
+  /\.toggle-pill \{[\s\S]{0,500}transition: transform 0\.2s var\(--motion-decelerate\), width 0\.2s var\(--motion-decelerate\);/,
+  "switching segments must slide the shared selection pill across the group",
+);
+assert.match(
+  indexSource,
+  /function syncTogglePills\(\) \{[\s\S]{0,500}translateX\(\$\{active\.offsetLeft\}px\)/,
+  "the selection pill must be repositioned under whichever segment is active",
+);
+assert.match(
+  indexSource,
+  /window\.addEventListener\('resize', syncTogglePills\);/,
+  "the selection pill must follow segment width changes on window resize",
 );
 assert.match(
   indexSource,
   /\.toggle-box \{[^}]*border: 1px solid var\(--stroke-strong\);/,
   "the segmented switch container must keep a clearly visible border in both themes",
 );
-assert.match(toastSource, /html\[data-theme="light"\]/, "toast bubbles must ship a light theme token set");
+assert.match(toastSource, /background: var\(--status-bg\);/, "toast bubbles must use the shared theme-aware surface token");
 assert.match(toastSource, /loadData\('settings\.json'\)/, "toast bubbles must adopt the persisted theme");
 assert.match(
   overlaySource,
-  /#drag-bar\s*\{[\s\S]{0,400}#4CC2FF/,
-  "the overlay drag bar must use the Fluent accent instead of the legacy yellow",
+  /#drag-bar\s*\{[\s\S]{0,400}border-left: 3px solid var\(--accent\);/,
+  "the overlay drag bar must use the shared Fluent accent token instead of the legacy yellow",
 );
 
 // Focus rings, listening-state hint contrast, and overlay text hotkey styling.
@@ -95,12 +174,12 @@ assert.doesNotMatch(
   "text inputs must not draw the outer keyboard-focus ring; the accent underline already marks focus",
 );
 assert.match(
-  indexSource,
+  tokensSource,
   /--bg-input-focus:/,
   "text field fills must be theme-aware and recessed at rest",
 );
 assert.match(
-  indexSource,
+  tokensSource,
   /--shadow-btn:/,
   "neutral buttons must carry theme-aware elevation shadows",
 );
@@ -111,8 +190,8 @@ assert.match(
 );
 assert.match(
   indexSource,
-  /\.set-btn:hover \{ background: var\(--fill-control-hover\); transform: translateY\(-1px\); box-shadow: var\(--shadow-btn-hover\); \}/,
-  "settings action buttons must lift on hover",
+  /\.set-btn:hover \{ background: var\(--fill-control-hover\); box-shadow: var\(--shadow-btn-hover\); \}/,
+  "settings action buttons must change fill and deepen their compact depth shadow on hover, without lift",
 );
 assert.match(
   indexSource,
@@ -121,17 +200,17 @@ assert.match(
 );
 assert.match(
   indexSource,
-  /\.btn-square\.primary \{[\s\S]{0,300}box-shadow: 0 1px 2px rgba\(0, 0, 0, 0\.35\)/,
-  "primary buttons must carry elevation shadow for depth",
+  /\.btn-square\.primary \{[\s\S]{0,300}box-shadow: var\(--shadow-primary\);/,
+  "primary buttons must carry the bevel depth shadow (ring, top light, bottom shade)",
 );
 assert.match(
   indexSource,
-  /\.btn-square\.primary:hover \{ background-color: var\(--accent-hover\); transform: translateY\(-1px\);/,
-  "primary button hover must give clear lift feedback",
+  /\.btn-square\.primary:hover \{ background-color: var\(--accent-hover\); box-shadow: var\(--shadow-primary-hover\); \}/,
+  "primary button hover must change fill and strengthen the depth shadow, without lift",
 );
 assert.match(
   indexSource,
-  /\.bind-btn\.listening \.bind-subtext \{ color: var\(--text-on-accent\); font-size: 11px; \}/,
+  /\.bind-btn\.listening \.bind-subtext \{ color: var\(--text-on-accent\); font-size: 12px; \}/,
   "the chord-capture hint must stay readable on the accent-filled listening button",
 );
 assert.match(
@@ -162,7 +241,11 @@ assert.match(
   /function applyTheme\(\) \{[\s\S]{0,200}documentElement\.dataset\.theme/,
   "the saved theme must drive the html data-theme attribute consumed by the theme token sets",
 );
-assert.match(indexSource, /html\[data-theme="light"\]\s*\{/, "a light theme token set must exist");
+assert.match(
+  indexSource,
+  /html\[data-theme="light"\] \.arrow-img \{/,
+  "the main window must keep light-theme-aware rule overrides next to the shared token sheet",
+);
 assert.match(indexSource, /themeToLight: "切换到浅色主题"/);
 assert.match(indexSource, /themeToDark: "切换到深色主题"/);
 assert.match(indexSource, /themeToLight: "Switch to light theme"/);

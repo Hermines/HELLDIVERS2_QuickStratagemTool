@@ -4,133 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HD2 Trigger</title>
+    <link rel="stylesheet" href="./tokens.css">
     <style>
-        /* Fluent Design tokens. Dark stays the default so the historical look is preserved. */
-        :root {
-            color-scheme: dark;
-
-            --accent: #4CC2FF;
-            --accent-hover: #65CBFF;
-            --accent-pressed: #38BDF8;
-            --accent-text: #4CC2FF;
-            --accent-soft: rgba(76, 194, 255, 0.13);
-            --accent-glow: rgba(76, 194, 255, 0.35);
-            --text-on-accent: #000000;
-
-            --danger: #C42B1C;
-            --danger-hover: #D13438;
-            --danger-text: #FF99A4;
-            --danger-soft: rgba(255, 153, 146, 0.12);
-
-            --window-bg: #202020;
-            --bg-solid: #1C1C1C;
-            --bg-solid-strong: #2B2B2B;
-            --bg-card: rgba(255, 255, 255, 0.0373);
-            --bg-card-hover: rgba(255, 255, 255, 0.0558);
-            --bg-input: rgba(0, 0, 0, 0.22);
-            --bg-input-focus: rgba(0, 0, 0, 0.06);
-            --fill-control: rgba(255, 255, 255, 0.0605);
-            --fill-control-hover: rgba(255, 255, 255, 0.0837);
-            --fill-control-tertiary: rgba(255, 255, 255, 0.0314);
-            --titlebar-bg: rgba(32, 32, 32, 0.85);
-            --sidebar-bg: rgba(26, 26, 26, 0.55);
-            --modal-header-bg: rgba(43, 43, 43, 0.92);
-            --layer-dim: rgba(0, 0, 0, 0.32);
-            --status-bg: rgba(43, 43, 43, 0.97);
-
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.7843);
-            --text-tertiary: rgba(255, 255, 255, 0.5490);
-
-            --divider: rgba(255, 255, 255, 0.0837);
-            --stroke-control: rgba(255, 255, 255, 0.0698);
-            --stroke-strong: rgba(255, 255, 255, 0.2259);
-            --window-edge: rgba(255, 255, 255, 0.0803);
-            --focus-outer: #FFFFFF;
-
-            --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.13);
-            --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.20);
-            --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.22);
-            --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.37), 0 2px 21px rgba(0, 0, 0, 0.27);
-            --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            --shadow-btn-hover: 0 4px 10px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-            --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(76, 194, 255, 0.05), transparent 62%),
-                                 linear-gradient(180deg, rgba(255, 255, 255, 0.012), rgba(0, 0, 0, 0.06));
-            --select-chevron: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-
-            --radius-sm: 4px;
-            --radius-md: 6px;
-            --radius-lg: 8px;
-            --window-radius: 8px;
-
-            --slider-track: rgba(255, 255, 255, 0.25);
-            --slider-thumb-ring: #1C1C1C;
-
-            --motion-decelerate: cubic-bezier(0.1, 0.9, 0.2, 1);
-            --transition: all 0.16s var(--motion-decelerate);
-        }
-
-        html[data-theme="light"] {
-            color-scheme: light;
-
-            --accent: #005FB8;
-            --accent-hover: #0067C0;
-            --accent-pressed: #004E8C;
-            --accent-text: #005FB8;
-            --accent-soft: rgba(0, 95, 184, 0.09);
-            --accent-glow: rgba(0, 95, 184, 0.22);
-            --text-on-accent: #FFFFFF;
-
-            --danger: #C42B1C;
-            --danger-hover: #B3271D;
-            --danger-text: #C42B1C;
-            --danger-soft: rgba(196, 43, 28, 0.08);
-
-            --window-bg: #F3F3F3;
-            --bg-solid: #F9F9F9;
-            --bg-solid-strong: #FFFFFF;
-            --bg-card: rgba(255, 255, 255, 0.82);
-            --bg-card-hover: rgba(255, 255, 255, 0.96);
-            --bg-input: rgba(0, 0, 0, 0.045);
-            --bg-input-focus: #FFFFFF;
-            --fill-control: rgba(255, 255, 255, 0.7);
-            --fill-control-hover: rgba(249, 249, 249, 0.55);
-            --fill-control-tertiary: rgba(249, 249, 249, 0.4);
-            --titlebar-bg: rgba(243, 243, 243, 0.88);
-            --sidebar-bg: rgba(234, 234, 234, 0.55);
-            --modal-header-bg: rgba(255, 255, 255, 0.95);
-            --layer-dim: rgba(255, 255, 255, 0.32);
-            --status-bg: rgba(255, 255, 255, 0.97);
-
-            --text-primary: #1B1B1B;
-            --text-secondary: rgba(0, 0, 0, 0.6063);
-            --text-tertiary: rgba(0, 0, 0, 0.4458);
-
-            --divider: rgba(0, 0, 0, 0.0803);
-            --stroke-control: rgba(0, 0, 0, 0.0578);
-            --stroke-strong: rgba(0, 0, 0, 0.3311);
-            --window-edge: rgba(0, 0, 0, 0.2269);
-            --focus-outer: #000000;
-
-            --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.09);
-            --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
-            --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.19), 0 2px 21px rgba(0, 0, 0, 0.14);
-            --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.10), 0 1px 0 rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            --shadow-btn-hover: 0 4px 10px rgba(0, 0, 0, 0.14), 0 1px 0 rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-            --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(0, 95, 184, 0.035), transparent 62%),
-                                 linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
-            --select-chevron: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-
-            --slider-track: rgba(0, 0, 0, 0.25);
-            --slider-thumb-ring: #FFFFFF;
-        }
-
         * {
             box-sizing: border-box; margin: 0; padding: 0; user-select: none;
-            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+            font-family: var(--font-ui);
             -webkit-font-smoothing: antialiased;
         }
         input, textarea { user-select: text; }
@@ -140,11 +18,6 @@
             height: 100%;
             background: transparent;
         }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--stroke-strong); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         /* Keyboard-focus ring for interactive controls. Text inputs are excluded:
            their accent underline and brighter fill already mark focus, and the
@@ -182,7 +55,7 @@
 
         .lang-btn {
             background: var(--fill-control); border: 1px solid var(--stroke-control); color: var(--text-primary);
-            cursor: pointer; padding: 4px 12px; font-size: 11px; font-weight: 600; border-radius: var(--radius-sm);
+            cursor: pointer; padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm);
             transition: var(--transition); margin-right: 8px;
         }
         .lang-btn:hover { background: var(--fill-control-hover); border-color: var(--stroke-strong); }
@@ -209,22 +82,23 @@
             display: flex; align-items: center; gap: 12px; width: 100%;
             background-color: transparent; color: var(--text-primary);
             border: 1px solid transparent; border-radius: var(--radius-md);
-            padding: 10px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+            padding: 10px 12px; font-size: 14px; font-weight: 600; cursor: pointer;
             transition: var(--transition); text-align: left; white-space: nowrap;
         }
         .sidebar-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
         .sidebar-btn:hover { background-color: var(--fill-control-hover); border-color: var(--stroke-control); }
-        .sidebar-btn:active { background-color: var(--fill-control-tertiary); }
+        .sidebar-btn:active { background-color: var(--fill-control-pressed); }
         .sidebar-btn.primary {
             background-color: var(--accent); color: var(--text-on-accent); border-color: transparent;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            border-top-color: var(--primary-top-light);
+            box-shadow: var(--shadow-primary);
         }
-        .sidebar-btn.primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-glow), 0 1px 2px rgba(0, 0, 0, 0.35); }
-        .sidebar-btn.primary:active { transform: translateY(0); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25); }
+        .sidebar-btn.primary:hover { background-color: var(--accent-hover); box-shadow: var(--shadow-primary-hover); }
+        .sidebar-btn.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); box-shadow: var(--shadow-btn-pressed); }
 
         #main-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 24px; overflow-y: auto; }
         .main-panel-title {
-            color: var(--text-primary); font-size: 18px; font-weight: 600; letter-spacing: 0.1px;
+            color: var(--text-primary); font-size: 20px; font-weight: 600; letter-spacing: 0.1px;
             display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
         }
         .main-panel-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
@@ -232,19 +106,20 @@
         .btn-square {
             background-color: var(--fill-control); color: var(--text-primary);
             border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
-            padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+            padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
             transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
             box-shadow: var(--shadow-btn);
         }
-        .btn-square:hover { background-color: var(--fill-control-hover); border-color: var(--stroke-strong); transform: translateY(-1px); box-shadow: var(--shadow-btn-hover); }
-        .btn-square:active { background-color: var(--fill-control-tertiary); color: var(--text-secondary); transform: translateY(0); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.22); }
+        .btn-square:hover { background-color: var(--fill-control-hover); box-shadow: var(--shadow-btn-hover); }
+        .btn-square:active { background-color: var(--fill-control-pressed); color: var(--text-secondary); box-shadow: var(--shadow-btn-pressed); }
 
         .btn-square.primary {
             background-color: var(--accent); color: var(--text-on-accent); border-color: transparent;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            border-top-color: var(--primary-top-light);
+            box-shadow: var(--shadow-primary);
         }
-        .btn-square.primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-glow), 0 1px 2px rgba(0, 0, 0, 0.35); }
-        .btn-square.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); transform: translateY(0); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25); }
+        .btn-square.primary:hover { background-color: var(--accent-hover); box-shadow: var(--shadow-primary-hover); }
+        .btn-square.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); box-shadow: var(--shadow-btn-pressed); }
 
         .list-container { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; max-width: 780px; width: 100%; margin: 0 auto; }
 
@@ -301,11 +176,11 @@
 
         .btn-remove {
             position: absolute; top: 6px; left: 6px; background: var(--bg-solid-strong); color: var(--text-secondary);
-            border: 1px solid var(--stroke-control); border-radius: 50%; width: 22px; height: 22px; font-size: 10px;
+            border: 1px solid var(--stroke-control); border-radius: 50%; width: 22px; height: 22px; font-size: 12px;
             display: flex; justify-content: center; align-items: center; cursor: pointer; opacity: 0; transition: var(--transition);
         }
         .list-row:hover .btn-remove { opacity: 1; }
-        .btn-remove:hover { background: var(--danger); color: white; border-color: var(--danger); transform: scale(1.1); }
+        .btn-remove:hover { background: var(--danger); color: white; border-color: var(--danger); }
         .btn-lock {
             position: absolute; top: 6px; right: 6px; background: var(--bg-solid-strong); color: var(--text-secondary);
             border: 1px solid var(--stroke-control); border-radius: 50%; width: 22px; height: 22px; padding: 0;
@@ -314,26 +189,25 @@
         .btn-lock svg { width: 12px; height: 12px; pointer-events: none; }
         .list-row:hover .btn-lock, .btn-lock.locked { opacity: 1; }
         .btn-lock.locked { background: var(--accent); color: var(--text-on-accent); border-color: transparent; }
-        .btn-lock:hover { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); transform: scale(1.1); }
+        .btn-lock:hover { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); }
         .btn-lock.locked:hover { background: var(--danger-soft); color: var(--danger-text); border-color: var(--danger); }
 
         .row-arrows { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; gap: 10px; padding: 0 24px; }
-        .arrow-img { width: 24px; height: 24px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.35)); transition: transform 0.16s var(--motion-decelerate);}
-        .list-row:hover .arrow-img { transform: scale(1.05); }
+        .arrow-img { width: 24px; height: 24px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.35)); }
         /* Bundled arrow glyphs are white fills; invert them to a soft gray on the light theme. */
         html[data-theme="light"] .arrow-img { filter: invert(1) opacity(0.65) drop-shadow(0px 1px 2px rgba(0,0,0,0.2)); }
 
         .row-bind-box { width: 200px; border-left: 1px solid var(--divider); padding: 10px; display: flex; }
         .bind-btn {
             width: 100%; background: var(--fill-control-tertiary); border: 1px solid var(--stroke-control); border-radius: var(--radius-sm);
-            color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+            color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition);
             display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; z-index: 10;
         }
         .bind-btn:hover { background: var(--fill-control-hover); color: var(--text-primary); border-color: var(--stroke-strong); }
         .bind-btn.bound { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); font-size: 16px; }
         .bind-btn.listening { background: var(--accent); color: var(--text-on-accent); border-color: transparent; animation: pulse 1.5s infinite; }
-        .bind-subtext { font-size: 10px; color: var(--text-tertiary); font-weight: 400; letter-spacing: 0; }
-        .bind-btn.listening .bind-subtext { color: var(--text-on-accent); font-size: 11px; }
+        .bind-subtext { font-size: 12px; color: var(--text-tertiary); font-weight: 400; letter-spacing: 0; }
+        .bind-btn.listening .bind-subtext { color: var(--text-on-accent); font-size: 12px; }
         .bind-btn.bound:hover .bind-subtext { color: var(--danger-text); }
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--accent-glow); } 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
@@ -354,7 +228,7 @@
         }
         .modal-title { font-size: 20px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.1px; display: flex; align-items: center; gap: 10px;}
         .modal-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
-        .modal-header .btn-square { flex-grow: 0; padding: 8px 20px; font-size: 13px; }
+        .modal-header .btn-square { flex-grow: 0; padding: 8px 20px; font-size: 14px; }
 
         #library-modal .modal-header { gap: 16px; flex-wrap: wrap; flex-shrink: 0; }
         .lib-heading { flex: 1; min-width: 260px; }
@@ -365,7 +239,7 @@
             color: var(--text-primary); padding: 10px 14px; font-size: 14px; outline: none; transition: var(--transition);
         }
         #lib-search-input:focus { background: var(--bg-input-focus); border-color: var(--stroke-strong); box-shadow: inset 0 -2px 0 var(--accent); }
-        #lib-search-hint { font-size: 13px; font-weight: 600; color: var(--accent-text); margin-top: 10px; display: none; }
+        #lib-search-hint { font-size: 14px; font-weight: 600; color: var(--accent-text); margin-top: 10px; display: none; }
 
         .lib-content { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
         .lib-cat-header { font-size: 14px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--divider); padding-bottom: 8px; letter-spacing: 0.2px;}
@@ -378,7 +252,7 @@
         .lib-card:hover { border-color: var(--stroke-strong); background: var(--bg-card-hover); box-shadow: var(--shadow-card-hover); }
         .lib-card.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
         .lib-icon { width: 44px; height: 44px; background: var(--fill-control-tertiary); border-radius: var(--radius-sm); border: 1px solid var(--stroke-control); object-fit: contain; padding: 2px;}
-        .lib-name { flex-grow: 1; font-size: 13px; font-weight: 400; line-height: 1.2; }
+        .lib-name { flex-grow: 1; font-size: 14px; font-weight: 400; line-height: 1.2; }
         .lib-check { color: var(--accent-text); font-size: 16px; font-weight: bold; display: none; margin-right: 5px; }
         .lib-card.selected .lib-check { display: block; animation: popIn 0.3s var(--motion-decelerate); }
         .lib-favorite-star { color: var(--accent-text); font-size: 18px; }
@@ -389,7 +263,9 @@
 
         .settings-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-width: 800px; margin: 0 auto; width: 100%;}
         .set-group { background: var(--bg-card); border: 1px solid var(--stroke-control); border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow-card); }
-        .set-title { color: var(--accent-text); font-size: 14px; font-weight: 600; margin-bottom: 20px; letter-spacing: 0.2px; display: flex; align-items: center; gap: 8px;}
+        /* Windows-Settings style: group headers use the primary text color;
+           accent stays reserved for links and selection indicators. */
+        .set-title { color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 20px; letter-spacing: 0.2px; display: flex; align-items: center; gap: 8px;}
         .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--divider); }
         .set-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
         .set-label { font-size: 14px; color: var(--text-primary); font-weight: 400; display:flex; flex-direction: column; gap: 6px; }
@@ -397,25 +273,27 @@
 
         .set-btn {
             background: var(--fill-control); border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
-            color: var(--text-primary); padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; min-width: 120px; text-align: center; transition: var(--transition);
+            color: var(--text-primary); padding: 6px 14px; font-size: 14px; font-weight: 600; cursor: pointer; min-width: 120px; text-align: center; transition: var(--transition);
             box-shadow: var(--shadow-btn);
         }
-        .set-btn:hover { background: var(--fill-control-hover); transform: translateY(-1px); box-shadow: var(--shadow-btn-hover); }
-        .set-btn:active { background: var(--fill-control-tertiary); color: var(--text-secondary); transform: translateY(0); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.22); }
+        .set-btn:hover { background: var(--fill-control-hover); box-shadow: var(--shadow-btn-hover); }
+        .set-btn:active { background: var(--fill-control-pressed); color: var(--text-secondary); box-shadow: var(--shadow-btn-pressed); }
         .set-btn.listening { background: var(--accent); color: var(--text-on-accent); border-color: transparent; animation: pulse 1.5s infinite; }
 
-        .toggle-box { display: flex; background: var(--fill-control-tertiary); border-radius: var(--radius-sm); padding: 3px; border: 1px solid var(--stroke-strong); }
-        .toggle-option { position: relative; z-index: 0; padding: 5px 18px; cursor: pointer; color: var(--text-secondary); font-size: 12px; font-weight: 600; border-radius: 3px; transition: var(--transition); text-align: center;}
-        /* The selection pill is a pseudo element so it can animate in/out when
-           the active segment changes, regardless of segment widths. */
-        .toggle-option::before {
-            content: ''; position: absolute; inset: 0; border-radius: 3px; z-index: -1;
-            background: var(--accent); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
-            opacity: 0; transform: scale(0.88);
-            transition: opacity 0.2s var(--motion-decelerate), transform 0.2s var(--motion-decelerate);
+        .toggle-box { position: relative; display: flex; background: var(--fill-control-tertiary); border-radius: var(--radius-sm); padding: 3px; border: 1px solid var(--stroke-strong); }
+        .toggle-option { position: relative; z-index: 1; padding: 5px 18px; cursor: pointer; color: var(--text-secondary); font-size: 12px; font-weight: 600; border-radius: 3px; transition: var(--transition); text-align: center;}
+        /* One sliding pill per group, positioned under the active segment by
+           syncTogglePills(). Switching segments slides the pill across the
+           group instead of fading a per-segment background in and out. */
+        .toggle-pill {
+            position: absolute; top: 3px; bottom: 3px; left: 0; z-index: 0;
+            width: 0; border-radius: 3px; pointer-events: none;
+            background: var(--segment-selected-bg);
+            border: 1px solid var(--segment-selected-border);
+            box-shadow: var(--segment-selected-shadow);
+            transition: transform 0.2s var(--motion-decelerate), width 0.2s var(--motion-decelerate);
         }
-        .toggle-option.active { color: var(--text-on-accent); }
-        .toggle-option.active::before { opacity: 1; transform: scale(1); }
+        .toggle-option.active { color: var(--segment-selected-text); }
 
         .set-input {
             background: var(--bg-input); border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
@@ -431,12 +309,16 @@
         select.set-input option { background-color: var(--bg-solid-strong); color: var(--text-primary); }
 
         input[type="range"] { -webkit-appearance: none; width: 140px; background: transparent; }
-        input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: var(--slider-track); border-radius: 2px; }
+        /* WinUI sliders fill the track from the minimum up to the thumb with
+           the accent color; --range-progress is kept in sync by the UI. */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px; border-radius: 2px;
+            background: linear-gradient(90deg, var(--accent) var(--range-progress, 100%), var(--slider-track) var(--range-progress, 100%));
+        }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
-            background: var(--accent); border: 2px solid var(--slider-thumb-ring); margin-top: -7px; box-shadow: var(--shadow-card); cursor: pointer; transition: transform 0.1s;
+            background: var(--accent); border: 2px solid var(--slider-thumb-ring); margin-top: -7px; box-shadow: var(--shadow-card); cursor: pointer;
         }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
         .presets-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-width: 900px; margin: 0 auto; width: 100%;}
         .preset-save-bar { display: flex; gap: 12px; background: var(--bg-card); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--stroke-control); box-shadow: var(--shadow-card); }
@@ -459,8 +341,8 @@
         .preset-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
         .preset-actions .btn-square { padding: 6px 14px; font-size: 12px; }
         .preset-icons-preview { display: flex; gap: 8px; flex-wrap: wrap; background: var(--fill-control-tertiary); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--stroke-control); }
-        .preset-icon-mini { width: 40px; height: 40px; background: var(--bg-solid); border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); object-fit: contain; padding: 4px; transition: transform 0.16s var(--motion-decelerate);}
-        .preset-icon-mini:hover { transform: scale(1.1); }
+        .preset-icon-mini { width: 40px; height: 40px; background: var(--bg-solid); border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); object-fit: contain; padding: 4px; }
+        .preset-icons-preview .preset-icon-mini:hover { border-color: var(--stroke-strong); }
 
         #global-status {
             position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 30px);
@@ -480,21 +362,21 @@
             box-shadow: var(--shadow-dialog);
             backdrop-filter: blur(40px); margin: auto;
         }
-        .confirm-header { padding: 16px 24px; background: var(--danger-soft); color: var(--danger-text); font-size: 15px; font-weight: 600; text-align: center; border-bottom: 1px solid var(--divider); }
+        .confirm-header { padding: 16px 24px; background: var(--danger-soft); color: var(--danger-text); font-size: 16px; font-weight: 600; text-align: center; border-bottom: 1px solid var(--divider); }
         .confirm-header.accent { background: var(--accent-soft); color: var(--accent-text); }
-        .confirm-body { padding: 30px 24px; text-align: center; font-size: 15px; color: var(--text-primary); font-weight: 400; line-height: 1.5;}
+        .confirm-body { padding: 30px 24px; text-align: center; font-size: 14px; color: var(--text-primary); font-weight: 400; line-height: 1.5;}
         .confirm-footer { display: flex; gap: 12px; padding: 16px 24px; background: var(--fill-control-tertiary); border-top: 1px solid var(--divider); }
         .confirm-footer .btn-square { flex: 1; padding: 10px; }
         .update-header { background: var(--accent-soft); color: var(--accent-text); }
 
-        .btn-danger { background-color: var(--danger); color: white; border-color: transparent; }
-        .btn-danger:hover { background-color: var(--danger-hover); border-color: transparent; }
-        .btn-danger:active { color: white; }
+        .btn-danger { background-color: var(--danger); color: white; border-color: transparent; box-shadow: var(--shadow-danger); }
+        .btn-danger:hover { background-color: var(--danger-hover); border-color: transparent; box-shadow: var(--shadow-danger-hover); }
+        .btn-danger:active { color: white; box-shadow: var(--shadow-btn-pressed); }
 
         .file-upload-box { display: flex; gap: 12px; align-items: center; max-width: 300px; justify-content: flex-end;}
         .file-upload-btn {
             background: var(--fill-control); color: var(--text-primary); border: 1px dashed var(--stroke-strong); border-radius: var(--radius-sm);
-            padding: 8px 18px; cursor: pointer; transition: var(--transition); font-size: 13px; flex-shrink: 0; font-weight: 400;
+            padding: 8px 18px; cursor: pointer; transition: var(--transition); font-size: 14px; flex-shrink: 0; font-weight: 400;
         }
         .file-upload-btn:hover { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); }
         #add-strat-preview { width: 44px; height: 44px; object-fit: contain; border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); background: var(--fill-control-tertiary); display: none; padding: 4px; }
@@ -586,8 +468,8 @@
                         <span class="set-desc" id="txt-desc-opacity">调整游戏内悬浮窗的背景透明度。</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="range" id="input-set-opacity" min="10" max="100" value="100" oninput="document.getElementById('opacity-val').innerText = this.value + '%'">
-                        <span id="opacity-val" style="width: 40px; text-align: right; font-size: 13px;">100%</span>
+                        <input type="range" id="input-set-opacity" min="10" max="100" value="100" oninput="onOpacitySliderInput(this)">
+                        <span id="opacity-val" style="width: 40px; text-align: right; font-size: 14px;">100%</span>
                     </div>
                 </div>
                 <div class="set-row">
@@ -929,7 +811,7 @@
                 </div>
             </div>
             
-            <button class="btn-square primary" id="btn-add-save" style="margin-top: 10px; width: 100%; height: 50px; font-size: 15px;" onclick="saveCustomStratagem()">SAVE / 保存并添加</button>
+            <button class="btn-square primary" id="btn-add-save" style="margin-top: 10px; width: 100%; height: 50px; font-size: 14px;" onclick="saveCustomStratagem()">SAVE / 保存并添加</button>
             <div class="hint-text" id="txt-add-hint">提示：点击自定义战备卡片上的 × 按钮可将其删除。</div>
         </div>
     </div>
@@ -2652,6 +2534,46 @@
         window.setAutoOpenOverlay = (enabled) => { gameSettings.autoOpenOverlay = enabled === true; updateSettingsUI(); }
         window.setAutoLockOverlay = (enabled) => { gameSettings.autoLockOverlay = enabled === true; updateSettingsUI(); }
 
+        // WinUI slider tracks are filled with the accent color up to the
+        // thumb, so the track gradient must follow every value change.
+        function updateRangeProgress(input) {
+            if (!input) return;
+            const min = Number(input.min);
+            const max = Number(input.max);
+            const value = Number(input.value);
+            if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min || !Number.isFinite(value)) return;
+            input.style.setProperty('--range-progress', `${((value - min) / (max - min)) * 100}%`);
+        }
+
+        function onOpacitySliderInput(input) {
+            document.getElementById('opacity-val').innerText = input.value + '%';
+            updateRangeProgress(input);
+        }
+
+        // Each segmented switch gets one shared pill element that slides
+        // under the active segment. Re-sync on every settings/i18n refresh so
+        // the pill follows text-driven width changes, and on window resize.
+        function ensureTogglePills() {
+            document.querySelectorAll('.toggle-box').forEach((box) => {
+                if (box.querySelector('.toggle-pill')) return;
+                const pill = document.createElement('div');
+                pill.className = 'toggle-pill';
+                pill.setAttribute('aria-hidden', 'true');
+                box.appendChild(pill);
+            });
+        }
+
+        function syncTogglePills() {
+            document.querySelectorAll('.toggle-box').forEach((box) => {
+                const pill = box.querySelector('.toggle-pill');
+                const active = box.querySelector('.toggle-option.active');
+                if (!pill || !active) return;
+                pill.style.width = `${active.offsetWidth}px`;
+                pill.style.transform = `translateX(${active.offsetLeft}px)`;
+            });
+        }
+        window.addEventListener('resize', syncTogglePills);
+
         function updateSettingsUI() {
             document.getElementById('btn-set-menuKey').textContent = formatDisplayKey(gameSettings.menuKey);
             document.getElementById('btn-set-upKey').textContent = formatDisplayKey(gameSettings.upKey);
@@ -2671,6 +2593,7 @@
             
             document.getElementById('input-set-opacity').value = gameSettings.ovOpacity;
             document.getElementById('opacity-val').innerText = gameSettings.ovOpacity + '%';
+            updateRangeProgress(document.getElementById('input-set-opacity'));
             document.getElementById('input-set-w').value = gameSettings.ovWidth;
             document.getElementById('input-set-h').value = gameSettings.ovHeight;
             
@@ -2700,6 +2623,7 @@
             } else {
                 ocrStatus.textContent = i18n[currentLang].ocrRegionUnset;
             }
+            syncTogglePills();
         }
 
         window.startOcrRegionSelect = async () => {
@@ -2985,12 +2909,20 @@
                     cancelBinding();
                     return;
                 }
-                const conflictIdx = activeLoadout.findIndex((s, idx) => s.hotkey === hotkey && idx !== bindingTarget.index);
+                const bindIndex = bindingTarget.index;
+                const conflictIdx = activeLoadout.findIndex((s, idx) => s.hotkey === hotkey && idx !== bindIndex);
                 if (conflictIdx !== -1) {
-                    if(!confirm(lang.msgConfirm)) { cancelBinding(); return; }
-                    activeLoadout[conflictIdx].hotkey = null;
+                    // A native confirm() would open a system dialog while the
+                    // capture-all input filter is still armed and would break
+                    // the Fluent dialog language; reuse the styled modal. The
+                    // conflict is recomputed when the user confirms.
+                    pendingDelete = { type: 'hotkeyConflict', payload: { hotkey, index: bindIndex } };
+                    document.getElementById('txt-confirm-msg').textContent = lang.msgConfirm;
+                    document.getElementById('confirm-modal').classList.add('active');
+                    cancelBinding();
+                    return;
                 }
-                activeLoadout[bindingTarget.index].hotkey = hotkey;
+                activeLoadout[bindIndex].hotkey = hotkey;
                 loadoutChanged = true;
                 showToast(`${lang.msgMacro} ${formatDisplayKey(hotkey)}`);
             } else if (bindingTarget.type === 'setting') {
@@ -3524,6 +3456,17 @@
                 saveDataToLocal('presets.json', savedPresets, 'hd2_macro_presets');
                 showToast(i18n[currentLang].msgPreUpdated);
                 renderPresets();
+            } else if (pendingDelete.type === 'hotkeyConflict') {
+                const { hotkey, index } = pendingDelete.payload;
+                if (activeLoadout[index]) {
+                    // Recompute the conflict at execution time: the loadout
+                    // may have changed between the prompt and the confirm.
+                    const conflictIdx = activeLoadout.findIndex((s, idx) => s.hotkey === hotkey && idx !== index);
+                    if (conflictIdx !== -1) activeLoadout[conflictIdx].hotkey = null;
+                    activeLoadout[index].hotkey = hotkey;
+                    showToast(`${i18n[currentLang].msgMacro} ${formatDisplayKey(hotkey)}`);
+                    commitLoadoutChange();
+                }
             }
             closeConfirmModal();
         }
@@ -3584,6 +3527,7 @@
             renderLibrary(keyword); 
         }
         
+        ensureTogglePills();
         initData().catch(error => {
             console.error('Failed to initialize the main UI:', error);
             updateI18n();

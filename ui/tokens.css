@@ -1,0 +1,180 @@
+/* Shared Fluent Design tokens for every window. Dark is the default so
+   surfaces that never opt into a theme (the in-game overlay list, the OCR
+   region selector) keep the dark look. Windows that follow the persisted
+   theme set <html data-theme="light"> at load time. */
+:root {
+    color-scheme: dark;
+
+    --font-ui: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+
+    --accent: #4CC2FF;
+    --accent-hover: #65CBFF;
+    --accent-pressed: #38BDF8;
+    --accent-text: #4CC2FF;
+    --accent-soft: rgba(76, 194, 255, 0.13);
+    --accent-glow: rgba(76, 194, 255, 0.35);
+    --text-on-accent: #000000;
+
+    --danger: #C42B1C;
+    --danger-hover: #D13438;
+    --danger-text: #FF99A4;
+    --danger-soft: rgba(255, 153, 146, 0.12);
+    --danger-solid-bg: rgba(64, 26, 22, 0.97);
+
+    --window-bg: #202020;
+    --bg-solid: #1C1C1C;
+    --bg-solid-strong: #2B2B2B;
+    --bg-card: rgba(255, 255, 255, 0.0373);
+    --bg-card-hover: rgba(255, 255, 255, 0.0558);
+    --bg-input: rgba(0, 0, 0, 0.22);
+    --bg-input-focus: rgba(0, 0, 0, 0.06);
+    --fill-control: rgba(255, 255, 255, 0.0605);
+    --fill-control-hover: rgba(255, 255, 255, 0.0837);
+    --fill-control-tertiary: rgba(255, 255, 255, 0.0314);
+    --fill-control-pressed: rgba(255, 255, 255, 0.0314);
+    --titlebar-bg: rgba(32, 32, 32, 0.85);
+    --sidebar-bg: rgba(26, 26, 26, 0.55);
+    --modal-header-bg: rgba(43, 43, 43, 0.92);
+    --layer-dim: rgba(0, 0, 0, 0.32);
+    --status-bg: rgba(43, 43, 43, 0.97);
+
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.7843);
+    --text-tertiary: rgba(255, 255, 255, 0.5490);
+
+    --divider: rgba(255, 255, 255, 0.0837);
+    --stroke-control: rgba(255, 255, 255, 0.0698);
+    --stroke-strong: rgba(255, 255, 255, 0.2259);
+    --window-edge: rgba(255, 255, 255, 0.0803);
+    --focus-outer: #FFFFFF;
+
+    /* Windows-Settings segmented switch: the selected pill is a neutral
+       surface, not an accent fill, mirroring the system segmented control. */
+    --segment-selected-bg: #5C5C5C;
+    --segment-selected-text: #FFFFFF;
+    --segment-selected-border: rgba(255, 255, 255, 0.0698);
+    --segment-selected-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+
+    --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.13);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.20);
+    --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.22);
+    --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.37), 0 2px 21px rgba(0, 0, 0, 0.27);
+
+    /* Button depth: compact elevation, a tight 1px tonal ring hugging the
+       border, and a top-light / bottom-shade bevel. No wide blur halos —
+       they read as glow rather than dimension. Pressed swaps the elevation
+       for an inset dip so the key physically travels down. */
+    --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+    --shadow-btn-hover: 0 2px 5px rgba(0, 0, 0, 0.40), 0 4px 8px rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+    --shadow-btn-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.30), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    /* Primary buttons keep their signature soft accent halo — the lighter
+       touch from the outline-glow era. Only neutral buttons dropped halos.
+       The top highlight is a border color, not an inset shadow: inset
+       shadows start at the padding edge, leaving a 1px gap below the
+       transparent border instead of hugging the top edge. */
+    --primary-top-light: rgba(255, 255, 255, 0.16);
+    --shadow-primary: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 194, 255, 0.30), 0 0 14px rgba(76, 194, 255, 0.16);
+    --shadow-primary-hover: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 194, 255, 0.50), 0 0 22px rgba(76, 194, 255, 0.32);
+    --shadow-danger: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 153, 146, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+    --shadow-danger-hover: 0 2px 5px rgba(0, 0, 0, 0.40), 0 4px 8px rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(255, 153, 146, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+
+    --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(76, 194, 255, 0.05), transparent 62%),
+                         linear-gradient(180deg, rgba(255, 255, 255, 0.012), rgba(0, 0, 0, 0.06));
+    --select-chevron: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --window-radius: 8px;
+
+    --slider-track: rgba(255, 255, 255, 0.25);
+    --slider-thumb-ring: #1C1C1C;
+
+    --motion-decelerate: cubic-bezier(0.1, 0.9, 0.2, 1);
+    --transition: all 0.16s var(--motion-decelerate);
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
+
+    --accent: #005FB8;
+    --accent-hover: #0067C0;
+    --accent-pressed: #004E8C;
+    --accent-text: #005FB8;
+    --accent-soft: rgba(0, 95, 184, 0.09);
+    --accent-glow: rgba(0, 95, 184, 0.22);
+    --text-on-accent: #FFFFFF;
+
+    --danger: #C42B1C;
+    --danger-hover: #B3271D;
+    --danger-text: #C42B1C;
+    --danger-soft: rgba(196, 43, 28, 0.08);
+    --danger-solid-bg: rgba(253, 231, 230, 0.97);
+
+    --window-bg: #F3F3F3;
+    --bg-solid: #F9F9F9;
+    --bg-solid-strong: #FFFFFF;
+    --bg-card: rgba(255, 255, 255, 0.82);
+    --bg-card-hover: rgba(255, 255, 255, 0.96);
+    --bg-input: rgba(0, 0, 0, 0.045);
+    --bg-input-focus: #FFFFFF;
+    /* Light rest fills sit slightly darker than the near-white surfaces:
+       near-white buttons vanish against the cards, and the depth bevels
+       need a non-white base to read. */
+    --fill-control: rgba(0, 0, 0, 0.04);
+    /* The light hover fill must be a dark tint: near-white fills are
+       invisible against the near-white window and card surfaces. */
+    --fill-control-hover: rgba(0, 0, 0, 0.065);
+    --fill-control-tertiary: rgba(0, 0, 0, 0.03);
+    --fill-control-pressed: rgba(0, 0, 0, 0.09);
+    --titlebar-bg: rgba(243, 243, 243, 0.88);
+    --sidebar-bg: rgba(234, 234, 234, 0.55);
+    --modal-header-bg: rgba(255, 255, 255, 0.95);
+    --layer-dim: rgba(255, 255, 255, 0.32);
+    --status-bg: rgba(255, 255, 255, 0.97);
+
+    --text-primary: #1B1B1B;
+    --text-secondary: rgba(0, 0, 0, 0.6063);
+    --text-tertiary: rgba(0, 0, 0, 0.4458);
+
+    --divider: rgba(0, 0, 0, 0.0803);
+    --stroke-control: rgba(0, 0, 0, 0.0578);
+    --stroke-strong: rgba(0, 0, 0, 0.3311);
+    --window-edge: rgba(0, 0, 0, 0.2269);
+    --focus-outer: #000000;
+
+    --segment-selected-bg: #FFFFFF;
+    --segment-selected-text: #1B1B1B;
+    --segment-selected-border: rgba(0, 0, 0, 0.0578);
+    --segment-selected-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+
+    --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.09);
+    --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
+    --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.19), 0 2px 21px rgba(0, 0, 0, 0.14);
+
+    /* Light-theme bevels are subtler by nature: the ring and the bottom
+       inner shade carry most of the dimension on near-white surfaces. The
+       primary bevel shades toward the accent's own dark blue. */
+    --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.10), 0 2px 5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.10);
+    --shadow-btn-hover: 0 2px 5px rgba(0, 0, 0, 0.13), 0 4px 8px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(0, 0, 0, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.11);
+    --shadow-btn-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    --primary-top-light: rgba(255, 255, 255, 0.16);
+    --shadow-primary: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 95, 184, 0.22), 0 0 12px rgba(0, 95, 184, 0.12);
+    --shadow-primary-hover: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 95, 184, 0.40), 0 0 20px rgba(0, 95, 184, 0.22);
+    --shadow-danger: 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(196, 43, 28, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -2px 0 rgba(90, 15, 8, 0.38);
+    --shadow-danger-hover: 0 2px 5px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(196, 43, 28, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -2px 0 rgba(90, 15, 8, 0.38);
+
+    --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(0, 95, 184, 0.035), transparent 62%),
+                         linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+    --select-chevron: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+
+    --slider-track: rgba(0, 0, 0, 0.25);
+    --slider-thumb-ring: #FFFFFF;
+}
+
+/* Shared Fluent thin overlay scrollbar for every window. */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--stroke-strong); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }

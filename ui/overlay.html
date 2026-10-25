@@ -3,50 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./tokens.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Impact', sans-serif; letter-spacing: 1px; }
         body { background: transparent; color: #FFE80A; overflow: hidden; transition: opacity 0.3s ease; }
-        
+
 
         /* The in-game list stays dark for game readability; the drag bar is a
-           configuration surface and uses the Fluent dark palette instead. */
+           configuration surface and uses the Fluent dark palette instead. The
+           window never opts into the light theme, so the shared tokens below
+           always resolve to their dark values. */
         #drag-bar {
             -webkit-app-region: drag;
-            background: rgba(43, 43, 43, 0.97);
-            border: 1px solid rgba(255, 255, 255, 0.0698);
-            border-left: 3px solid #4CC2FF;
+            background: var(--status-bg);
+            border: 1px solid var(--stroke-control);
+            border-left: 3px solid var(--accent);
             margin: 8px 8px 12px 8px;
             border-radius: 6px;
             padding: 6px 8px 6px 10px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.22);
+            box-shadow: var(--shadow-flyout);
         }
 
         .drag-info {
             display: flex; align-items: center; gap: 8px;
-            color: rgba(255, 255, 255, 0.7843);
-            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
-            font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+            font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
         }
 
 
         .lock-btn {
             -webkit-app-region: no-drag;
-            background: rgba(255, 255, 255, 0.0605);
-            color: rgba(255, 255, 255, 0.7843);
-            border: 1px solid rgba(255, 255, 255, 0.2259);
+            background: var(--fill-control);
+            color: var(--text-secondary);
+            border: 1px solid var(--stroke-strong);
             border-radius: 4px;
             cursor: pointer;
             width: 26px; height: 26px;
             display: flex; justify-content: center; align-items: center;
-            transition: all 0.16s cubic-bezier(0.1, 0.9, 0.2, 1);
+            transition: background 0.16s var(--motion-decelerate), color 0.16s var(--motion-decelerate), border-color 0.16s var(--motion-decelerate);
         }
 
         .lock-btn:hover {
-            background: #C42B1C;
+            background: var(--danger);
             color: #ffffff;
-            border-color: #C42B1C;
-            transform: scale(1.05);
+            border-color: var(--danger);
         }
 
         #list-container { display: flex; flex-direction: column; gap: 6px; padding: 0 8px 8px 8px; padding-right: 20px; }
@@ -79,7 +81,7 @@
         
 
         .hotkey-text {
-            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+            font-family: var(--font-ui);
             font-size: 20px; font-weight: 600; letter-spacing: 0.5px;
             color: #1A86D8;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);

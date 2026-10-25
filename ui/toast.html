@@ -3,35 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./tokens.css">
     <style>
-        /* Fluent Design tokens shared with the main window; dark is the default. */
-        :root {
-            color-scheme: dark;
-            --toast-bg: rgba(43, 43, 43, 0.97);
-            --toast-border: rgba(255, 255, 255, 0.0698);
-            --toast-text: #FFFFFF;
-            --toast-accent: #4CC2FF;
-            --toast-danger-text: #FF99A4;
-            --toast-danger-bg: rgba(64, 26, 22, 0.97);
-            --toast-shadow: 0 8px 16px rgba(0, 0, 0, 0.22);
-        }
-
-        html[data-theme="light"] {
-            color-scheme: light;
-            --toast-bg: rgba(255, 255, 255, 0.97);
-            --toast-border: rgba(0, 0, 0, 0.0578);
-            --toast-text: #1B1B1B;
-            --toast-accent: #005FB8;
-            --toast-danger-text: #C42B1C;
-            --toast-danger-bg: rgba(253, 231, 230, 0.97);
-            --toast-shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             width: 100vw; height: 100vh; overflow: hidden; background: transparent;
             display: flex; align-items: center; justify-content: center;
-            font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+            font-family: var(--font-ui);
             -webkit-font-smoothing: antialiased;
         }
         #toast {
@@ -39,11 +17,11 @@
             max-height: calc(100vh - 20px);
             padding: 12px 20px;
             border-radius: 8px;
-            background: var(--toast-bg);
-            color: var(--toast-text);
-            border: 1px solid var(--toast-border);
-            border-left: 3px solid var(--toast-accent);
-            box-shadow: var(--toast-shadow);
+            background: var(--status-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--stroke-control);
+            border-left: 3px solid var(--accent);
+            box-shadow: var(--shadow-flyout);
             font-size: 14px;
             font-weight: 600;
             text-align: center;
@@ -58,9 +36,9 @@
         }
         #toast.show { opacity: 1; transform: translateY(0) scale(1); }
         #toast.error {
-            background: var(--toast-danger-bg);
-            color: var(--toast-danger-text);
-            border-left-color: var(--toast-danger-text);
+            background: var(--danger-solid-bg);
+            color: var(--danger-text);
+            border-left-color: var(--danger-text);
         }
     </style>
 </head>

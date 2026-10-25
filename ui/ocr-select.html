@@ -3,35 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./tokens.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             width: 100vw; height: 100vh; overflow: hidden;
-            cursor: crosshair; background: rgba(0, 0, 0, 0.32);
-            font-family: system-ui, "Segoe UI", Arial, sans-serif;
+            cursor: crosshair;
+            /* The dim stays black in both themes: it is a functional capture
+               veil over the screen, not a themed surface. */
+            background: rgba(0, 0, 0, 0.32);
+            font-family: var(--font-ui);
+            -webkit-font-smoothing: antialiased;
         }
         #hint {
             position: fixed; left: 50%; top: 28px; transform: translateX(-50%);
-            padding: 10px 16px; border: 1px solid rgba(255, 232, 10, 0.45);
-            background: rgba(10, 10, 12, 0.92); color: #FFE80A;
-            border-radius: 8px; font-size: 13px; font-weight: 700;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            padding: 10px 16px;
+            border: 1px solid var(--stroke-control);
+            border-left: 3px solid var(--accent);
+            border-radius: var(--radius-md);
+            background: var(--status-bg);
+            color: var(--text-primary);
+            font-size: 14px; font-weight: 600;
+            box-shadow: var(--shadow-flyout);
         }
         #selection {
             position: fixed; display: none;
-            border: 2px solid #FFE80A;
-            background: rgba(255, 232, 10, 0.12);
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.28), 0 0 18px rgba(255, 232, 10, 0.55);
+            border: 2px solid var(--accent);
+            background: var(--accent-soft);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.28);
         }
         #size {
             position: absolute; right: 0; bottom: -28px;
-            padding: 4px 7px; background: #FFE80A; color: #000;
-            border-radius: 4px; font-size: 12px; font-weight: 800;
+            padding: 3px 8px; background: var(--accent); color: var(--text-on-accent);
+            border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div id="hint">Drag to select OCR area, Esc to cancel</div>
+    <div id="hint"></div>
     <div id="selection"><div id="size"></div></div>
     <script src="./bridge.js"></script>
     <script>
@@ -40,6 +49,26 @@
         let dragging = false;
         let startX = 0;
         let startY = 0;
+
+        const hintByLanguage = {
+            zh: '拖动鼠标框选 OCR 识别区域，按 Esc 取消',
+            en: 'Drag to select the OCR area. Press Esc to cancel.'
+        };
+
+        // The selector window is created on demand, so pull the persisted
+        // language and theme at load time to match the main window.
+        function applyUiPreferences(settings) {
+            const language = settings && settings.language === 'en' ? 'en' : 'zh';
+            document.documentElement.lang = language === 'en' ? 'en' : 'zh-CN';
+            document.getElementById('hint').textContent = hintByLanguage[language];
+            document.documentElement.dataset.theme = settings && settings.theme === 'light' ? 'light' : 'dark';
+        }
+        document.getElementById('hint').textContent = hintByLanguage.zh;
+        if (window.electronAPI && window.electronAPI.loadData) {
+            window.electronAPI.loadData('settings.json')
+                .then(applyUiPreferences)
+                .catch(() => {});
+        }
 
         function updateSelection(x, y) {
             const left = Math.min(startX, x);
