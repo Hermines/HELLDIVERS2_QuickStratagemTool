@@ -11,7 +11,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 test("seed catalog contains valid normalized items", async () => {
   const seed = JSON.parse(await readFile(path.join(root, "data", "seed-catalog.json"), "utf8"));
   const items = normalizeItems(seed.items);
-  assert.equal(items.length, 101);
+  assert.equal(items.length, seed.items.length);
   assert.equal(items.some((item) => item.aliases.some((alias) => typeof alias !== "string")), false);
 });
 

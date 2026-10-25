@@ -517,6 +517,9 @@ mod tests {
         .expect("the public catalog should respond");
         let catalog = verify_bundle(&manifest, &catalog_bytes, &production_key().unwrap())
             .expect("the public catalog signature should verify");
-        assert_eq!(catalog.items.len(), 101);
+        assert!(
+            !catalog.items.is_empty(),
+            "the public catalog should always publish at least one item"
+        );
     }
 }

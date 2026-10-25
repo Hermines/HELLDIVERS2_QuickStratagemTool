@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -8,6 +8,10 @@ import { CatalogStore } from "../lib/store.mjs";
 import { createCatalogServer, validateBundledIcons } from "../server.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const seedItemCount = JSON.parse(
+  await readFile(path.join(root, "data", "seed-catalog.json"), "utf8"),
+).items.length;
 
 async function fixture(t) {
   const directory = await mkdtemp(path.join(os.tmpdir(), "hd2-catalog-server-"));
@@ -41,7 +45,7 @@ test("public manifest and immutable catalog are available", async (t) => {
   assert.match(manifestResponse.headers.get("cache-control"), /max-age=60/);
   assert.equal(manifestResponse.headers.get("x-content-type-options"), "nosniff");
   const catalogResponse = await fetch(`${base}${manifest.catalogPath}`);
-  assert.equal((await catalogResponse.json()).items.length, 101);
+  assert.equal((await catalogResponse.json()).items.length, seedItemCount);
   assert.match(catalogResponse.headers.get("cache-control"), /immutable/);
 });
 
@@ -116,9 +120,9 @@ test("startup validation rejects an incomplete bundled icon package", async (t) 
   t.after(() => rm(emptyDirectory, { recursive: true, force: true }));
   await assert.rejects(
     validateBundledIcons(store, emptyDirectory),
-    /Bundled icon validation failed \(101 missing\)/,
+    new RegExp(`Bundled icon validation failed \\(${seedItemCount} missing\\)`),
   );
-  assert.equal(await validateBundledIcons(store, path.join(root, "bundled-icons")), 101);
+  assert.equal(await validateBundledIcons(store, path.join(root, "bundled-icons")), seedItemCount);
 });
 
 test("admin can be fail-closed while public catalog remains available", async (t) => {

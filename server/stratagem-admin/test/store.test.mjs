@@ -8,6 +8,10 @@ import { CatalogStore } from "../lib/store.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+const seedItemCount = JSON.parse(
+  await readFile(path.join(root, "data", "seed-catalog.json"), "utf8"),
+).items.length;
+
 async function fixture(t) {
   const directory = await mkdtemp(path.join(os.tmpdir(), "hd2-catalog-store-"));
   t.after(() => rm(directory, { recursive: true, force: true }));
@@ -34,7 +38,7 @@ test("store initializes, signs and verifies the seed snapshot", async (t) => {
   const { store, directory } = await fixture(t);
   const { manifest, catalog } = await store.current();
   assert.equal(manifest.catalogVersion, 1);
-  assert.equal(catalog.items.length, 101);
+  assert.equal(catalog.items.length, seedItemCount);
   assert.equal(await store.verifyCurrent(), true);
   assert.match(await readFile(path.join(directory, "keys", "public.pem"), "utf8"), /PUBLIC KEY/);
 });

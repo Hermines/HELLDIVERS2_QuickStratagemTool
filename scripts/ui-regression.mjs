@@ -540,6 +540,26 @@ assert.match(meltagunIconSource, /fill="#ffffee"/);
 assert.match(meltagunIconSource, /fill="#5abeda"/);
 assert.doesNotMatch(meltagunIconSource, /<image\b/i, "the bundled Meltagun icon must remain vector-only");
 
+// The admin seed catalog bootstraps fresh update-server deployments, so it
+// must stay in sync with the bundled UI database. Run the catalog export
+// (`node scripts/export-stratagem-catalog.mjs`) after changing
+// defaultStratagemDB; otherwise fresh deployments can never deliver new items.
+const seedCatalog = JSON.parse(
+  fs.readFileSync(path.join(root, "server", "stratagem-admin", "data", "seed-catalog.json"), "utf8"),
+);
+const seedIds = seedCatalog.items.map((item) => String(item.id).toLowerCase()).sort();
+const databaseIds = JSON.parse(
+  vm.runInContext(
+    "JSON.stringify(database.map(item => String(item.id).toLowerCase()).sort())",
+    databaseContext,
+  ),
+);
+assert.deepEqual(
+  seedIds,
+  databaseIds,
+  "the admin seed catalog must match the bundled stratagem database",
+);
+
 const validPreset = normalizeImportedPreset({
   n: "Support",
   l: [{ s: "wpn_mg", h: "F8", l: true }],
