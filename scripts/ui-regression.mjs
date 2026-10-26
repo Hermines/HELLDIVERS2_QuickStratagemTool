@@ -161,6 +161,78 @@ assert.match(
   /#drag-bar\s*\{[\s\S]{0,400}border-left: 3px solid var\(--accent\);/,
   "the overlay drag bar must use the shared Fluent accent token instead of the legacy yellow",
 );
+// The overlay list is a Fluent surface too: legacy game-yellow chrome and the
+// white selection box must stay replaced by shared token styling.
+assert.doesNotMatch(
+  overlaySource,
+  /FFE80A|255,\s*232,\s*10/,
+  "the overlay must not reintroduce the legacy game-yellow color",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item \{[^}]*border: 1px solid var\(--stroke-strong\);/,
+  "overlay list items must use the shared neutral stroke token for their border",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item\.selected-box \{[^}]*border-color: var\(--accent\);[^}]*transform: translateX\(10px\);[^}]*var\(--accent-soft\)[^}]*0 0 0 1px var\(--accent\)[^}]*-6px 0px 0px var\(--accent\)/,
+  "overlay selection must stay prominent: accent border, slide-out, accent-soft tint, ring, and left indicator bar",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item \{[^}]*transition: transform 0\.2s var\(--motion-decelerate\), background-color 0\.2s var\(--motion-decelerate\), border-color 0\.2s var\(--motion-decelerate\), box-shadow 0\.2s var\(--motion-decelerate\);/,
+  "the fill color must share the same 0.2s transition clock as the scale so the flash stays synchronized",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item\.active-glow \{[^}]*background-color: var\(--accent\);[^}]*transform: translateX\(10px\) scale\(1\.05\);/,
+  "the executing item must light up accent and scale up together as one state change",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item\.active-glow::after \{[\s\S]{0,300}animation: overlay-flash-ring var\(--flash-duration, 600ms\)/,
+  "the long-period glow ring must run on its own ::after layer, not on the fill transition",
+);
+assert.match(
+  overlaySource,
+  /@keyframes overlay-flash-ring \{/,
+  "the execution flash must pulse the shared accent-glow ring",
+);
+assert.match(
+  overlaySource,
+  /\.stratagem-item\.active-glow \.hotkey-text \{ color: var\(--text-on-accent\); \}/,
+  "the hotkey text must ride the fill's transition clock instead of its own animation",
+);
+assert.match(
+  overlaySource,
+  /const flashTimers = new Map\(\);/,
+  "the overlay must track one flash timer per item so re-arms can cancel stale removals",
+);
+assert.match(
+  overlaySource,
+  /if \(pending\) clearTimeout\(pending\);/,
+  "re-triggering a flash must cancel the previous removal timer or the fill blinks dark mid-flash",
+);
+assert.match(
+  overlaySource,
+  /if \(!el\.classList\.contains\('active-glow'\)\) \{/,
+  "a re-trigger while still lit must not cycle the class: remove/reflow/add blinks toward dark for a frame",
+);
+assert.match(
+  overlaySource,
+  /FLASH_REARM_GRACE_MS = 240;/,
+  "the lit state must hold a grace window past the flash so rapid re-arms never cool before re-lighting",
+);
+assert.match(
+  overlaySource,
+  /setProperty\('--flash-duration', `\$\{flashMs\}ms`\)/,
+  "the execution flash duration must track the macro's reported run time",
+);
+assert.doesNotMatch(
+  overlaySource,
+  /\.lock-btn:hover \{[^}]*var\(--danger\)/,
+  "the lock button hover must read as a neutral control, not a destructive action",
+);
 
 // Focus rings, listening-state hint contrast, and overlay text hotkey styling.
 assert.match(
