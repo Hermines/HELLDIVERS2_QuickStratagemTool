@@ -517,8 +517,23 @@ assert.match(
 );
 assert.match(
   indexSource,
-  /#global-status\s*{[\s\S]{0,500}visibility:\s*hidden;[\s\S]{0,500}#global-status\.show\s*{[^}]*visibility:\s*visible;/,
+  /#global-status\s*{[\s\S]{0,900}visibility:\s*hidden;[\s\S]{0,900}#global-status\.show\s*{[^}]*visibility:\s*visible;/,
   "the hidden status blur layer must be excluded from rendering",
+);
+assert.match(
+  indexSource,
+  /#global-status\s*{[\s\S]{0,1200}max-width:\s*min\(calc\(100vw - 48px\), 640px\);/,
+  "the inline status pill must be width-bounded so interpolated error text cannot overflow the window",
+);
+assert.doesNotMatch(
+  indexSource,
+  /#global-status\s*{[^}]*white-space:\s*nowrap;/,
+  "the inline status pill must wrap long fallback errors instead of clipping at the window edges",
+);
+assert.match(
+  indexSource,
+  /#global-status\s*{[\s\S]{0,1200}overflow-wrap:\s*anywhere;/,
+  "the inline status pill must break long unbroken error strings like the toast bubble does",
 );
 assert.match(
   mainSource,

@@ -351,7 +351,12 @@
             opacity: 0; visibility: hidden; transition: opacity 0.2s var(--motion-decelerate), transform 0.2s var(--motion-decelerate), visibility 0s linear 0.2s; pointer-events: none;
             box-shadow: var(--shadow-flyout); border: 1px solid var(--stroke-strong);
             border-left: 3px solid var(--accent);
-            text-align: center; white-space: nowrap;
+            /* Interpolated IPC error strings are unbounded in length: bound the
+               pill and wrap like the toast bubble so long fallback errors stay
+               inside the window instead of clipping at both edges. */
+            max-width: min(calc(100vw - 48px), 640px);
+            text-align: center; line-height: 1.45;
+            overflow-wrap: anywhere; word-break: break-word;
         }
         #global-status.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
         #global-status.error { border-left-color: var(--danger); color: var(--danger-text); }
