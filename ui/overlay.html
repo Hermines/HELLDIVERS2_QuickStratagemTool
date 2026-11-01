@@ -13,7 +13,14 @@
            configuration surface and uses the Fluent dark palette instead. The
            window never opts into the light theme, so the shared tokens below
            always resolve to their dark values. */
+        /* Fractional DPI scales (125%/150%) snap 1px borders to whole device
+           pixels, shrinking these content-sized blocks: the overlay column
+           pitch then lands between device pixels and row borders render
+           crisp/faded alternatingly. Pinned minimum heights keep the drag
+           bar, rows, and gaps on whole device pixels at the common Windows
+           scale factors (100%/125%/150%/200%) so every border renders alike. */
         #drag-bar {
+            min-height: 40px;
             -webkit-app-region: drag;
             background: var(--status-bg);
             border: 1px solid var(--stroke-control);
@@ -68,6 +75,8 @@
            Execution flashes the shared accent-glow pulse ring; the inset
            shadow layers the tint above the dark base without hard-coding
            the accent value. */
+        /* See #drag-bar: without the pinned height the snapped border shrinks
+           the row and the 6px gap lands on a half device pixel. */
         .stratagem-item {
             display: flex; align-items: center; gap: 12px;
             position: relative;
@@ -77,6 +86,7 @@
             transition: transform 0.2s var(--motion-decelerate), background-color 0.2s var(--motion-decelerate), border-color 0.2s var(--motion-decelerate), box-shadow 0.2s var(--motion-decelerate);
             border-radius: var(--radius-md);
             width: 100%;
+            min-height: 54px;
             box-shadow: var(--shadow-card);
         }
 

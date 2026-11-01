@@ -173,6 +173,19 @@ assert.match(
   /\.stratagem-item \{[^}]*border: 1px solid var\(--stroke-strong\);/,
   "overlay list items must use the shared neutral stroke token for their border",
 );
+// Fractional DPI scales (125%/150%) snap 1px borders to whole device pixels;
+// content-sized blocks then shrink and the overlay column pitch lands between
+// device pixels, rendering row borders crisp/faded alternatingly.
+assert.match(
+  overlaySource,
+  /\.stratagem-item \{[^}]*min-height: 54px;/,
+  "overlay rows must pin their layout height so the row pitch stays on whole device pixels at fractional DPI scales",
+);
+assert.match(
+  overlaySource,
+  /#drag-bar \{[^}]*min-height: 40px;/,
+  "the drag bar must pin its layout height so the overlay list origin stays on a whole device pixel",
+);
 assert.match(
   overlaySource,
   /\.stratagem-item\.selected-box \{[^}]*border-color: var\(--accent\);[^}]*transform: translateX\(10px\);[^}]*var\(--accent-soft\)[^}]*0 0 0 1px var\(--accent\)[^}]*-6px 0px 0px var\(--accent\)/,
