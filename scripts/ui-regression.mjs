@@ -368,6 +368,13 @@ assert.match(
   /function updateI18n\(\) \{[\s\S]{0,80}documentElement\.lang = currentLang === 'zh' \? 'zh-CN' : 'en';/,
   "every localization refresh must sync the <html lang> attribute, including runtime language switches",
 );
+// The confirm dialog header already carries the severity ("WARNING"/"警告");
+// body copy must not repeat it.
+assert.doesNotMatch(
+  indexSource,
+  /msgConfirm(?:Del|DelCustom|Update): "(?:警告：|WARNING: )/,
+  "confirm dialog bodies must not repeat the WARNING/警告 prefix already carried by the dialog header",
+);
 // Loadout drag reordering must preview live: the dragged row follows the mouse
 // and the affected rows shift smoothly to their projected slots.
 assert.match(
