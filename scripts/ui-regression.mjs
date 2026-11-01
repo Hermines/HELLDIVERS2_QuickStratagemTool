@@ -375,6 +375,11 @@ assert.doesNotMatch(
   /msgConfirm(?:Del|DelCustom|Update): "(?:警告：|WARNING: )/,
   "confirm dialog bodies must not repeat the WARNING/警告 prefix already carried by the dialog header",
 );
+assert.doesNotMatch(
+  indexSource,
+  /ocr:\[[^\]]*\],\s*ocr:\[/,
+  "builtin stratagem entries must not repeat the ocr key: a silent last-wins duplicate hides data-entry mistakes",
+);
 // Loadout drag reordering must preview live: the dragged row follows the mouse
 // and the affected rows shift smoothly to their projected slots.
 assert.match(
