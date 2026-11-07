@@ -307,6 +307,14 @@ export function createCatalogServer({ store, access, bundledIconRoot, publicOrig
   });
 }
 
+// The dev bypass must require every development signal at once. Production
+// nginx proxies from 127.0.0.1, so the bind host alone cannot distinguish
+// development from a proxied deployment, and HD2_ADMIN_DEV_BYPASS=1 without
+// HD2_ENV=development stays inert.
+export function devBypassRequested(env, host) {
+  return env.HD2_ADMIN_DEV_BYPASS === "1" && host === "127.0.0.1" && env.HD2_ENV === "development";
+}
+
 async function main() {
   const host = process.env.HD2_CATALOG_HOST || "127.0.0.1";
   const port = Number(process.env.HD2_CATALOG_PORT || 8785);
@@ -327,7 +335,7 @@ async function main() {
     teamDomain: process.env.CF_ACCESS_TEAM_DOMAIN,
     audience: process.env.CF_ACCESS_AUD,
     allowedEmails: String(process.env.CF_ACCESS_ALLOWED_EMAILS || "").split(","),
-    devBypass: process.env.HD2_ADMIN_DEV_BYPASS === "1" && host === "127.0.0.1",
+    devBypass: devBypassRequested(process.env, host),
   });
   if (!adminDisabled && !access.configured() && !access.devBypass) {
     throw new Error("Cloudflare Access requires a team domain, audience and exactly one allowed email");

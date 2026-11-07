@@ -64,3 +64,33 @@ test("development bypass works only for loopback requests", async () => {
   assert.equal(identity.subject, "development");
   await assert.rejects(access.authenticate({ socket: { remoteAddress: "10.0.0.2" }, headers: {} }));
 });
+
+test("development bypass is refused when Cloudflare Access configuration is present", async () => {
+  const access = new AccessVerifier({
+    teamDomain: "https://example.cloudflareaccess.com",
+    audience: "expected-audience",
+    allowedEmails: ["owner@example.com"],
+    devBypass: true,
+    jwksProvider: async () => [jwk],
+  });
+  assert.equal(access.devBypass, false);
+  await assert.rejects(
+    access.authenticate({ socket: { remoteAddress: "127.0.0.1" }, headers: {} }),
+    /token is missing/,
+  );
+  const identity = await access.authenticate({
+    socket: { remoteAddress: "127.0.0.1" },
+    headers: { "cf-access-jwt-assertion": token() },
+  });
+  assert.equal(identity.subject, "subject");
+});
+
+test("any production signal refuses the development bypass", () => {
+  assert.equal(new AccessVerifier({
+    teamDomain: "https://example.cloudflareaccess.com",
+    devBypass: true,
+  }).devBypass, false);
+  assert.equal(new AccessVerifier({ audience: "expected-audience", devBypass: true }).devBypass, false);
+  assert.equal(new AccessVerifier({ allowedEmails: ["owner@example.com"], devBypass: true }).devBypass, false);
+  assert.equal(new AccessVerifier({ allowedEmails: [" "], devBypass: true }).devBypass, true);
+});

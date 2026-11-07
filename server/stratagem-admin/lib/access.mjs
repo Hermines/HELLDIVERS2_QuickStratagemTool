@@ -21,7 +21,19 @@ export class AccessVerifier {
     this.teamDomain = teamDomain ? normalizeTeamDomain(teamDomain) : null;
     this.audience = String(audience || "").trim();
     this.allowedEmails = new Set(allowedEmails.map((value) => value.trim().toLowerCase()).filter(Boolean));
-    this.devBypass = devBypass === true;
+    // Loopback cannot distinguish development from a reverse-proxied
+    // production deployment: nginx forwards from 127.0.0.1, so every proxied
+    // request looks local. Any Cloudflare Access configuration is treated as
+    // production and refuses the bypass, keeping the fail-closed direction.
+    const productionConfiguration = Boolean(
+      this.teamDomain || this.audience || this.allowedEmails.size > 0,
+    );
+    this.devBypass = devBypass === true && !productionConfiguration;
+    if (devBypass === true && productionConfiguration) {
+      console.warn("[hd2-stratagem-admin] HD2_ADMIN_DEV_BYPASS=1 is ignored because Cloudflare Access configuration is present");
+    } else if (this.devBypass) {
+      console.warn("[hd2-stratagem-admin] Development auth bypass is ACTIVE: loopback admin requests are unauthenticated");
+    }
     this.jwksProvider = jwksProvider || (() => this.#remoteJwks());
     this.jwks = null;
     this.jwksExpiresAt = 0;

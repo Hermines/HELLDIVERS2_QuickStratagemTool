@@ -6,7 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { CatalogStore } from "../lib/store.mjs";
-import { createCatalogServer, validateBundledIcons } from "../server.mjs";
+import { createCatalogServer, devBypassRequested, validateBundledIcons } from "../server.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -171,4 +171,12 @@ test("admin can be fail-closed while public catalog remains available", async (t
   const port = server.address().port;
   assert.equal((await fetch(`http://127.0.0.1:${port}/admin/`)).status, 503);
   assert.equal((await fetch(`http://127.0.0.1:${port}/api/v1/stratagems/manifest`)).status, 200);
+});
+
+test("dev bypass requires every development signal", () => {
+  assert.equal(devBypassRequested({ HD2_ADMIN_DEV_BYPASS: "1", HD2_ENV: "development" }, "127.0.0.1"), true);
+  assert.equal(devBypassRequested({ HD2_ADMIN_DEV_BYPASS: "1", HD2_ENV: "development" }, "0.0.0.0"), false);
+  assert.equal(devBypassRequested({ HD2_ADMIN_DEV_BYPASS: "1" }, "127.0.0.1"), false);
+  assert.equal(devBypassRequested({ HD2_ADMIN_DEV_BYPASS: "1", HD2_ENV: "production" }, "127.0.0.1"), false);
+  assert.equal(devBypassRequested({ HD2_ENV: "development" }, "127.0.0.1"), false);
 });
