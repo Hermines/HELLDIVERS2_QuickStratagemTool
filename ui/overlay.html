@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./tokens.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Impact', sans-serif; letter-spacing: 1px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: var(--font-ui); }
         body { background: transparent; color: var(--text-primary); overflow: hidden; transition: opacity 0.3s ease; }
 
 
@@ -19,7 +19,7 @@
             border: 1px solid var(--stroke-control);
             border-left: 3px solid var(--accent);
             margin: 8px 8px 12px 8px;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             padding: 6px 8px 6px 10px;
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: var(--shadow-flyout);
@@ -29,7 +29,7 @@
             display: flex; align-items: center; gap: 8px;
             color: var(--text-secondary);
             font-family: var(--font-ui);
-            font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+            font-size: 12px; font-weight: 400;
         }
 
 
@@ -54,7 +54,6 @@
         .lock-btn:active {
             background: var(--fill-control-pressed);
             color: var(--text-secondary);
-            box-shadow: var(--shadow-btn-pressed);
         }
 
         #list-container { display: flex; flex-direction: column; gap: 6px; padding: 0 8px 8px 8px; padding-right: 20px; }
@@ -118,22 +117,26 @@
         .icon { width: 40px; height: 40px; object-fit: contain; border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.8); padding: 2px; }
         
 
+        /* Accent rides the shared token instead of a hardcoded legacy blue.
+           The text shadow stays: the hotkey floats over arbitrary bright game
+           footage, unlike an in-app surface. */
         .hotkey-text {
             font-family: var(--font-ui);
-            font-size: 20px; font-weight: 600; letter-spacing: 0.5px;
-            color: #1A86D8;
+            font-size: 20px; font-weight: 600;
+            color: var(--accent-text);
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
         }
 
 
+        /* PowerToys KeyVisual keycap: flat solid face, hairline stroke, 2px
+           corners, normal weight. The fill is the solid keycap token instead
+           of the translucent card fill so the cap survives bright footage. */
         .hotkey-icon {
             display: inline-flex; justify-content: center; align-items: center;
-            background: linear-gradient(180deg, #e6e6e6 0%, #a3a3a3 100%);
-            border: 1px solid #333; border-radius: 6px;
-            color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 14px; font-weight: 800; letter-spacing: 0; padding: 4px 10px;
-            box-shadow: 0 4px 0px #555, 0 5px 5px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.8);
-            transform: translateY(-2px);
+            background: var(--keycap-bg);
+            border: 1px solid var(--keycap-border); border-radius: var(--radius-keycap);
+            color: var(--keycap-text); font-family: var(--font-ui);
+            font-size: 14px; font-weight: 400; letter-spacing: 0; padding: 4px 8px;
             min-width: 32px;
         }
 

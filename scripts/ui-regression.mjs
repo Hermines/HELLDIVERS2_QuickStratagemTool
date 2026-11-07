@@ -79,28 +79,60 @@ assert.match(
 assert.doesNotMatch(
   tokensSource,
   /--glow-/,
-  "neutral buttons must stay halo-free: their depth comes from compact elevation, a tight ring, and bevel highlights",
+  "buttons must stay halo-free: the WinUI model expresses depth through fill swaps, never glow",
 );
-assert.match(
+// PowerToys/WinUI button model: flat fill plus a 1px stroke. Bevels, accent
+// halos, and inset-press dips are legacy skeuomorphism and must stay removed.
+assert.doesNotMatch(
   tokensSource,
-  /--primary-top-light:\s*rgba\(255, 255, 255, 0\.16\);/,
-  "the primary top highlight must be an edge token so it can ride the border itself",
-);
-assert.match(
-  tokensSource,
-  /--shadow-primary:\s*0 1px 2px rgba\(0, 0, 0, 0\.35\), 0 0 0 1px rgba\(76, 194, 255, 0\.30\), 0 0 14px rgba\(76, 194, 255, 0\.16\);/,
-  "primary buttons keep their signature light touch: base elevation, accent ring, and soft halo — without the offset inset top light",
+  /--shadow-btn|--shadow-primary|--primary-top-light|--shadow-danger/,
+  "button elevation/bevel tokens must stay deleted: buttons are flat fill plus stroke in both themes",
 );
 assert.match(
   indexSource,
-  /\.btn-square\.primary \{[\s\S]{0,300}border-top-color: var\(--primary-top-light\);/,
-  "the primary highlight must hug the top border: inset shadows start at the padding edge and leave a visible gap",
+  /\.btn-square\.primary \{[^}]*background-color: var\(--accent\);[^}]*border-color: transparent;\s*\}/,
+  "primary buttons are a flat accent fill with no top-light border trick or halo",
 );
-assert.match(tokensSource, /--shadow-primary-hover:/, "primary buttons need a hover depth shadow in both themes");
+assert.doesNotMatch(
+  indexSource,
+  /\.btn-square[^{]*\{[^}]*box-shadow: var\(--shadow-(btn|primary|danger)/,
+  "square buttons must not reintroduce elevation or bevel shadows",
+);
+// Motion ramp: the WinUI/PowerToys standard durations on the shared curve.
 assert.match(
   tokensSource,
-  /--shadow-btn-pressed:\s*inset 0 2px 4px/,
-  "pressing a button must swap elevation for an inset dip so the key travels down",
+  /--motion-duration-very-fast:\s*83ms;\s*\n\s*--motion-duration-brief:\s*167ms;\s*\n\s*--motion-duration-fast:\s*187ms;\s*\n\s*--motion-duration-normal:\s*333ms;/,
+  "the shared motion ramp must expose the four standard WinUI durations",
+);
+assert.match(tokensSource, /--transition:\s*all 0\.167s var\(--motion-decelerate\);/, "control transitions use the brief motion step");
+// Type ramp tokens (caption/body/title/subtitle) must exist for the shared ramp.
+assert.match(
+  tokensSource,
+  /--font-size-caption:\s*12px;\s*\n\s*--font-size-body:\s*14px;\s*\n\s*--font-size-title:\s*16px;\s*\n\s*--font-size-subtitle:\s*20px;/,
+  "the shared type ramp must expose caption, body, title, and subtitle steps",
+);
+// Corner radii: ControlCornerRadius 4 (md==sm), OverlayCornerRadius 8, KeyVisual 2.
+assert.match(tokensSource, /--radius-md:\s*4px;/, "the medium radius must match ControlCornerRadius");
+assert.match(tokensSource, /--radius-keycap:\s*2px;/, "keycaps must use the KeyVisual 2px corner radius");
+assert.match(
+  tokensSource,
+  /--keycap-bg:\s*#2B2B2B;[\s\S]{0,200}--keycap-text:\s*#FFFFFF;/,
+  "the dark theme must define solid KeyVisual keycap tokens",
+);
+assert.match(
+  tokensSource,
+  /--keycap-bg:\s*#FAFAFA;[\s\S]{0,200}--keycap-text:\s*#1B1B1B;/,
+  "the light theme must define solid KeyVisual keycap tokens",
+);
+assert.match(
+  tokensSource,
+  /--infobar-info-bg:\s*#34424D;[\s\S]{0,120}--infobar-info-fg:\s*#5FB2F2;/,
+  "the dark theme must define the PowerToys informational InfoBar surface",
+);
+assert.match(
+  tokensSource,
+  /--infobar-info-bg:\s*#D3E7F7;[\s\S]{0,120}--infobar-info-fg:\s*#0063B1;/,
+  "the light theme must define the PowerToys informational InfoBar surface",
 );
 assert.match(
   tokensSource,
@@ -136,7 +168,7 @@ assert.match(
 );
 assert.match(
   indexSource,
-  /\.toggle-pill \{[\s\S]{0,500}transition: transform 0\.2s var\(--motion-decelerate\), width 0\.2s var\(--motion-decelerate\);/,
+  /\.toggle-pill \{[\s\S]{0,500}transition: transform var\(--motion-duration-fast\) var\(--motion-decelerate\), width var\(--motion-duration-fast\) var\(--motion-decelerate\);/,
   "switching segments must slide the shared selection pill across the group",
 );
 assert.match(
@@ -154,7 +186,50 @@ assert.match(
   /\.toggle-box \{[^}]*border: 1px solid var\(--stroke-strong\);/,
   "the segmented switch container must keep a clearly visible border in both themes",
 );
-assert.match(toastSource, /background: var\(--status-bg\);/, "toast bubbles must use the shared theme-aware surface token");
+// A percentage max-width on .set-desc resolves against the element's own
+// unwrapped width, so nearly every description wraps with a short orphan
+// last line even when the card has free space. Descriptions must rely on
+// flex shrink (wrap only under real pressure) plus text-wrap: pretty.
+assert.doesNotMatch(
+  indexSource,
+  /\.set-desc\s*\{[^}]*max-width:\s*\d+%/,
+  "setting descriptions must not cap their width as a percentage of their own unwrapped width",
+);
+assert.match(
+  indexSource,
+  /\.set-desc \{[^}]*text-wrap: pretty;/,
+  "space-constrained setting descriptions must avoid orphan last lines with text-wrap: pretty",
+);
+// The preset list empty state must follow the active interface language
+// instead of showing a hardcoded bilingual string in both languages.
+assert.match(
+  indexSource,
+  /preEmpty: "暂无保存的预设",/,
+  "the Chinese preset empty-state text must come from the i18n dictionary",
+);
+assert.match(
+  indexSource,
+  /preEmpty: "No presets yet",/,
+  "the English preset empty-state text must come from the i18n dictionary",
+);
+assert.match(
+  indexSource,
+  /renderPresets[\s\S]{0,800}lang\.preEmpty/,
+  "the preset list empty state must render the active language's preEmpty string",
+);
+assert.doesNotMatch(
+  indexSource,
+  /暂无保存的预设 \/ NO PRESETS/,
+  "the hardcoded bilingual preset empty-state text must stay removed",
+);
+// The OCR region selector's live size badge hangs below the selection; near
+// the bottom screen edge it must flip above instead of rendering off-screen.
+assert.match(
+  ocrSelectSource,
+  /if \(top \+ height \+ 34 > window\.innerHeight\) \{\s*\n\s*sizeLabel\.style\.bottom = 'auto';\s*\n\s*sizeLabel\.style\.top = '-30px';/,
+  "the OCR size badge must flip above the selection when it would extend past the bottom screen edge",
+);
+assert.match(toastSource, /background: var\(--infobar-info-bg\);/, "toast bubbles must use the shared InfoBar severity surface token");
 assert.match(toastSource, /loadData\('settings\.json'\)/, "toast bubbles must adopt the persisted theme");
 assert.match(
   overlaySource,
@@ -251,19 +326,14 @@ assert.match(
   "text field fills must be theme-aware and recessed at rest",
 );
 assert.match(
-  tokensSource,
-  /--shadow-btn:/,
-  "neutral buttons must carry theme-aware elevation shadows",
+  indexSource,
+  /\.set-btn \{[^}]*min-width: 200px;/,
+  "settings action buttons (unlock, reset position, key binds) must keep the wide PowerToys action-control width",
 );
 assert.match(
   indexSource,
-  /\.set-btn \{[\s\S]{0,400}box-shadow: var\(--shadow-btn\)/,
-  "settings action buttons (unlock, reset position, key binds) must be elevated",
-);
-assert.match(
-  indexSource,
-  /\.set-btn:hover \{ background: var\(--fill-control-hover\); box-shadow: var\(--shadow-btn-hover\); \}/,
-  "settings action buttons must change fill and deepen their compact depth shadow on hover, without lift",
+  /\.set-btn:hover \{ background: var\(--fill-control-hover\); \}/,
+  "settings action buttons must express hover through the fill swap only, with no elevation",
 );
 assert.match(
   indexSource,
@@ -272,23 +342,32 @@ assert.match(
 );
 assert.match(
   indexSource,
-  /\.btn-square\.primary \{[\s\S]{0,300}box-shadow: var\(--shadow-primary\);/,
-  "primary buttons must carry the bevel depth shadow (ring, top light, bottom shade)",
-);
-assert.match(
-  indexSource,
-  /\.btn-square\.primary:hover \{ background-color: var\(--accent-hover\); box-shadow: var\(--shadow-primary-hover\); \}/,
-  "primary button hover must change fill and strengthen the depth shadow, without lift",
-);
-assert.match(
-  indexSource,
   /\.bind-btn\.listening \.bind-subtext \{ color: var\(--text-on-accent\); font-size: 12px; \}/,
   "the chord-capture hint must stay readable on the accent-filled listening button",
 );
+// PowerToys KeyVisual: flat solid keycaps, no skeuomorphic gradient or 3D edge,
+// and no hardcoded legacy blue on text hotkeys.
 assert.match(
   overlaySource,
-  /\.hotkey-text \{[\s\S]{0,300}#1A86D8/,
-  "text-style hotkey hints in the overlay must use the deeper Fluent blue",
+  /\.hotkey-icon \{[^}]*background: var\(--keycap-bg\);[^}]*border: 1px solid var\(--keycap-border\);[^}]*border-radius: var\(--radius-keycap\);/,
+  "overlay keycaps must be flat KeyVisual caps built from the shared keycap tokens",
+);
+assert.doesNotMatch(
+  overlaySource,
+  /linear-gradient\(180deg, #e6e6e6|0 4px 0px|translateY\(-2px\)/,
+  "the skeuomorphic keycap gradient, 3D bottom edge, and lift must stay removed",
+);
+assert.match(
+  overlaySource,
+  /\.hotkey-text \{[^}]*color: var\(--accent-text\);/,
+  "text-style hotkey hints in the overlay must ride the shared accent token",
+);
+assert.doesNotMatch(overlaySource, /#1A86D8/, "the hardcoded legacy hotkey blue must not come back");
+assert.doesNotMatch(overlaySource, /Impact/, "the overlay must use the shared UI font stack, not Impact");
+assert.doesNotMatch(
+  overlaySource,
+  /letter-spacing:\s*1px/,
+  "the overlay must not re-apply global letter-spacing; Fluent text is untracked",
 );
 assert.doesNotMatch(overlaySource, />MOVE</, "the overlay drag bar must not show the MOVE label");
 
@@ -337,7 +416,12 @@ assert.match(
 );
 assert.match(indexSource, /<div id="main-panel">\s*<div class="main-panel-title" id="txt-main-title">/);
 assert.match(indexSource, /mainLoadoutTitle: "当前装配"/);
-assert.match(indexSource, /mainLoadoutTitle: "CURRENT LOADOUT"/);
+assert.match(indexSource, /mainLoadoutTitle: "Current loadout"/);
+// PowerToys copy style: English UI strings are sentence case, never the
+// legacy all-caps terminal styling.
+assert.doesNotMatch(indexSource, /"GAME SETTINGS"/);
+assert.doesNotMatch(indexSource, /"STRATAGEM LIBRARY"/);
+assert.doesNotMatch(indexSource, /"LOADOUT PRESETS"/);
 
 assert.match(
   indexSource,
@@ -515,9 +599,32 @@ assert.match(
   /\.modal-overlay\s*{[\s\S]{0,600}transform: translateY\(14px\);/,
   "modal transitions must include a Fluent-style slide-up entrance",
 );
+// PowerToys settings composition: backgroundless groups with a BodyStrong
+// header above a 2px-spaced list of individually bordered cards, plus
+// ContentDialog-style dialogs with a plain title instead of a tinted band.
 assert.match(
   indexSource,
-  /#global-status\s*{[\s\S]{0,900}visibility:\s*hidden;[\s\S]{0,900}#global-status\.show\s*{[^}]*visibility:\s*visible;/,
+  /\.set-group \{ display: flex; flex-direction: column; gap: 2px; \}\s*\n\s*\.set-group \+ \.set-group \{ margin-top: 32px; \}/,
+  "settings groups must be backgroundless stacks: 2px between cards, 32px above the next group",
+);
+assert.match(
+  indexSource,
+  /\.settings-card \{[^}]*background: var\(--bg-card\);[^}]*border: 1px solid var\(--stroke-control\);[^}]*border-radius: var\(--radius-sm\);[^}]*min-height: 44px;/,
+  "each settings row must be its own SettingsCard-style bordered card",
+);
+assert.doesNotMatch(indexSource, /class="set-row"/, "the divider-separated set-row layout must stay replaced by settings cards");
+assert.match(indexSource, /class="set-title-icon"/, "settings group headers carry a Segoe Fluent icon");
+assert.match(indexSource, /<div class="dialog-title" id="txt-confirm-title">/, "confirm dialogs must use the ContentDialog title layout");
+assert.doesNotMatch(indexSource, /confirm-header|update-header/, "tinted dialog header bands must stay replaced by the plain ContentDialog title");
+assert.match(indexSource, /class="modal-overlay stack-high"/, "the catalog dialog must keep its elevated stacking through the stack class");
+assert.match(
+  indexSource,
+  /#global-status::before \{[\s\S]{0,200}font-family: "Segoe Fluent Icons"/,
+  "the inline status pill must use the InfoBar severity glyph",
+);
+assert.match(
+  indexSource,
+  /#global-status\s*{[\s\S]{0,1200}visibility:\s*hidden;[\s\S]{0,1200}#global-status\.show\s*{[^}]*visibility:\s*visible;/,
   "the hidden status blur layer must be excluded from rendering",
 );
 assert.match(
@@ -970,7 +1077,7 @@ assert.match(
 );
 assert.match(indexSource, /id="btn-reset-overlay-position"[^>]*onclick="resetOverlayPosition\(\)"/);
 assert.match(indexSource, /resetOverlayPosition: "重置位置"/);
-assert.match(indexSource, /resetOverlayPosition: "RESET POSITION"/);
+assert.match(indexSource, /resetOverlayPosition: "Reset position"/);
 assert.match(
   indexSource,
   /window\.resetOverlayPosition = async[\s\S]{0,700}toggleOverlay\(\);[\s\S]{0,400}clearSavedOverlayPosition\(\);[\s\S]{0,600}await window\.handleToggleOverlay\(\);/,

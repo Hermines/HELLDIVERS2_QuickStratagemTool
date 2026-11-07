@@ -49,13 +49,13 @@
             border-bottom: 1px solid var(--divider); z-index: 100; flex-shrink: 0;
         }
         .title-text {
-            color: var(--text-primary); font-size: 12px; font-weight: 600; letter-spacing: 0.2px;
+            color: var(--text-primary); font-size: var(--font-size-caption); font-weight: 600;
         }
         .titlebar-controls { display: flex; height: 100%; -webkit-app-region: no-drag; align-items: center; padding-right: 4px; gap: 4px; }
 
         .lang-btn {
             background: var(--fill-control); border: 1px solid var(--stroke-control); color: var(--text-primary);
-            cursor: pointer; padding: 4px 12px; font-size: 12px; font-weight: 600; border-radius: var(--radius-sm);
+            cursor: pointer; padding: 4px 12px; font-size: var(--font-size-caption); font-weight: 600; border-radius: var(--radius-sm);
             transition: var(--transition); margin-right: 8px;
         }
         .lang-btn:hover { background: var(--fill-control-hover); border-color: var(--stroke-strong); }
@@ -78,48 +78,48 @@
             padding: 12px 8px; border-right: 1px solid var(--divider);
             background: var(--sidebar-bg); overflow-y: auto;
         }
+        /* NavigationView item model: a subtle fill on hover with no border
+           swap, ControlCornerRadius, and a flat accent fill for the primary
+           action — depth comes from the fill swap, never elevation. */
         .sidebar-btn {
             display: flex; align-items: center; gap: 12px; width: 100%;
             background-color: transparent; color: var(--text-primary);
-            border: 1px solid transparent; border-radius: var(--radius-md);
-            padding: 10px 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+            border: 1px solid transparent; border-radius: var(--radius-sm);
+            padding: 10px 12px; font-size: var(--font-size-body); font-weight: 600; cursor: pointer;
             transition: var(--transition); text-align: left; white-space: nowrap;
         }
         .sidebar-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-        .sidebar-btn:hover { background-color: var(--fill-control-hover); border-color: var(--stroke-control); }
+        .sidebar-btn:hover { background-color: var(--fill-control-hover); }
         .sidebar-btn:active { background-color: var(--fill-control-pressed); }
         .sidebar-btn.primary {
             background-color: var(--accent); color: var(--text-on-accent); border-color: transparent;
-            border-top-color: var(--primary-top-light);
-            box-shadow: var(--shadow-primary);
         }
-        .sidebar-btn.primary:hover { background-color: var(--accent-hover); box-shadow: var(--shadow-primary-hover); }
-        .sidebar-btn.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); box-shadow: var(--shadow-btn-pressed); }
+        .sidebar-btn.primary:hover { background-color: var(--accent-hover); }
+        .sidebar-btn.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); }
 
         #main-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 24px; overflow-y: auto; }
         .main-panel-title {
-            color: var(--text-primary); font-size: 20px; font-weight: 600; letter-spacing: 0.1px;
-            display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+            color: var(--text-primary); font-size: var(--font-size-subtitle); font-weight: 600;
+            margin-bottom: 18px;
         }
-        .main-panel-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
 
+        /* WinUI button model: flat fill with a 1px stroke; pressing reads
+           through the fill swap (default -> subtle -> tertiary), never
+           elevation or bevel highlights. */
         .btn-square {
             background-color: var(--fill-control); color: var(--text-primary);
             border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
-            padding: 8px 16px; font-size: 14px; font-weight: 600; cursor: pointer;
+            padding: 8px 16px; font-size: var(--font-size-body); font-weight: 600; cursor: pointer;
             transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: var(--shadow-btn);
         }
-        .btn-square:hover { background-color: var(--fill-control-hover); box-shadow: var(--shadow-btn-hover); }
-        .btn-square:active { background-color: var(--fill-control-pressed); color: var(--text-secondary); box-shadow: var(--shadow-btn-pressed); }
+        .btn-square:hover { background-color: var(--fill-control-hover); }
+        .btn-square:active { background-color: var(--fill-control-pressed); color: var(--text-secondary); }
 
         .btn-square.primary {
             background-color: var(--accent); color: var(--text-on-accent); border-color: transparent;
-            border-top-color: var(--primary-top-light);
-            box-shadow: var(--shadow-primary);
         }
-        .btn-square.primary:hover { background-color: var(--accent-hover); box-shadow: var(--shadow-primary-hover); }
-        .btn-square.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); box-shadow: var(--shadow-btn-pressed); }
+        .btn-square.primary:hover { background-color: var(--accent-hover); }
+        .btn-square.primary:active { background-color: var(--accent-pressed); color: var(--text-on-accent); }
 
         .list-container { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; max-width: 780px; width: 100%; margin: 0 auto; }
 
@@ -127,9 +127,9 @@
             display: flex; align-items: stretch; background-color: var(--bg-card);
             border: 1px solid var(--stroke-control); border-radius: var(--radius-lg);
             height: 76px; transition: var(--transition); position: relative; overflow: hidden;
-            box-shadow: var(--shadow-card); cursor: default;
+            cursor: default;
         }
-        .list-row:hover { border-color: var(--stroke-strong); background-color: var(--bg-card-hover); box-shadow: var(--shadow-card-hover); }
+        .list-row:hover { border-color: var(--stroke-strong); background-color: var(--bg-card-hover); }
         .list-row.dragging {
             transition: none; opacity: 0.9; z-index: 5;
             box-shadow: var(--shadow-flyout); cursor: grabbing;
@@ -138,7 +138,7 @@
         body.is-dragging .list-row { transform: none; }
         /* 跟随鼠标的拖拽行不响应指针，避免悬停效果和意外交互。 */
         body.is-dragging .list-row.dragging { pointer-events: none; }
-        .list-row.drag-over { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow-card-hover); }
+        .list-row.drag-over { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
         body.is-dragging .list-row * { pointer-events: none; }
 
         .list-row.empty {
@@ -172,7 +172,7 @@
             width: 76px; height: 100%; background: var(--fill-control-tertiary);
             border-right: 1px solid var(--divider); display: flex; justify-content: center; align-items: center; padding: 12px; position: relative;
         }
-        .row-icon-box img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35)); }
+        .row-icon-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .btn-remove {
             position: absolute; top: 6px; left: 6px; background: var(--bg-solid-strong); color: var(--text-secondary);
@@ -193,9 +193,9 @@
         .btn-lock.locked:hover { background: var(--danger-soft); color: var(--danger-text); border-color: var(--danger); }
 
         .row-arrows { flex-grow: 1; display: flex; justify-content: flex-start; align-items: center; gap: 10px; padding: 0 24px; }
-        .arrow-img { width: 24px; height: 24px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.35)); }
+        .arrow-img { width: 24px; height: 24px; }
         /* Bundled arrow glyphs are white fills; invert them to a soft gray on the light theme. */
-        html[data-theme="light"] .arrow-img { filter: invert(1) opacity(0.65) drop-shadow(0px 1px 2px rgba(0,0,0,0.2)); }
+        html[data-theme="light"] .arrow-img { filter: invert(1) opacity(0.65); }
 
         .row-bind-box { width: 200px; border-left: 1px solid var(--divider); padding: 10px; display: flex; }
         .bind-btn {
@@ -218,17 +218,20 @@
             z-index: 50; display: flex; flex-direction: column;
             opacity: 0; visibility: hidden; pointer-events: none;
             transform: translateY(14px);
-            transition: opacity 0.24s var(--motion-decelerate), transform 0.24s var(--motion-decelerate), visibility 0s linear 0.24s;
+            transition: opacity var(--motion-duration-fast) var(--motion-decelerate), transform var(--motion-duration-fast) var(--motion-decelerate), visibility 0s linear var(--motion-duration-fast);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); transition-delay: 0s; }
+        /* Stacking: secondary dialogs sit above the modals that spawn them. */
+        .modal-overlay.stack-low { z-index: 60; }
+        .modal-overlay.stack-mid { z-index: 70; }
+        .modal-overlay.stack-high { z-index: 91; }
 
         .modal-header {
             padding: 16px 24px; border-bottom: 1px solid var(--divider); display: flex;
             justify-content: space-between; align-items: center; background: var(--modal-header-bg);
         }
-        .modal-title { font-size: 20px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.1px; display: flex; align-items: center; gap: 10px;}
-        .modal-title::before { content: ''; display: block; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
-        .modal-header .btn-square { flex-grow: 0; padding: 8px 20px; font-size: 14px; }
+        .modal-title { font-size: var(--font-size-subtitle); font-weight: 600; color: var(--text-primary); }
+        .modal-header .btn-square { flex-grow: 0; padding: 8px 20px; font-size: var(--font-size-body); }
 
         #library-modal .modal-header { gap: 16px; flex-wrap: wrap; flex-shrink: 0; }
         .lib-heading { flex: 1; min-width: 260px; }
@@ -242,14 +245,13 @@
         #lib-search-hint { font-size: 14px; font-weight: 600; color: var(--accent-text); margin-top: 10px; display: none; }
 
         .lib-content { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
-        .lib-cat-header { font-size: 14px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--divider); padding-bottom: 8px; letter-spacing: 0.2px;}
+        .lib-cat-header { font-size: var(--font-size-body); font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--divider); padding-bottom: 8px;}
         .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
         .lib-card {
             display: flex; align-items: center; border: 1px solid var(--stroke-control); background: var(--bg-card);
-            border-radius: var(--radius-md); padding: 8px 12px; cursor: pointer; transition: var(--transition); gap: 12px; height: 64px;
-            box-shadow: var(--shadow-card);
+            border-radius: var(--radius-sm); padding: 8px 12px; cursor: pointer; transition: var(--transition); gap: 12px; height: 64px;
         }
-        .lib-card:hover { border-color: var(--stroke-strong); background: var(--bg-card-hover); box-shadow: var(--shadow-card-hover); }
+        .lib-card:hover { border-color: var(--stroke-strong); background: var(--bg-card-hover); }
         .lib-card.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
         .lib-icon { width: 44px; height: 44px; background: var(--fill-control-tertiary); border-radius: var(--radius-sm); border: 1px solid var(--stroke-control); object-fit: contain; padding: 2px;}
         .lib-name { flex-grow: 1; font-size: 14px; font-weight: 400; line-height: 1.2; }
@@ -261,23 +263,33 @@
 
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        .settings-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-width: 800px; margin: 0 auto; width: 100%;}
-        .set-group { background: var(--bg-card); border: 1px solid var(--stroke-control); border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow-card); }
-        /* Windows-Settings style: group headers use the primary text color;
-           accent stays reserved for links and selection indicators. */
-        .set-title { color: var(--text-primary); font-size: 14px; font-weight: 600; margin-bottom: 20px; letter-spacing: 0.2px; display: flex; align-items: center; gap: 8px;}
-        .set-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--divider); }
-        .set-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .set-label { font-size: 14px; color: var(--text-primary); font-weight: 400; display:flex; flex-direction: column; gap: 6px; }
-        .set-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; font-weight: 400; max-width: 85%; }
+        /* PowerToys SettingsGroup/SettingsCard composition: backgroundless
+           groups with a BodyStrong header (32px above via the sibling rule,
+           8px below) followed by a 2px-spaced list of individually bordered
+           4px-radius cards. */
+        .settings-content { padding: 24px; display: flex; flex-direction: column; overflow-y: auto; max-width: 800px; margin: 0 auto; width: 100%;}
+        .set-group { display: flex; flex-direction: column; gap: 2px; }
+        .set-group + .set-group { margin-top: 32px; }
+        /* Group headers use the primary text color; accent stays reserved for
+           links and selection indicators. The 6px margin plus the group's 2px
+           flex gap reproduces the 8px header-to-cards rhythm of the PowerToys
+           SettingsGroup template. */
+        .set-title { color: var(--text-primary); font-size: var(--font-size-body); font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;}
+        .set-title-icon { font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets"; font-size: var(--font-size-title); line-height: 1; }
+        .settings-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--bg-card); border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); padding: 12px 16px; min-height: 44px; }
+        .set-label { font-size: var(--font-size-body); color: var(--text-primary); font-weight: 400; display:flex; flex-direction: column; gap: 6px; }
+        /* No percentage max-width: it resolves against this element's own
+           unwrapped width and orphans the last line of nearly every
+           description. Flex shrink wraps the text only under real pressure. */
+        .set-desc { font-size: var(--font-size-caption); color: var(--text-secondary); line-height: 1.4; font-weight: 400; text-wrap: pretty; }
+        .set-title .set-btn { min-width: 0; margin-left: auto; padding: 6px 12px; min-height: 30px; }
 
         .set-btn {
             background: var(--fill-control); border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
-            color: var(--text-primary); padding: 6px 14px; font-size: 14px; font-weight: 600; cursor: pointer; min-width: 120px; text-align: center; transition: var(--transition);
-            box-shadow: var(--shadow-btn);
+            color: var(--text-primary); padding: 6px 14px; font-size: var(--font-size-body); font-weight: 600; cursor: pointer; min-width: 200px; text-align: center; transition: var(--transition);
         }
-        .set-btn:hover { background: var(--fill-control-hover); box-shadow: var(--shadow-btn-hover); }
-        .set-btn:active { background: var(--fill-control-pressed); color: var(--text-secondary); box-shadow: var(--shadow-btn-pressed); }
+        .set-btn:hover { background: var(--fill-control-hover); }
+        .set-btn:active { background: var(--fill-control-pressed); color: var(--text-secondary); }
         .set-btn.listening { background: var(--accent); color: var(--text-on-accent); border-color: transparent; animation: pulse 1.5s infinite; }
 
         .toggle-box { position: relative; display: flex; background: var(--fill-control-tertiary); border-radius: var(--radius-sm); padding: 3px; border: 1px solid var(--stroke-strong); }
@@ -291,14 +303,14 @@
             background: var(--segment-selected-bg);
             border: 1px solid var(--segment-selected-border);
             box-shadow: var(--segment-selected-shadow);
-            transition: transform 0.2s var(--motion-decelerate), width 0.2s var(--motion-decelerate);
+            transition: transform var(--motion-duration-fast) var(--motion-decelerate), width var(--motion-duration-fast) var(--motion-decelerate);
         }
         .toggle-option.active { color: var(--segment-selected-text); }
 
         .set-input {
             background: var(--bg-input); border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
-            color: var(--text-primary); padding: 8px 14px; font-size: 14px; outline: none; transition: var(--transition);
-            width: 120px; text-align: center; font-weight: 400;
+            color: var(--text-primary); padding: 8px 14px; font-size: var(--font-size-body); outline: none; transition: var(--transition);
+            width: 200px; text-align: left; font-weight: 400;
         }
         /* Windows-Settings-style text fields: recessed (darker) fill at rest,
            focused = same visible neutral border + accent underline + brighter
@@ -321,7 +333,7 @@
         }
 
         .presets-content { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-width: 900px; margin: 0 auto; width: 100%;}
-        .preset-save-bar { display: flex; gap: 12px; background: var(--bg-card); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--stroke-control); box-shadow: var(--shadow-card); }
+        .preset-save-bar { display: flex; gap: 12px; background: var(--bg-card); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--stroke-control); }
         #preset-name-input {
             flex-grow: 1; background: var(--bg-input); border: 1px solid var(--stroke-strong); border-radius: var(--radius-sm);
             color: var(--text-primary); padding: 0 14px; font-size: 14px; outline: none; transition: var(--transition);
@@ -331,12 +343,11 @@
         .preset-list { display: flex; flex-direction: column; gap: 12px; }
         .preset-card {
             border: 1px solid var(--stroke-control); background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px;
-            display: flex; flex-direction: column; gap: 16px; transition: var(--transition); box-shadow: var(--shadow-card);
+            display: flex; flex-direction: column; gap: 16px; transition: var(--transition);
         }
-        .preset-card:hover { border-color: var(--stroke-strong); box-shadow: var(--shadow-card-hover); }
+        .preset-card:hover { border-color: var(--stroke-strong); }
         .preset-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); padding-bottom: 12px;}
-        .preset-name { font-size: 16px; color: var(--text-primary); font-weight: 600; display: flex; align-items: center; gap: 10px;}
-        .preset-name::before { content:''; display:inline-block; width:8px; height:8px; background: var(--accent); border-radius: 50%; }
+        .preset-name { font-size: var(--font-size-title); color: var(--text-primary); font-weight: 600; }
 
         .preset-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;}
         .preset-actions .btn-square { padding: 6px 14px; font-size: 12px; }
@@ -344,39 +355,54 @@
         .preset-icon-mini { width: 40px; height: 40px; background: var(--bg-solid); border: 1px solid var(--stroke-control); border-radius: var(--radius-sm); object-fit: contain; padding: 4px; }
         .preset-icons-preview .preset-icon-mini:hover { border-color: var(--stroke-strong); }
 
+        /* InfoBar model: severity-tinted surface with a leading status glyph.
+           The JS only ever writes textContent, so the glyph lives on ::before
+           and swaps to the critical glyph and surface on the error variant. */
         #global-status {
             position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 30px);
-            background: var(--status-bg); backdrop-filter: blur(20px); color: var(--text-primary);
-            padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: var(--radius-md); z-index: 999;
-            opacity: 0; visibility: hidden; transition: opacity 0.2s var(--motion-decelerate), transform 0.2s var(--motion-decelerate), visibility 0s linear 0.2s; pointer-events: none;
-            box-shadow: var(--shadow-flyout); border: 1px solid var(--stroke-strong);
-            border-left: 3px solid var(--accent);
+            background: var(--infobar-info-bg); backdrop-filter: blur(20px); color: var(--text-primary);
+            padding: 12px 20px 12px 16px; font-size: var(--font-size-body); font-weight: 400; border-radius: var(--radius-sm); z-index: 999;
+            opacity: 0; visibility: hidden; transition: opacity var(--motion-duration-brief) var(--motion-decelerate), transform var(--motion-duration-brief) var(--motion-decelerate), visibility 0s linear var(--motion-duration-brief); pointer-events: none;
+            box-shadow: var(--shadow-flyout); border: 1px solid var(--stroke-control);
+            display: flex; align-items: flex-start; gap: 10px;
             /* Interpolated IPC error strings are unbounded in length: bound the
                pill and wrap like the toast bubble so long fallback errors stay
                inside the window instead of clipping at both edges. */
             max-width: min(calc(100vw - 48px), 640px);
-            text-align: center; line-height: 1.45;
+            text-align: left; line-height: 1.45;
             overflow-wrap: anywhere; word-break: break-word;
         }
+        #global-status::before {
+            content: '\E946';
+            font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
+            font-size: var(--font-size-title); line-height: 1.45;
+            color: var(--infobar-info-fg);
+        }
         #global-status.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
-        #global-status.error { border-left-color: var(--danger); color: var(--danger-text); }
+        #global-status.error { background: var(--danger-solid-bg); color: var(--danger-text); }
+        #global-status.error::before { content: '\E783'; color: var(--danger-text); }
 
+        /* ContentDialog composition: a surface-toned dialog with a
+           subtitle-size title, body copy, a hairline divider, and full-width
+           split commands. Severity is carried by the primary command's color,
+           not by a tinted header band. */
         .confirm-box {
             width: 380px; background: var(--bg-solid-strong); border: 1px solid var(--stroke-strong);
             border-radius: var(--radius-lg); display: flex; flex-direction: column; overflow: hidden;
             box-shadow: var(--shadow-dialog);
             backdrop-filter: blur(40px); margin: auto;
         }
-        .confirm-header { padding: 16px 24px; background: var(--danger-soft); color: var(--danger-text); font-size: 16px; font-weight: 600; text-align: center; border-bottom: 1px solid var(--divider); }
-        .confirm-header.accent { background: var(--accent-soft); color: var(--accent-text); }
-        .confirm-body { padding: 30px 24px; text-align: center; font-size: 14px; color: var(--text-primary); font-weight: 400; line-height: 1.5;}
-        .confirm-footer { display: flex; gap: 12px; padding: 16px 24px; background: var(--fill-control-tertiary); border-top: 1px solid var(--divider); }
+        .confirm-box.wide { width: 430px; max-width: calc(100% - 32px); }
+        .confirm-box.compact { width: 440px; }
+        .dialog-title { padding: 20px 24px 0; font-size: var(--font-size-subtitle); font-weight: 600; color: var(--text-primary); text-align: left; }
+        .dialog-body { padding: 12px 24px 24px; text-align: left; font-size: var(--font-size-body); color: var(--text-primary); font-weight: 400; line-height: 1.5;}
+        .confirm-footer { display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--divider); }
         .confirm-footer .btn-square { flex: 1; padding: 10px; }
-        .update-header { background: var(--accent-soft); color: var(--accent-text); }
+        .import-textarea { width: 100%; height: 100px; resize: none; }
 
-        .btn-danger { background-color: var(--danger); color: white; border-color: transparent; box-shadow: var(--shadow-danger); }
-        .btn-danger:hover { background-color: var(--danger-hover); border-color: transparent; box-shadow: var(--shadow-danger-hover); }
-        .btn-danger:active { color: white; box-shadow: var(--shadow-btn-pressed); }
+        .btn-danger { background-color: var(--danger); color: white; border-color: transparent; }
+        .btn-danger:hover { background-color: var(--danger-hover); border-color: transparent; }
+        .btn-danger:active { color: white; }
 
         .file-upload-box { display: flex; gap: 12px; align-items: center; max-width: 300px; justify-content: flex-end;}
         .file-upload-btn {
@@ -391,7 +417,7 @@
 </head>
 <body>
     <div id="titlebar" data-tauri-drag-region="deep">
-        <div class="title-text" id="txt-app-title">HD2 MACRO TERMINAL</div>
+        <div class="title-text" id="txt-app-title">HD2 Macro Terminal</div>
         <div class="titlebar-controls" data-tauri-drag-region="false">
             <button class="window-btn theme-btn" id="btn-theme" onclick="toggleTheme()" aria-label="切换主题">
                 <svg class="theme-icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
@@ -408,23 +434,23 @@
         <nav id="app-sidebar" aria-label="Main navigation">
             <button class="sidebar-btn" id="btn-top-settings" onclick="openSettings()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span class="sidebar-label">GAME SETTINGS</span>
+                <span class="sidebar-label">Game settings</span>
             </button>
             <button class="sidebar-btn" id="btn-top-presets" onclick="openPresets()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                <span class="sidebar-label">PRESETS</span>
+                <span class="sidebar-label">Presets</span>
             </button>
             <button class="sidebar-btn" id="btn-top-overlay" onclick="handleToggleOverlay()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                <span class="sidebar-label">OVERLAY</span>
+                <span class="sidebar-label">Overlay</span>
             </button>
             <button class="sidebar-btn primary" id="btn-top-lib" onclick="openLibrary()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                <span class="sidebar-label">OPEN LIBRARY</span>
+                <span class="sidebar-label">Open library</span>
             </button>
         </nav>
         <div id="main-panel">
-            <div class="main-panel-title" id="txt-main-title">CURRENT LOADOUT</div>
+            <div class="main-panel-title" id="txt-main-title">Current loadout</div>
             <div class="list-container" id="slots-container"></div>
         </div>
     </div>
@@ -433,12 +459,12 @@
     <div id="library-modal" class="modal-overlay">
         <div class="modal-header">
             <div class="lib-heading">
-                <div class="modal-title" id="txt-lib-title">STRATAGEM LIBRARY</div>
+                <div class="modal-title" id="txt-lib-title">Stratagem library</div>
                 <div class="lib-favorite-hint" id="txt-lib-favorite-hint"></div>
             </div>
             <div style="display: flex; gap: 12px;">
-                <button class="btn-square primary" id="btn-lib-add" onclick="openAddStratModal()">+ ADD CUSTOM</button>
-                <button class="btn-square" id="btn-lib-done" onclick="closeModals()">DONE</button>
+                <button class="btn-square primary" id="btn-lib-add" onclick="openAddStratModal()">+ Add custom</button>
+                <button class="btn-square" id="btn-lib-done" onclick="closeModals()">Done</button>
             </div>
         </div>
         <div class="lib-search-container">
@@ -450,26 +476,26 @@
 
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-header">
-            <div class="modal-title" id="txt-set-title">GAME SETTINGS</div>
-            <button class="btn-square primary" id="btn-set-done" onclick="saveSettings()">SAVE & CLOSE</button>
+            <div class="modal-title" id="txt-set-title">Game settings</div>
+            <button class="btn-square primary" id="btn-set-done" onclick="saveSettings()">Save & close</button>
         </div>
         <div class="settings-content">
             <div class="set-group">
-                <div class="set-title" id="txt-set-overlayTitle">OVERLAY APPEARANCE / 悬浮窗外观</div>
-                <div class="set-row">
+                <div class="set-title"><span class="set-title-icon">&#xE7F4;</span><span id="txt-set-overlayTitle">Overlay appearance / 悬浮窗外观</span></div>
+                <div class="settings-card">
                     <div class="set-label">
                         <span id="txt-set-overlayLabel">If overlay is locked, click here to make it draggable.</span>
                         <span class="set-desc" id="txt-desc-unlock">若悬浮窗处于锁定状态无法拖拽，请点击此处解锁。</span>
                         <span class="set-desc" id="txt-desc-resetPosition">若悬浮窗被拖到屏幕外找不到了，点击此处将其恢复到屏幕内的默认位置。</span>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="set-btn" id="btn-set-unlock" onclick="unlockOverlaySafely()">UNLOCK / 解锁</button>
-                        <button class="set-btn" id="btn-reset-overlay-position" onclick="resetOverlayPosition()">RESET POSITION / 重置位置</button>
+                        <button class="set-btn" id="btn-set-unlock" onclick="unlockOverlaySafely()">Unlock / 解锁</button>
+                        <button class="set-btn" id="btn-reset-overlay-position" onclick="resetOverlayPosition()">Reset position / 重置位置</button>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-opacity">OPACITY / 透明度</span>
+                        <span id="txt-set-opacity">Opacity / 透明度</span>
                         <span class="set-desc" id="txt-desc-opacity">调整游戏内悬浮窗的背景透明度。</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -477,9 +503,9 @@
                         <span id="opacity-val" style="width: 40px; text-align: right; font-size: 14px;">100%</span>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-size">SIZE (W x H) / 宽高尺寸</span>
+                        <span id="txt-set-size">Size (W x H) / 宽高尺寸</span>
                         <span class="set-desc" id="txt-desc-size">自定义悬浮窗在屏幕上的宽和高像素大小。</span>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
@@ -488,17 +514,17 @@
                         <input type="number" id="input-set-h" class="set-input" placeholder="550" style="width: 80px;" min="100" max="800">
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-style">HOTKEY STYLE / 按键样式</span>
+                        <span id="txt-set-style">Hotkey style / 按键样式</span>
                         <span class="set-desc" id="txt-desc-style">悬浮窗内显示的按键是纯文本还是键帽图标风格。</span>
                     </div>
                     <div class="toggle-box">
-                        <div class="toggle-option active" id="style-text" onclick="setOverlayStyle('text')">TEXT (文本)</div>
-                        <div class="toggle-option" id="style-svg" onclick="setOverlayStyle('svg')">ICON (键帽)</div>
+                        <div class="toggle-option active" id="style-text" onclick="setOverlayStyle('text')">Text (文本)</div>
+                        <div class="toggle-option" id="style-svg" onclick="setOverlayStyle('svg')">Icon (键帽)</div>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
                         <span id="txt-set-autoOpenOverlay">启动时自动开启悬浮窗</span>
                         <span class="set-desc" id="txt-desc-autoOpenOverlay">程序启动并加载完成后自动显示悬浮窗，默认关闭。</span>
@@ -508,7 +534,7 @@
                         <div class="toggle-option active" id="auto-open-overlay-off" onclick="setAutoOpenOverlay(false)">关闭</div>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
                         <span id="txt-set-autoLockOverlay">悬浮窗呼出时自动锁定</span>
                         <span class="set-desc" id="txt-desc-autoLockOverlay">每次显示悬浮窗后自动设为不可拖动和鼠标穿透，默认关闭。</span>
@@ -521,24 +547,24 @@
             </div>
 
             <div class="set-group">
-                <div class="set-title" id="txt-set-overlayCtrlTitle">OVERLAY CONTROLS / 悬浮窗控制</div>
-                <div class="set-row">
+                <div class="set-title"><span class="set-title-icon">&#xE70F;</span><span id="txt-set-overlayCtrlTitle">Overlay controls / 悬浮窗控制</span></div>
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ctrlUp">SCROLL UP / 向上选择</span>
+                        <span id="txt-set-ctrlUp">Scroll up / 向上选择</span>
                         <span class="set-desc" id="txt-desc-ovUp">在悬浮窗的战备列表中向上滚动。(留空为默认配置)</span>
                     </div>
                     <button class="set-btn" id="btn-set-ovUp" onclick="startSettingBind('ovUp', event)" oncontextmenu="clearSettingBind('ovUp', event)">WheelUp</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ctrlDown">SCROLL DOWN / 向下选择</span>
+                        <span id="txt-set-ctrlDown">Scroll down / 向下选择</span>
                         <span class="set-desc" id="txt-desc-ovDown">在悬浮窗的战备列表中向下滚动。(留空为默认配置)</span>
                     </div>
                     <button class="set-btn" id="btn-set-ovDown" onclick="startSettingBind('ovDown', event)" oncontextmenu="clearSettingBind('ovDown', event)">WheelDown</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ctrlExec">EXECUTE / 执行选定战备</span>
+                        <span id="txt-set-ctrlExec">Execute / 执行选定战备</span>
                         <span class="set-desc" id="txt-desc-ovExec">一键执行悬浮窗当前选中的战备指令。(留空为默认配置)</span>
                     </div>
                     <button class="set-btn" id="btn-set-ovExec" onclick="startSettingBind('ovExec', event)" oncontextmenu="clearSettingBind('ovExec', event)">MouseMiddle</button>
@@ -547,52 +573,53 @@
 
             <div class="set-group">
                 <div class="set-title">
-                    <span id="txt-set-ocrTitle">OCR AUTO LOADOUT</span>
-                    <button class="set-btn" id="btn-set-ocrHelp" style="margin-left: auto; padding: 6px 12px; min-height: 30px;" onclick="openOcrHelp()">HELP</button>
+                    <span class="set-title-icon">&#xE8FD;</span>
+                    <span id="txt-set-ocrTitle">OCR auto loadout</span>
+                    <button class="set-btn" id="btn-set-ocrHelp" onclick="openOcrHelp()">Help</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ocrRegion">OCR REGION</span>
+                        <span id="txt-set-ocrRegion">OCR region</span>
                         <span class="set-desc" id="txt-desc-ocrRegion">Drag a rectangle over the in-game stratagem list. The region is saved until replaced.</span>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                        <button class="set-btn" id="btn-set-ocrRegion" onclick="startOcrRegionSelect()">SELECT REGION</button>
-                        <span class="set-desc" id="txt-ocr-region-status" style="max-width: 260px; text-align: right;">NOT SET</span>
+                        <button class="set-btn" id="btn-set-ocrRegion" onclick="startOcrRegionSelect()">Select region</button>
+                        <span class="set-desc" id="txt-ocr-region-status" style="max-width: 260px; text-align: right;">Not set</span>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ocrDisplay">OCR SCREEN</span>
+                        <span id="txt-set-ocrDisplay">OCR screen</span>
                         <span class="set-desc" id="txt-desc-ocrDisplay">Select the monitor where the game is running.</span>
                     </div>
                     <select id="select-set-ocrDisplay" class="set-input set-input-wide" onchange="setOcrDisplay(this.value)">
-                        <option value="">PRIMARY SCREEN</option>
+                        <option value="">Primary screen</option>
                     </select>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-ocrHotkey">OCR HOTKEY</span>
+                        <span id="txt-set-ocrHotkey">OCR hotkey</span>
                         <span class="set-desc" id="txt-desc-ocrHotkey">Press this key to recognize the selected screen region and equip matched stratagems.</span>
                     </div>
                     <button class="set-btn" id="btn-set-ocrHotkey" onclick="startSettingBind('ocrHotkey', event)" oncontextmenu="clearSettingBind('ocrHotkey', event)">F8</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-toastEnabled">TOAST NOTIFICATIONS</span>
+                        <span id="txt-set-toastEnabled">Toast notifications</span>
                         <span class="set-desc" id="txt-desc-toastEnabled">Show notification bubbles on the player screen.</span>
                     </div>
                     <div class="toggle-box">
-                        <div class="toggle-option active" id="toast-on" onclick="setToastEnabled(true)">ON</div>
-                        <div class="toggle-option" id="toast-off" onclick="setToastEnabled(false)">OFF</div>
+                        <div class="toggle-option active" id="toast-on" onclick="setToastEnabled(true)">On</div>
+                        <div class="toggle-option" id="toast-off" onclick="setToastEnabled(false)">Off</div>
                     </div>
                 </div>
             </div>
 
             <div class="set-group">
-                <div class="set-title" id="txt-set-loadout">STRATAGEM LOADOUT</div>
-                <div class="set-row">
+                <div class="set-title"><span class="set-title-icon">&#xE71D;</span><span id="txt-set-loadout">Stratagem loadout</span></div>
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-slotCount">LOADOUT SLOTS</span>
+                        <span id="txt-set-slotCount">Loadout slots</span>
                         <span class="set-desc" id="txt-desc-slotCount">Set how many stratagem slots are shown. Max 14.</span>
                     </div>
                     <input type="number" id="input-set-slotCount" class="set-input" placeholder="10" min="1" max="14">
@@ -600,51 +627,51 @@
             </div>
 
             <div class="set-group">
-                <div class="set-title" id="txt-set-menu">STRATAGEM MENU CONTROL</div>
-                <div class="set-row">
+                <div class="set-title"><span class="set-title-icon">&#xE700;</span><span id="txt-set-menu">Stratagem menu control</span></div>
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-menuKey">MENU KEY (DEFAULT CTRL)</span>
+                        <span id="txt-set-menuKey">Menu key (default Ctrl)</span>
                         <span class="set-desc" id="txt-desc-menuKey">你在游戏内用于呼出战备菜单的按键。</span>
                     </div>
                     <button class="set-btn" id="btn-set-menuKey" onclick="startSettingBind('menuKey', event)">ControlLeft</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-menuMode">TRIGGER MODE (HOLD / TOGGLE)</span>
+                        <span id="txt-set-menuMode">Trigger mode (hold / toggle)</span>
                         <span class="set-desc" id="txt-desc-menuMode">游戏内的设定：长按呼出，还是按一次切换状态。</span>
                     </div>
                     <div class="toggle-box">
-                        <div class="toggle-option active" id="mode-hold" onclick="setMenuMode('hold')">HOLD</div>
-                        <div class="toggle-option" id="mode-toggle" onclick="setMenuMode('toggle')">TOGGLE</div>
+                        <div class="toggle-option active" id="mode-hold" onclick="setMenuMode('hold')">Hold</div>
+                        <div class="toggle-option" id="mode-toggle" onclick="setMenuMode('toggle')">Toggle</div>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-directionOnly">DIRECTION INPUT ONLY</span>
+                        <span id="txt-set-directionOnly">Direction input only</span>
                         <span class="set-desc" id="txt-desc-directionOnly">Only type the directional sequence without pressing or releasing the stratagem menu key.</span>
                     </div>
                     <div class="toggle-box">
-                        <div class="toggle-option" id="direction-only-on" onclick="setDirectionOnly(true)">ON</div>
-                        <div class="toggle-option active" id="direction-only-off" onclick="setDirectionOnly(false)">OFF</div>
+                        <div class="toggle-option" id="direction-only-on" onclick="setDirectionOnly(true)">On</div>
+                        <div class="toggle-option active" id="direction-only-off" onclick="setDirectionOnly(false)">Off</div>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-menuDelay">MENU OPEN DELAY / 菜单展开等待 (ms)</span>
+                        <span id="txt-set-menuDelay">Menu open delay / 菜单展开等待 (ms)</span>
                         <span class="set-desc" id="txt-desc-menuDelay">按下呼出键后，等待多少毫秒再开始输入指令。</span>
                     </div>
                     <input type="number" id="input-set-menuDelay" class="set-input" placeholder="100" min="1">
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-pressDelay">PRESS DURATION / 按压时长 (ms)</span>
+                        <span id="txt-set-pressDelay">Press duration / 按压时长 (ms)</span>
                         <span class="set-desc" id="txt-desc-pressDelay">模拟每次按下方向键的持续时间。</span>
                     </div>
                     <input type="number" id="input-set-pressDelay" class="set-input" placeholder="10" min="1">
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-intervalDelay">INTERVAL DELAY / 指令间隔 (ms)</span>
+                        <span id="txt-set-intervalDelay">Interval delay / 指令间隔 (ms)</span>
                         <span class="set-desc" id="txt-desc-intervalDelay">松开上一个按键与按下下一个按键之间的间隔时间。</span>
                     </div>
                     <input type="number" id="input-set-intervalDelay" class="set-input" placeholder="10" min="1">
@@ -652,31 +679,31 @@
             </div>
 
             <div class="set-group">
-                <div class="set-title" id="txt-set-arrows">STRATAGEM INPUT KEYS</div>
-                <div class="set-row">
+                <div class="set-title"><span class="set-title-icon">&#xE765;</span><span id="txt-set-arrows">Stratagem input keys</span></div>
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-up">UP</span>
+                        <span id="txt-set-up">Up</span>
                         <span class="set-desc" id="txt-desc-upKey">游戏内设定的“上”指令键。</span>
                     </div>
                     <button class="set-btn" id="btn-set-upKey" onclick="startSettingBind('upKey', event)">W</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-down">DOWN</span>
+                        <span id="txt-set-down">Down</span>
                         <span class="set-desc" id="txt-desc-downKey">游戏内设定的“下”指令键。</span>
                     </div>
                     <button class="set-btn" id="btn-set-downKey" onclick="startSettingBind('downKey', event)">S</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-left">LEFT</span>
+                        <span id="txt-set-left">Left</span>
                         <span class="set-desc" id="txt-desc-leftKey">游戏内设定的“左”指令键。</span>
                     </div>
                     <button class="set-btn" id="btn-set-leftKey" onclick="startSettingBind('leftKey', event)">A</button>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-set-right">RIGHT</span>
+                        <span id="txt-set-right">Right</span>
                         <span class="set-desc" id="txt-desc-rightKey">游戏内设定的“右”指令键。</span>
                     </div>
                     <button class="set-btn" id="btn-set-rightKey" onclick="startSettingBind('rightKey', event)">D</button>
@@ -688,14 +715,14 @@
 
     <div id="presets-modal" class="modal-overlay">
         <div class="modal-header">
-            <div class="modal-title" id="txt-pre-title">LOADOUT PRESETS</div>
-            <button class="btn-square" id="btn-pre-done" onclick="closeModals()">CLOSE</button>
+            <div class="modal-title" id="txt-pre-title">Loadout presets</div>
+            <button class="btn-square" id="btn-pre-done" onclick="closeModals()">Close</button>
         </div>
         <div class="presets-content">
             <div class="preset-save-bar">
                 <input type="text" id="preset-name-input" placeholder="Enter preset name..." maxlength="20" autocomplete="off">
-                <button class="btn-square primary" id="btn-pre-save" onclick="saveCurrentPreset()" style="flex-grow: 0;">SAVE CURRENT</button>
-                <button class="btn-square" id="btn-pre-import" onclick="openImportModal()" style="flex-grow: 0;">IMPORT CODE</button>
+                <button class="btn-square primary" id="btn-pre-save" onclick="saveCurrentPreset()" style="flex-grow: 0;">Save current</button>
+                <button class="btn-square" id="btn-pre-import" onclick="openImportModal()" style="flex-grow: 0;">Import code</button>
             </div>
             <div class="preset-list" id="preset-list-container"></div>
         </div>
@@ -703,63 +730,63 @@
 
     <div id="confirm-modal" class="modal-overlay">
         <div class="confirm-box">
-            <div class="confirm-header" id="txt-confirm-title">WARNING</div>
-            <div class="confirm-body" id="txt-confirm-msg">确定要删除此预设吗？</div>
+            <div class="dialog-title" id="txt-confirm-title">Warning</div>
+            <div class="dialog-body" id="txt-confirm-msg">确定要删除此预设吗？</div>
             <div class="confirm-footer">
-                <button class="btn-square" id="btn-confirm-cancel" onclick="closeConfirmModal()">CANCEL</button>
-                <button class="btn-square btn-danger" id="btn-confirm-ok" onclick="executeDelete()">DELETE</button>
+                <button class="btn-square" id="btn-confirm-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn-square btn-danger" id="btn-confirm-ok" onclick="executeDelete()">Delete</button>
             </div>
         </div>
     </div>
 
-    <div id="catalog-update-modal" class="modal-overlay" style="z-index: 91;" role="dialog" aria-modal="true" aria-labelledby="txt-catalog-update-title">
-        <div class="confirm-box" style="width: 430px; max-width: calc(100% - 32px);">
-            <div class="confirm-header update-header" id="txt-catalog-update-title">战备数据库已更新</div>
-            <div class="confirm-body" id="txt-catalog-update-msg">已更新至新版本。</div>
+    <div id="catalog-update-modal" class="modal-overlay stack-high" role="dialog" aria-modal="true" aria-labelledby="txt-catalog-update-title">
+        <div class="confirm-box wide">
+            <div class="dialog-title" id="txt-catalog-update-title">战备数据库已更新</div>
+            <div class="dialog-body" id="txt-catalog-update-msg">已更新至新版本。</div>
             <div class="confirm-footer">
                 <button class="btn-square primary" id="btn-catalog-update-ok" onclick="closeCatalogUpdateModal()">知道了</button>
             </div>
         </div>
     </div>
 
-    <div id="import-modal" class="modal-overlay" style="z-index: 70;">
-        <div class="confirm-box" style="width: 440px; padding: 0;">
-            <div class="confirm-header accent" id="txt-import-title">IMPORT PRESET CODE</div>
-            <div class="confirm-body" style="padding: 24px;">
-                <textarea id="import-code-input" class="set-input set-input-wide" style="width: 100%; height: 100px; resize: none; border-radius: 8px;" placeholder="Paste preset code here..."></textarea>
+    <div id="import-modal" class="modal-overlay stack-mid">
+        <div class="confirm-box compact">
+            <div class="dialog-title" id="txt-import-title">Import preset code</div>
+            <div class="dialog-body">
+                <textarea id="import-code-input" class="set-input set-input-wide import-textarea" placeholder="Paste preset code here..."></textarea>
             </div>
             <div class="confirm-footer">
-                <button class="btn-square" id="btn-import-cancel" onclick="closeImportModal()">CANCEL</button>
-                <button class="btn-square primary" id="btn-import-ok" onclick="executeImport()">IMPORT</button>
+                <button class="btn-square" id="btn-import-cancel" onclick="closeImportModal()">Cancel</button>
+                <button class="btn-square primary" id="btn-import-ok" onclick="executeImport()">Import</button>
             </div>
         </div>
     </div>
 
-    <div id="rename-modal" class="modal-overlay" style="z-index: 70;">
-        <div class="confirm-box" style="width: 440px; padding: 0;">
-            <div class="confirm-header accent" id="txt-rename-title">RENAME PRESET</div>
-            <div class="confirm-body" style="padding: 24px;">
-                <input type="text" id="rename-input" class="set-input set-input-wide" style="width: 100%; border-radius: 8px;" placeholder="Enter new name..." maxlength="40" autocomplete="off">
+    <div id="rename-modal" class="modal-overlay stack-mid">
+        <div class="confirm-box compact">
+            <div class="dialog-title" id="txt-rename-title">Rename preset</div>
+            <div class="dialog-body">
+                <input type="text" id="rename-input" class="set-input set-input-wide" style="width: 100%;" placeholder="Enter new name..." maxlength="40" autocomplete="off">
             </div>
             <div class="confirm-footer">
-                <button class="btn-square" id="btn-rename-cancel" onclick="closeRenameModal()">CANCEL</button>
-                <button class="btn-square primary" id="btn-rename-ok" onclick="executeRename()">CONFIRM</button>
+                <button class="btn-square" id="btn-rename-cancel" onclick="closeRenameModal()">Cancel</button>
+                <button class="btn-square primary" id="btn-rename-ok" onclick="executeRename()">Confirm</button>
             </div>
         </div>
     </div>
 
     <div id="global-status">状态提示</div>
     
-    <div id="add-strat-modal" class="modal-overlay" style="z-index: 60;">
+    <div id="add-strat-modal" class="modal-overlay stack-low">
         <div class="modal-header">
-            <div class="modal-title" id="txt-add-title">ADD CUSTOM STRATAGEM</div>
-            <button class="btn-square" id="btn-add-cancel" onclick="closeAddStratModal()">CANCEL</button>
+            <div class="modal-title" id="txt-add-title">Add custom stratagem</div>
+            <button class="btn-square" id="btn-add-cancel" onclick="closeAddStratModal()">Cancel</button>
         </div>
         <div class="settings-content">
             <div class="set-group">
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-cat">CATEGORY / 分类</span>
+                        <span id="txt-add-cat">Category / 分类</span>
                         <span class="set-desc" id="txt-desc-addCat">选择该战备所属的分类库。</span>
                     </div>
                     <select id="add-strat-cat" class="set-input set-input-wide">
@@ -773,50 +800,50 @@
                         <option value="mission" id="opt-cat-mission">任务通用</option>
                     </select>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-icon">ICON (SVG) / 图标</span>
+                        <span id="txt-add-icon">Icon (SVG) / 图标</span>
                         <span class="set-desc" id="txt-desc-addIcon">上传战备图标，推荐使用透明背景的 SVG 或 PNG。</span>
                     </div>
                     <div class="file-upload-box">
                         <img id="add-strat-preview">
                         <label class="file-upload-btn">
-                            <span id="txt-add-upload">CHOOSE FILE</span>
+                            <span id="txt-add-upload">Choose file</span>
                             <input type="file" id="add-strat-icon" accept=".svg, .png, .jpg" style="display: none;" onchange="handleSvgUpload(event)">
                         </label>
                     </div>
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-name-zh">NAME (ZH) / 中文名</span>
+                        <span id="txt-add-name-zh">Name (zh) / 中文名</span>
                         <span class="set-desc" id="txt-desc-addZh">战备在中文界面下的显示名称。</span>
                     </div>
                     <input type="text" id="add-strat-name-zh" class="set-input set-input-wide" placeholder="输入中文名称">
                 </div>
-                <div class="set-row">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-name-en">NAME (EN) / 英文名</span>
+                        <span id="txt-add-name-en">Name (en) / 英文名</span>
                         <span class="set-desc" id="txt-desc-addEn">战备在英文界面下的显示名称。</span>
                     </div>
                     <input type="text" id="add-strat-name-en" class="set-input set-input-wide" placeholder="Enter English name">
                 </div>
-                <div class="set-row" style="border-bottom: none;">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-seq">SEQUENCE / 指令序列</span>
+                        <span id="txt-add-seq">Sequence / 指令序列</span>
                         <span class="set-desc" id="txt-desc-addSeq">请使用 W A S D 字母输入指令，忽略大小写。</span>
                     </div>
                     <input type="text" id="add-strat-seq" class="set-input set-input-wide" placeholder="例如: W A S D">
                 </div>
-                <div class="set-row" style="border-bottom: none;">
+                <div class="settings-card">
                     <div class="set-label">
-                        <span id="txt-add-ocr">OCR MATCH TERMS</span>
+                        <span id="txt-add-ocr">OCR match terms</span>
                         <span class="set-desc" id="txt-desc-addOcr">Use English commas to separate OCR terms.</span>
                     </div>
                     <input type="text" id="add-strat-ocr" class="set-input set-input-wide" placeholder="C4背包, C4 Pack, B/MD C4 背包">
                 </div>
             </div>
-            
-            <button class="btn-square primary" id="btn-add-save" style="margin-top: 10px; width: 100%; height: 50px; font-size: 14px;" onclick="saveCustomStratagem()">SAVE / 保存并添加</button>
+
+            <button class="btn-square primary" id="btn-add-save" style="margin-top: 10px; width: 100%; height: 50px; font-size: 14px;" onclick="saveCustomStratagem()">Save / 保存并添加</button>
             <div class="hint-text" id="txt-add-hint">提示：点击自定义战备卡片上的 × 按钮可将其删除。</div>
         </div>
     </div>
@@ -852,7 +879,7 @@
                 searchPh: "搜索战备名称或外号...", searchHint: "你要找的是不是：",
                 setLoadout: "战备栏位", slotCount: "栏位槽数量", setMenu: "战备菜单控制", setMenuKey: "呼出战备栏按键", setMenuMode: "呼出模式", modeHold: "按住", modeToggle: "切换", directionOnly: "仅输入方向", directionOnlyOn: "开启", directionOnlyOff: "关闭",
                 setArrows: "战备指令输入键位", up: "上", down: "下", left: "左", right: "右", saveClose: "保存并关闭",
-                preTitle: "战备预设管理", btnSaveCurrent: "保存当前装配", phPresetName: "输入预设名称...", btnLoad: "加载", btnDel: "删除",
+                preTitle: "战备预设管理", preEmpty: "暂无保存的预设", btnSaveCurrent: "保存当前装配", phPresetName: "输入预设名称...", btnLoad: "加载", btnDel: "删除",
                 cat_support: "支援武器", cat_orbital: "轨道系", cat_eagle: "飞鹰系", cat_emplacement: "防御系", cat_sentry: "哨戒炮", cat_backpack: "背包", cat_vehicle: "载具", cat_mission: "任务通用",
                 
                 // 口令
@@ -902,47 +929,47 @@
             en: {
                 // UI
                 themeToLight: "Switch to light theme", themeToDark: "Switch to dark theme",
-                btnOverlay: "OVERLAY", setOverlayTitle: "OVERLAY APPEARANCE", setOverlayLabel: "If overlay is locked, click here to make it draggable again.",
-                btnUnlock: "UNLOCK OVERLAY", appTitle: "HD2 Trigger", btnSettings: "GAME SETTINGS", btnPresets: "PRESETS", btnOpenLib: "OPEN LIBRARY", mainLoadoutTitle: "CURRENT LOADOUT",
-                resetOverlayPosition: "RESET POSITION", resetOverlayPositionDesc: "If the overlay was dragged off-screen and cannot be found, click here to restore it to the default on-screen position.", resetOverlayDone: "Overlay position reset", resetOverlayFailed: "Failed to reset overlay position: {error}",
-                emptySlot: "EMPTY SLOT (CLICK TO ADD)", clickToBind: "CLICK TO BIND", waiting: "WAITING...",
-                unboundSub: "NO HOTKEY BOUND", bindSub: "PRESS CHORD, ENTER TO CONFIRM (ESC CANCEL)", boundSub: "RIGHT CLICK TO CLEAR",
-                libTitle: "STRATAGEM LIBRARY", btnDone: "DONE", dragHint: "Hold and drag to reorder",
+                btnOverlay: "Overlay", setOverlayTitle: "Overlay appearance", setOverlayLabel: "If overlay is locked, click here to make it draggable again.",
+                btnUnlock: "Unlock overlay", appTitle: "HD2 Trigger", btnSettings: "Game settings", btnPresets: "Presets", btnOpenLib: "Open library", mainLoadoutTitle: "Current loadout",
+                resetOverlayPosition: "Reset position", resetOverlayPositionDesc: "If the overlay was dragged off-screen and cannot be found, click here to restore it to the default on-screen position.", resetOverlayDone: "Overlay position reset", resetOverlayFailed: "Failed to reset overlay position: {error}",
+                emptySlot: "Empty slot (click to add)", clickToBind: "Click to bind", waiting: "Waiting...",
+                unboundSub: "No hotkey bound", bindSub: "Press chord, Enter to confirm (Esc to cancel)", boundSub: "Right-click to clear",
+                libTitle: "Stratagem library", btnDone: "Done", dragHint: "Hold and drag to reorder",
                 libFavoriteHint: "Right-click to favorite or unfavorite. Favorites are pinned to the top of the library.",
-                cat_favorites: "FAVORITES", libSearchResults: "SEARCH RESULTS", favoriteAdd: "Right-click to favorite", favoriteRemove: "Right-click to unfavorite", favoriteAdded: "Added to favorites", favoriteRemoved: "Removed from favorites",
+                cat_favorites: "Favorites", libSearchResults: "Search results", favoriteAdd: "Right-click to favorite", favoriteRemove: "Right-click to unfavorite", favoriteAdded: "Added to favorites", favoriteRemoved: "Removed from favorites",
                 searchPh: "Search by name...", searchHint: "Did you mean:",
-                setLoadout: "STRATAGEM LOADOUT", slotCount: "LOADOUT SLOTS", setMenu: "STRATAGEM MENU CONTROL", setMenuKey: "MENU KEY", setMenuMode: "TRIGGER MODE (HOLD / TOGGLE)", modeHold: "HOLD", modeToggle: "TOGGLE", directionOnly: "DIRECTION INPUT ONLY", directionOnlyOn: "ON", directionOnlyOff: "OFF",
-                setArrows: "STRATAGEM INPUT KEYS", up: "UP", down: "DOWN", left: "LEFT", right: "RIGHT", saveClose: "SAVE & CLOSE",
-                preTitle: "LOADOUT PRESETS", btnSaveCurrent: "SAVE CURRENT", phPresetName: "Enter preset name...", btnLoad: "LOAD", btnDel: "DELETE",
-                cat_support: "SUPPORT WEAPONS", cat_orbital: "ORBITAL STRIKES", cat_eagle: "EAGLE STRIKES", cat_emplacement: "EMPLACEMENTS", cat_sentry: "SENTRIES", cat_backpack: "BACKPACKS", cat_vehicle: "VEHICLES", cat_mission: "MISSION / GENERAL",
+                setLoadout: "Stratagem loadout", slotCount: "Loadout slots", setMenu: "Stratagem menu control", setMenuKey: "Menu key", setMenuMode: "Trigger mode (hold / toggle)", modeHold: "Hold", modeToggle: "Toggle", directionOnly: "Direction input only", directionOnlyOn: "On", directionOnlyOff: "Off",
+                setArrows: "Stratagem input keys", up: "Up", down: "Down", left: "Left", right: "Right", saveClose: "Save & close",
+                preTitle: "Loadout presets", preEmpty: "No presets yet", btnSaveCurrent: "Save current", phPresetName: "Enter preset name...", btnLoad: "Load", btnDel: "Delete",
+                cat_support: "Support weapons", cat_orbital: "Orbital strikes", cat_eagle: "Eagle strikes", cat_emplacement: "Emplacements", cat_sentry: "Sentries", cat_backpack: "Backpacks", cat_vehicle: "Vehicles", cat_mission: "Mission / general",
                 
                 // 预设口令
-                btnImport: "IMPORT CODE", btnExport: "EXPORT CODE", msgExported: "Preset code copied to clipboard!",
+                btnImport: "Import code", btnExport: "Export code", msgExported: "Preset code copied to clipboard!",
                 msgImportSuccess: "Preset imported successfully!", msgImportFailed: "Import failed: Invalid code format",
-                importTitle: "IMPORT PRESET CODE", importPh: "Paste preset code here...",
+                importTitle: "Import preset code", importPh: "Paste preset code here...",
                 sharePrefix: "I shared a loadout preset code with you, import it in HD2 Trigger to view! ({code})",
-                btnUpdate: "OVERWRITE", btnRename: "RENAME",
-                msgConfirmUpdate: "WARNING: Overwrite this preset with current loadout?",
-                msgPreUpdated: "PRESET OVERWRITTEN SUCCESSFULLY", msgPreRenamed: "PRESET RENAMED SUCCESSFULLY",
-                renameTitle: "RENAME PRESET",
+                btnUpdate: "Overwrite", btnRename: "Rename",
+                msgConfirmUpdate: "Warning: Overwrite this preset with current loadout?",
+                msgPreUpdated: "Preset overwritten successfully", msgPreRenamed: "Preset renamed successfully",
+                renameTitle: "Rename preset",
 
                 // 提示
-                msgFull: "SLOTS FULL ({count}/{count})", msgClear: "HOTKEY CLEARED", msgMacro: "MACRO BOUND:", msgKey: "KEY ASSIGNED:", msgConfirm: "KEY IN USE. REPLACE IT?", msgOcrHotkeyConflict: "This key is already used as the OCR hotkey and cannot be bound to a stratagem.", msgExec: ">>> EXECUTE MACRO", msgSetSaved: "SETTINGS SAVED",
-                msgEnterName: "PLEASE ENTER A PRESET NAME", msgEmptyLoadout: "LOADOUT IS EMPTY", msgPreSaved: "PRESET SAVED SUCCESSFULLY", msgPreLoaded: "PRESET LOADED AND SYNCED", msgConfirmDel: "WARNING: DELETE THIS PRESET?", msgPresetExists: "FAILED: PRESET NAME ALREADY EXISTS!",
-                btnAddCustom: "+ ADD CUSTOM",
-                setMenuDelay: "MENU OPEN DELAY (ms)", setPressDelay: "PRESS DURATION (ms)", setIntervalDelay: "INTERVAL DELAY (ms)",
-                
+                msgFull: "Slots full ({count}/{count})", msgClear: "Hotkey cleared", msgMacro: "Macro bound:", msgKey: "Key assigned:", msgConfirm: "Key in use. Replace it?", msgOcrHotkeyConflict: "This key is already used as the OCR hotkey and cannot be bound to a stratagem.", msgExec: "Executing macro", msgSetSaved: "Settings saved",
+                msgEnterName: "Please enter a preset name", msgEmptyLoadout: "Loadout is empty", msgPreSaved: "Preset saved successfully", msgPreLoaded: "Preset loaded and synced", msgConfirmDel: "Warning: delete this preset?", msgPresetExists: "Failed: preset name already exists!",
+                btnAddCustom: "+ Add custom",
+                setMenuDelay: "Menu open delay (ms)", setPressDelay: "Press duration (ms)", setIntervalDelay: "Interval delay (ms)",
+
                 // 自定义战备
-                addTitle: "ADD CUSTOM STRATAGEM", addCat: "CATEGORY", addIcon: "ICON (.svg)", uploadBtn: "CHOOSE FILE", nameZh: "NAME (ZH)", nameEn: "NAME (EN)",
-                addSeq: "SEQUENCE (USE W A S D)", addOcr: "OCR MATCH TERMS", addSave: "SAVE & ADD", msgInvalidSeq: "Sequence must only contain W, A, S, D", msgFillAll: "Please fill names, category and sequence", msgCustomSaved: "Custom stratagem added!",
-                addHint: "Hint: Click the × button on a custom stratagem card to delete it.", msgConfirmDelCustom: "WARNING: Delete this custom stratagem?",
+                addTitle: "Add custom stratagem", addCat: "Category", addIcon: "Icon (.svg)", uploadBtn: "Choose file", nameZh: "Name (zh)", nameEn: "Name (en)",
+                addSeq: "Sequence (use W A S D)", addOcr: "OCR match terms", addSave: "Save & add", msgInvalidSeq: "Sequence must only contain W, A, S, D", msgFillAll: "Please fill names, category and sequence", msgCustomSaved: "Custom stratagem added!",
+                addHint: "Hint: Click the × button on a custom stratagem card to delete it.", msgConfirmDelCustom: "Warning: delete this custom stratagem?",
                 addNameZhPh: "Enter Chinese name", addNameEnPh: "Enter English name", addSeqPh: "e.g. W A S D", addOcrPh: "e.g. C4背包, C4 Pack, B/MD C4 Backpack",
                 
                 // 悬浮窗
-                ovOpacity: "OPACITY", ovSize: "SIZE (W x H)", ovStyle: "HOTKEY STYLE", ovText: "TEXT", ovIcon: "ICON",
-                autoOpenOverlay: "AUTO-OPEN OVERLAY ON STARTUP", autoOpenOverlayOn: "ON", autoOpenOverlayOff: "OFF",
-                autoLockOverlay: "AUTO-LOCK OVERLAY WHEN SHOWN", autoLockOverlayOn: "ON", autoLockOverlayOff: "OFF",
-                ovCtrlTitle: "OVERLAY CONTROLS", ovCtrlUp: "SCROLL UP", ovCtrlDown: "SCROLL DOWN", ovCtrlExec: "EXECUTE SELECTION",
+                ovOpacity: "Opacity", ovSize: "Size (W x H)", ovStyle: "Hotkey style", ovText: "Text", ovIcon: "Icon",
+                autoOpenOverlay: "Auto-open overlay on startup", autoOpenOverlayOn: "On", autoOpenOverlayOff: "Off",
+                autoLockOverlay: "Auto-lock overlay when shown", autoLockOverlayOn: "On", autoLockOverlayOff: "Off",
+                ovCtrlTitle: "Overlay controls", ovCtrlUp: "Scroll up", ovCtrlDown: "Scroll down", ovCtrlExec: "Execute selection",
                 
                 // 设置说明
                 descUnlock: "Click if the overlay window cannot be dragged.", descOpacity: "Adjust the background transparency of the overlay.", descSize: "Set the width and height of the overlay on screen.", descStyle: "Display hotkeys as plain text or keycap style icons.",
@@ -952,11 +979,11 @@
                 descMenuKey: "The key used to open the stratagem menu in-game.", descMenuMode: "Hold the key to keep menu open, or press once to toggle.", descDirectionOnly: "Only type the directional sequence without pressing or releasing the stratagem menu key.", descMenuDelay: "Time to wait after opening the menu before typing commands.", descPressDelay: "How long each directional key is held down.",
                 descIntervalDelay: "Time between releasing one key and pressing the next.", descUpKey: "In-game directional key mapped to UP.", descDownKey: "In-game directional key mapped to DOWN.", descLeftKey: "In-game directional key mapped to LEFT.", descRightKey: "In-game directional key mapped to RIGHT.",
                 descAddCat: "Select the library category for this stratagem.", descAddIcon: "Upload an icon, SVG or PNG with transparent background recommended.", descAddZh: "Display name in the Chinese interface.", descAddEn: "Display name in the English interface.", descAddSeq: "Use letters W A S D to input sequence, case-insensitive.", descAddOcr: "OCR auto equip only compares these terms. Separate multiple possible OCR spellings with English commas.",
-                catalogUpdateTitle: "STRATAGEM DATABASE UPDATED",
+                catalogUpdateTitle: "Stratagem database updated",
                 catalogUpdateMessage: "Updated to v{version}.",
                 catalogUpdateOk: "OK",
                 ocrHelp: "Help",
-                ocrTitle: "OCR AUTO LOADOUT", ocrRegion: "OCR REGION", ocrSelectRegion: "SELECT REGION", ocrDisplay: "OCR SCREEN", ocrPrimaryDisplay: "PRIMARY SCREEN", ocrHotkey: "OCR HOTKEY", toastEnabled: "TOAST NOTIFICATIONS", toastOn: "ON", toastOff: "OFF", ocrRegionUnset: "NOT SET", ocrRegionSet: "SET: {width} x {height} @ {x},{y}",
+                ocrTitle: "OCR auto loadout", ocrRegion: "OCR region", ocrSelectRegion: "Select region", ocrDisplay: "OCR screen", ocrPrimaryDisplay: "Primary screen", ocrHotkey: "OCR hotkey", toastEnabled: "Toast notifications", toastOn: "On", toastOff: "Off", ocrRegionUnset: "Not set", ocrRegionSet: "Set: {width} x {height} @ {x},{y}",
                 descOcrRegion: "Drag a rectangle over the in-game stratagem text area. OCR will only read this saved region until you replace it.", descOcrDisplay: "Select the monitor where the game is running. The region selector will only appear on that screen.", descOcrHotkey: "Press this hotkey to recognize the selected region and equip stratagems matched against the English and Chinese library names.", descToastEnabled: "Show notification bubbles slightly above the bottom of the player screen.",
                 msgOcrSelectStarted: "Drag on screen to select the OCR region", msgOcrRegionSaved: "OCR region saved", msgOcrNoRegion: "Select an OCR region in settings first", msgOcrRunning: "OCR recognizing...", msgOcrNoText: "OCR did not read any text", msgOcrNoMatch: "No stratagems matched", msgOcrLoaded: "Successfully equipped {count} stratagems", msgOcrNoSpace: "Not enough remaining stratagem slots", msgOcrFailed: "OCR failed: {error}", msgMacroFailed: "Input failed: {error}", msgOverlayFailed: "Overlay operation failed: {error}", msgUnlockFailed: "Could not unlock overlay: {error}", announcementOk: "Got it"
             }
@@ -2108,9 +2135,9 @@
             document.getElementById('txt-set-left').textContent = lang.left;
             document.getElementById('txt-set-right').textContent = lang.right;
             document.getElementById('btn-lang').textContent = currentLang === 'zh' ? 'EN / 中文' : 'ZH / EN';
-            document.getElementById('btn-confirm-cancel').textContent = currentLang === 'zh' ? '取消' : 'CANCEL';
-            document.getElementById('btn-confirm-ok').textContent = currentLang === 'zh' ? '确认' : 'CONFIRM';
-            document.getElementById('txt-confirm-title').textContent = currentLang === 'zh' ? '警告' : 'WARNING';
+            document.getElementById('btn-confirm-cancel').textContent = currentLang === 'zh' ? '取消' : 'Cancel';
+            document.getElementById('btn-confirm-ok').textContent = currentLang === 'zh' ? '确认' : 'Confirm';
+            document.getElementById('txt-confirm-title').textContent = currentLang === 'zh' ? '警告' : 'Warning';
             updateCatalogModalText();
             document.getElementById('txt-pre-title').textContent = lang.preTitle;
             document.getElementById('btn-pre-done').textContent = lang.btnDone;
@@ -2122,13 +2149,13 @@
             document.getElementById('btn-pre-import').textContent = lang.btnImport;
             document.getElementById('txt-import-title').textContent = lang.importTitle;
             document.getElementById('import-code-input').placeholder = lang.importPh;
-            document.getElementById('btn-import-cancel').textContent = currentLang === 'zh' ? '取消' : 'CANCEL';
-            document.getElementById('btn-import-ok').textContent = currentLang === 'zh' ? '导入' : 'IMPORT';
+            document.getElementById('btn-import-cancel').textContent = currentLang === 'zh' ? '取消' : 'Cancel';
+            document.getElementById('btn-import-ok').textContent = currentLang === 'zh' ? '导入' : 'Import';
 
 
             document.getElementById('txt-rename-title').textContent = lang.renameTitle;
-            document.getElementById('btn-rename-cancel').textContent = currentLang === 'zh' ? '取消' : 'CANCEL';
-            document.getElementById('btn-rename-ok').textContent = currentLang === 'zh' ? '确认' : 'CONFIRM';
+            document.getElementById('btn-rename-cancel').textContent = currentLang === 'zh' ? '取消' : 'Cancel';
+            document.getElementById('btn-rename-ok').textContent = currentLang === 'zh' ? '确认' : 'Confirm';
 
 
             document.getElementById('txt-set-overlayTitle').textContent = lang.setOverlayTitle;
@@ -2189,7 +2216,7 @@
             
 
             document.getElementById('txt-add-title').textContent = lang.addTitle;
-            document.getElementById('btn-add-cancel').textContent = currentLang === 'zh' ? '取消' : 'CANCEL';
+            document.getElementById('btn-add-cancel').textContent = currentLang === 'zh' ? '取消' : 'Cancel';
             document.getElementById('txt-add-cat').textContent = lang.addCat;
             document.getElementById('txt-add-icon').textContent = lang.addIcon;
             document.getElementById('txt-add-upload').textContent = lang.uploadBtn;
@@ -2648,7 +2675,7 @@
             if (!select) return;
 
             const selectedId = gameSettings.ocrDisplayId == null ? '' : String(gameSettings.ocrDisplayId);
-            const primaryLabel = i18n[currentLang].ocrPrimaryDisplay || 'PRIMARY SCREEN';
+            const primaryLabel = i18n[currentLang].ocrPrimaryDisplay || 'Primary screen';
             const options = [`<option value="">${primaryLabel}</option>`];
             ocrDisplays.forEach(display => {
                 const bounds = display.bounds || {};
@@ -3260,7 +3287,7 @@
         
         window.renderPresets = () => {
             const container = document.getElementById('preset-list-container'); container.innerHTML = ''; const lang = i18n[currentLang];
-            if (savedPresets.length === 0) { container.innerHTML = `<div style="text-align:center; color: var(--text-secondary); padding: 40px; font-weight: 500;">暂无保存的预设 / NO PRESETS</div>`; return; }
+            if (savedPresets.length === 0) { container.innerHTML = `<div style="text-align:center; color: var(--text-secondary); padding: 40px; font-weight: 500;">${escapeHtml(lang.preEmpty)}</div>`; return; }
             savedPresets.forEach((preset, index) => {
                 const card = document.createElement('div'); card.className = 'preset-card';
                 const previewLoadout = restoreLoadout(preset.loadout, Array.isArray(preset.loadout) ? preset.loadout.length : maxSlots);

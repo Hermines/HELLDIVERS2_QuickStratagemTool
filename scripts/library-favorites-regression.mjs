@@ -133,6 +133,6 @@ assert.deepEqual(plain("gameSettings.favoriteStratagemIds"), []);
 assert.equal(run("stratagemDB.some(s => s.id === 'custom_a')"), false);
 assert.ok(saves.some(save => save.filename === "custom_strats.json" && save.data.length === 0));
 run("currentLang = 'en'; toggleFavoriteStratagem('eagle_a')");
-assert.equal(headers()[0], "FAVORITES");
+assert.equal(headers()[0], "Favorites");
 assert.equal(cards()[0].title, "Right-click to unfavorite");
 console.log("Library favorites: persistence, search, selection, localization, and custom deletion passed.");

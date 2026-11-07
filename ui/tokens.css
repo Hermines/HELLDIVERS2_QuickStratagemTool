@@ -1,11 +1,19 @@
-/* Shared Fluent Design tokens for every window. Dark is the default so
-   surfaces that never opt into a theme (the in-game overlay list, the OCR
-   region selector) keep the dark look. Windows that follow the persisted
-   theme set <html data-theme="light"> at load time. */
+/* Shared Fluent Design tokens for every window, aligned with the WinUI 3
+   design language PowerToys uses (ControlCornerRadius 4, OverlayCornerRadius 8,
+   standard motion durations, flat elevation-free buttons, KeyVisual keycaps).
+   Dark is the default so surfaces that never opt into a theme (the in-game
+   overlay list, the OCR region selector) keep the dark look. Windows that
+   follow the persisted theme set <html data-theme="light"> at load time. */
 :root {
     color-scheme: dark;
 
     --font-ui: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    /* Type ramp: caption 12 / body 14 / title 16 / subtitle 20, matching the
+       WinUI TextBlockStyles (Caption, Body, BodyStrong headings, Title). */
+    --font-size-caption: 12px;
+    --font-size-body: 14px;
+    --font-size-title: 16px;
+    --font-size-subtitle: 20px;
 
     --accent: #4CC2FF;
     --accent-hover: #65CBFF;
@@ -55,43 +63,49 @@
     --segment-selected-border: rgba(255, 255, 255, 0.0698);
     --segment-selected-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
 
+    /* Shadows are reserved for surfaces that genuinely float: overlay rows
+       over game footage, drag previews, flyout bubbles, and dialogs. In-window
+       cards and buttons are flat: fill plus a 1px stroke, like WinUI. */
     --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.13);
-    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.20);
     --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.22);
     --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.37), 0 2px 21px rgba(0, 0, 0, 0.27);
 
-    /* Button depth: compact elevation, a tight 1px tonal ring hugging the
-       border, and a top-light / bottom-shade bevel. No wide blur halos —
-       they read as glow rather than dimension. Pressed swaps the elevation
-       for an inset dip so the key physically travels down. */
-    --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.13), inset 0 -1px 0 rgba(0, 0, 0, 0.45);
-    --shadow-btn-hover: 0 2px 5px rgba(0, 0, 0, 0.40), 0 4px 8px rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(255, 255, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.45);
-    --shadow-btn-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.30), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    /* Primary buttons keep their signature soft accent halo — the lighter
-       touch from the outline-glow era. Only neutral buttons dropped halos.
-       The top highlight is a border color, not an inset shadow: inset
-       shadows start at the padding edge, leaving a 1px gap below the
-       transparent border instead of hugging the top edge. */
-    --primary-top-light: rgba(255, 255, 255, 0.16);
-    --shadow-primary: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 194, 255, 0.30), 0 0 14px rgba(76, 194, 255, 0.16);
-    --shadow-primary-hover: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 194, 255, 0.50), 0 0 22px rgba(76, 194, 255, 0.32);
-    --shadow-danger: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 153, 146, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
-    --shadow-danger-hover: 0 2px 5px rgba(0, 0, 0, 0.40), 0 4px 8px rgba(0, 0, 0, 0.20), 0 0 0 1px rgba(255, 153, 146, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+    /* KeyVisual keycap (PowerToys Common.UI.Controls): a flat solid face with
+       a hairline stroke and 2px corners. Solid instead of the translucent
+       card fill so the cap stays readable over bright game footage. */
+    --keycap-bg: #2B2B2B;
+    --keycap-border: rgba(255, 255, 255, 0.2259);
+    --keycap-text: #FFFFFF;
+
+    /* InfoBar severity surfaces, from PowerToys Settings Themes/Colors.xaml.
+       Error severity reuses the danger tokens above. */
+    --infobar-info-bg: #34424D;
+    --infobar-info-fg: #5FB2F2;
 
     --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(76, 194, 255, 0.05), transparent 62%),
                          linear-gradient(180deg, rgba(255, 255, 255, 0.012), rgba(0, 0, 0, 0.06));
     --select-chevron: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 
+    /* ControlCornerRadius 4 for controls and setting cards, OverlayCornerRadius
+       8 for large feature cards and the window itself, 2 for keycaps. */
     --radius-sm: 4px;
-    --radius-md: 6px;
+    --radius-md: 4px;
     --radius-lg: 8px;
     --window-radius: 8px;
+    --radius-keycap: 2px;
 
     --slider-track: rgba(255, 255, 255, 0.25);
     --slider-thumb-ring: #1C1C1C;
 
+    /* Motion ramp: the WinUI/PowerToys standard durations on the shared
+       fast-out-slow-in curve. Controls use the brief step, state slides use
+       the fast step, and page-level entrances use the normal step. */
+    --motion-duration-very-fast: 83ms;
+    --motion-duration-brief: 167ms;
+    --motion-duration-fast: 187ms;
+    --motion-duration-normal: 333ms;
     --motion-decelerate: cubic-bezier(0.1, 0.9, 0.2, 1);
-    --transition: all 0.16s var(--motion-decelerate);
+    --transition: all 0.167s var(--motion-decelerate);
 }
 
 html[data-theme="light"] {
@@ -119,8 +133,8 @@ html[data-theme="light"] {
     --bg-input: rgba(0, 0, 0, 0.045);
     --bg-input-focus: #FFFFFF;
     /* Light rest fills sit slightly darker than the near-white surfaces:
-       near-white buttons vanish against the cards, and the depth bevels
-       need a non-white base to read. */
+       near-white buttons vanish against the cards, and controls need a
+       non-white base to read. */
     --fill-control: rgba(0, 0, 0, 0.04);
     /* The light hover fill must be a dark tint: near-white fills are
        invisible against the near-white window and card surfaces. */
@@ -149,21 +163,15 @@ html[data-theme="light"] {
     --segment-selected-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
 
     --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.09);
     --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
     --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.19), 0 2px 21px rgba(0, 0, 0, 0.14);
 
-    /* Light-theme bevels are subtler by nature: the ring and the bottom
-       inner shade carry most of the dimension on near-white surfaces. The
-       primary bevel shades toward the accent's own dark blue. */
-    --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.10), 0 2px 5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.10);
-    --shadow-btn-hover: 0 2px 5px rgba(0, 0, 0, 0.13), 0 4px 8px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(0, 0, 0, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.11);
-    --shadow-btn-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.05);
-    --primary-top-light: rgba(255, 255, 255, 0.16);
-    --shadow-primary: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 95, 184, 0.22), 0 0 12px rgba(0, 95, 184, 0.12);
-    --shadow-primary-hover: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 95, 184, 0.40), 0 0 20px rgba(0, 95, 184, 0.22);
-    --shadow-danger: 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(196, 43, 28, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -2px 0 rgba(90, 15, 8, 0.38);
-    --shadow-danger-hover: 0 2px 5px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(196, 43, 28, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -2px 0 rgba(90, 15, 8, 0.38);
+    --keycap-bg: #FAFAFA;
+    --keycap-border: rgba(0, 0, 0, 0.3311);
+    --keycap-text: #1B1B1B;
+
+    --infobar-info-bg: #D3E7F7;
+    --infobar-info-fg: #0063B1;
 
     --window-bg-layers: radial-gradient(1100px 460px at 20% -12%, rgba(0, 95, 184, 0.035), transparent 62%),
                          linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
