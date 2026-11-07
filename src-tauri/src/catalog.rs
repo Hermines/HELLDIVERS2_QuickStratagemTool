@@ -110,23 +110,38 @@ pub struct ClientItem {
 }
 
 pub fn load_cached(data_dir: &Path) -> Result<Option<CatalogPayload>, String> {
+    cached_payload(data_dir, &production_key()?)
+}
+
+fn cached_payload(data_dir: &Path, key: &VerifyingKey) -> Result<Option<CatalogPayload>, String> {
     let primary = data_dir.join(CACHE_FILENAME);
     let backup = primary.with_extension("json.backup");
     if primary.is_file() {
-        match load_envelope(&primary) {
-            Ok(payload) => return Ok(Some(payload)),
+        match load_envelope(&primary, key) {
+            Ok(payload) => return Ok(usable_cached_payload(payload)),
             Err(primary_error) if backup.is_file() => {
-                return load_envelope(&backup).map(Some).map_err(|backup_error| {
-                    format!("Catalog cache and backup are invalid: {primary_error}; {backup_error}")
-                });
+                return load_envelope(&backup, key)
+                    .map(usable_cached_payload)
+                    .map_err(|backup_error| {
+                        format!(
+                            "Catalog cache and backup are invalid: {primary_error}; {backup_error}"
+                        )
+                    });
             }
             Err(error) => return Err(format!("Catalog cache is invalid: {error}")),
         }
     }
     if backup.is_file() {
-        return load_envelope(&backup).map(Some);
+        return load_envelope(&backup, key).map(usable_cached_payload);
     }
     Ok(None)
+}
+
+/// A cached catalog older than the bundled catalog cannot contain anything the
+/// bundled catalog lacks, so it is ignored and the bundled data takes over
+/// until the update server publishes a strictly newer version.
+fn usable_cached_payload(payload: CatalogPayload) -> Option<CatalogPayload> {
+    (payload.catalog_version >= BUNDLED_CATALOG_VERSION).then_some(payload)
 }
 
 pub fn check_for_update(data_dir: &Path) -> Result<Option<CatalogPayload>, String> {
@@ -388,7 +403,7 @@ fn validate_icon(icon: CatalogIcon) -> Result<String, String> {
     }
 }
 
-fn load_envelope(path: &Path) -> Result<CatalogPayload, String> {
+fn load_envelope(path: &Path, key: &VerifyingKey) -> Result<CatalogPayload, String> {
     let metadata =
         fs::metadata(path).map_err(|error| format!("Cannot inspect catalog cache: {error}"))?;
     if metadata.len() == 0 || metadata.len() > MAX_CACHE_BYTES {
@@ -400,14 +415,14 @@ fn load_envelope(path: &Path) -> Result<CatalogPayload, String> {
     let catalog_bytes = general_purpose::STANDARD
         .decode(envelope.catalog_base64)
         .map_err(|error| format!("Cached catalog encoding is invalid: {error}"))?;
-    verify_bundle(&envelope.manifest, &catalog_bytes, &production_key()?)
+    verify_bundle(&envelope.manifest, &catalog_bytes, key)
 }
 
 fn save_envelope(data_dir: &Path, manifest: Manifest, catalog_bytes: &[u8]) -> Result<(), String> {
     fs::create_dir_all(data_dir)
         .map_err(|error| format!("Cannot create catalog cache directory: {error}"))?;
     let path = data_dir.join(CACHE_FILENAME);
-    let keep_backup = path.is_file() && load_envelope(&path).is_ok();
+    let keep_backup = path.is_file() && load_envelope(&path, &production_key()?).is_ok();
     if path.is_file() && !keep_backup {
         let quarantine = path.with_extension("json.corrupt");
         let _ = fs::remove_file(&quarantine);
@@ -431,13 +446,13 @@ fn save_envelope(data_dir: &Path, manifest: Manifest, catalog_bytes: &[u8]) -> R
 mod tests {
     use super::*;
     use ed25519_dalek::{Signer, SigningKey};
+    use std::time::{SystemTime, UNIX_EPOCH};
 
-    fn signed_fixture() -> (Manifest, Vec<u8>, VerifyingKey) {
-        let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    fn signed_catalog_bytes(signing: &SigningKey, catalog_version: u64) -> (Vec<u8>, Manifest) {
         let published_at = "2026-08-20T00:00:00.000Z";
         let catalog = serde_json::json!({
             "schemaVersion": 1,
-            "catalogVersion": 2,
+            "catalogVersion": catalog_version,
             "publishedAt": published_at,
             "minAppVersion": env!("CARGO_PKG_VERSION"),
             "items": [{
@@ -453,20 +468,101 @@ mod tests {
             }]
         });
         let bytes = serde_json::to_vec(&catalog).unwrap();
-        let digest = Sha256::digest(&bytes);
         let manifest = Manifest {
             schema_version: 1,
-            catalog_version: 2,
+            catalog_version,
             published_at: published_at.to_owned(),
             min_app_version: env!("CARGO_PKG_VERSION").to_owned(),
             item_count: 1,
-            sha256: digest.iter().map(|byte| format!("{byte:02x}")).collect(),
+            sha256: Sha256::digest(&bytes)
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect(),
             signature: general_purpose::STANDARD.encode(signing.sign(&bytes).to_bytes()),
             signing_algorithm: SIGNING_ALGORITHM.to_owned(),
             key_id: SIGNING_KEY_ID.to_owned(),
-            catalog_path: "/api/v1/stratagems/catalog/2".to_owned(),
+            catalog_path: format!("/api/v1/stratagems/catalog/{catalog_version}"),
         };
+        (bytes, manifest)
+    }
+
+    fn signed_fixture() -> (Manifest, Vec<u8>, VerifyingKey) {
+        let signing = SigningKey::from_bytes(&[7_u8; 32]);
+        let (bytes, manifest) = signed_catalog_bytes(&signing, 2);
         (manifest, bytes, signing.verifying_key())
+    }
+
+    fn cache_envelope_bytes(signing: &SigningKey, catalog_version: u64) -> Vec<u8> {
+        let (bytes, manifest) = signed_catalog_bytes(signing, catalog_version);
+        let envelope = CacheEnvelope {
+            manifest,
+            catalog_base64: general_purpose::STANDARD.encode(bytes),
+        };
+        serde_json::to_vec(&envelope).unwrap()
+    }
+
+    fn unique_cache_dir(label: &str) -> std::path::PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system clock should be after epoch")
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!(
+            "hd2-macro-terminal-rust-catalog-{label}-{unique}-{}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&dir).expect("test directory should be creatable");
+        dir
+    }
+
+    #[test]
+    fn ignores_a_cached_catalog_older_than_the_bundled_version() {
+        let signing = SigningKey::from_bytes(&[9_u8; 32]);
+        let dir = unique_cache_dir("stale");
+        fs::write(
+            dir.join(CACHE_FILENAME),
+            cache_envelope_bytes(&signing, BUNDLED_CATALOG_VERSION - 1),
+        )
+        .unwrap();
+        let loaded = cached_payload(&dir, &signing.verifying_key())
+            .expect("a stale but valid cache should not be an error");
+        assert!(
+            loaded.is_none(),
+            "a stale cache must fall back to the bundled catalog"
+        );
+        fs::remove_dir_all(dir).expect("test directory should be removable");
+    }
+
+    #[test]
+    fn serves_a_cached_catalog_at_the_bundled_version() {
+        let signing = SigningKey::from_bytes(&[10_u8; 32]);
+        let dir = unique_cache_dir("current");
+        fs::write(
+            dir.join(CACHE_FILENAME),
+            cache_envelope_bytes(&signing, BUNDLED_CATALOG_VERSION),
+        )
+        .unwrap();
+        let loaded = cached_payload(&dir, &signing.verifying_key())
+            .expect("a current cache should load without errors")
+            .expect("a current cache should still be served");
+        assert_eq!(loaded.catalog_version, BUNDLED_CATALOG_VERSION);
+        fs::remove_dir_all(dir).expect("test directory should be removable");
+    }
+
+    #[test]
+    fn falls_back_to_a_current_backup_when_the_primary_is_invalid() {
+        let signing = SigningKey::from_bytes(&[11_u8; 32]);
+        let dir = unique_cache_dir("backup");
+        fs::write(dir.join(CACHE_FILENAME), b"not json").unwrap();
+        fs::write(
+            dir.join(CACHE_FILENAME).with_extension("json.backup"),
+            cache_envelope_bytes(&signing, BUNDLED_CATALOG_VERSION),
+        )
+        .unwrap();
+        let loaded = cached_payload(&dir, &signing.verifying_key())
+            .expect("an invalid primary with a usable backup should not be an error")
+            .expect("a current backup should be served when the primary is invalid");
+        assert_eq!(loaded.catalog_version, BUNDLED_CATALOG_VERSION);
+        fs::remove_dir_all(dir).expect("test directory should be removable");
     }
 
     #[test]
