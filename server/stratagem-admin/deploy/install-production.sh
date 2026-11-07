@@ -102,6 +102,7 @@ HD2_BUNDLED_ICONS=/opt/hd2-stratagem-admin/current/bundled-icons
 HD2_SEED_CATALOG=/opt/hd2-stratagem-admin/current/data/seed-catalog.json
 HD2_PUBLIC_ORIGIN=https://update.unsnow.online
 HD2_ADMIN_DISABLED=1
+HD2_ADMIN_DEV_BYPASS=0
 ENV
   chmod 0600 "$env_file"
   env_changed=1
