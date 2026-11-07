@@ -456,7 +456,7 @@ assert.match(
 // body copy must not repeat it.
 assert.doesNotMatch(
   indexSource,
-  /msgConfirm(?:Del|DelCustom|Update): "(?:警告：|WARNING: )/,
+  /msgConfirm(?:Del|DelCustom|Update): "(?:警告：|warning: )/i,
   "confirm dialog bodies must not repeat the WARNING/警告 prefix already carried by the dialog header",
 );
 assert.doesNotMatch(
