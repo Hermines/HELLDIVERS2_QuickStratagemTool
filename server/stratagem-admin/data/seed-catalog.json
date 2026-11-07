@@ -920,6 +920,65 @@
       "order": 32
     },
     {
+      "id": "las44",
+      "grp": "support",
+      "name": {
+        "zh": "LAS-44 新星",
+        "en": "LAS-44 Nova"
+      },
+      "aliases": [
+        "激光炮",
+        "新星"
+      ],
+      "ocr": [
+        "新星"
+      ],
+      "seq": [
+        "S",
+        "A",
+        "D",
+        "S",
+        "S"
+      ],
+      "icon": {
+        "kind": "bundled",
+        "value": "LAS-44_Nova_Stratagem_Icon.svg"
+      },
+      "enabled": true,
+      "order": 33
+    },
+    {
+      "id": "amw20apex",
+      "grp": "support",
+      "name": {
+        "zh": "AMW-20 尖峰",
+        "en": "AMW-20 Apex"
+      },
+      "aliases": [
+        "背包狙",
+        "尖峰",
+        "大狙",
+        "狙"
+      ],
+      "ocr": [
+        "尖峰"
+      ],
+      "seq": [
+        "S",
+        "A",
+        "A",
+        "W",
+        "S",
+        "A"
+      ],
+      "icon": {
+        "kind": "bundled",
+        "value": "AMW-20_Apex_Stratagem_Icon.svg"
+      },
+      "enabled": true,
+      "order": 34
+    },
+    {
       "id": "orb_precision",
       "grp": "orbital",
       "name": {
@@ -942,7 +1001,7 @@
         "value": "Orbital_Precision_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 33
+      "order": 35
     },
     {
       "id": "orb_gatling",
@@ -969,7 +1028,7 @@
         "value": "Orbital_Gatling_Barrage_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 34
+      "order": 36
     },
     {
       "id": "orb_gas",
@@ -995,7 +1054,7 @@
         "value": "Orbital_Gas_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 35
+      "order": 37
     },
     {
       "id": "orb_120",
@@ -1021,7 +1080,7 @@
         "value": "Orbital_120mm_HE_Barrage_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 36
+      "order": 38
     },
     {
       "id": "orb_airburst",
@@ -1046,7 +1105,7 @@
         "value": "Orbital_Airburst_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 37
+      "order": 39
     },
     {
       "id": "orb_smoke",
@@ -1072,7 +1131,7 @@
         "value": "Orbital_Smoke_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 38
+      "order": 40
     },
     {
       "id": "orb_ems",
@@ -1098,7 +1157,7 @@
         "value": "Orbital_EMS_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 39
+      "order": 41
     },
     {
       "id": "orb_380",
@@ -1125,7 +1184,7 @@
         "value": "Orbital_380mm_HE_Barrage_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 40
+      "order": 42
     },
     {
       "id": "orb_walking",
@@ -1153,7 +1212,7 @@
         "value": "Orbital_Walking_Barrage_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 41
+      "order": 43
     },
     {
       "id": "orb_laser",
@@ -1180,7 +1239,7 @@
         "value": "Orbital_Laser_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 42
+      "order": 44
     },
     {
       "id": "orb_napalm",
@@ -1208,7 +1267,7 @@
         "value": "Orbital_Napalm_Barrage_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 43
+      "order": 45
     },
     {
       "id": "orb_railcannon",
@@ -1235,7 +1294,7 @@
         "value": "Orbital_Railcannon_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 44
+      "order": 46
     },
     {
       "id": "eagle_strafing",
@@ -1261,7 +1320,7 @@
         "value": "Eagle_Strafing_Run_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 45
+      "order": 47
     },
     {
       "id": "eagle_airstrike",
@@ -1288,7 +1347,7 @@
         "value": "Eagle_Airstrike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 46
+      "order": 48
     },
     {
       "id": "eagle_cluster",
@@ -1316,7 +1375,7 @@
         "value": "Eagle_Cluster_Bomb_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 47
+      "order": 49
     },
     {
       "id": "eagle_smoke",
@@ -1342,7 +1401,7 @@
         "value": "Eagle_Smoke_Strike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 48
+      "order": 50
     },
     {
       "id": "eagle_napalm",
@@ -1368,7 +1427,7 @@
         "value": "Eagle_Napalm_Airstrike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 49
+      "order": 51
     },
     {
       "id": "eagle_110",
@@ -1395,7 +1454,7 @@
         "value": "Eagle_110mm_Rocket_Pods_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 50
+      "order": 52
     },
     {
       "id": "eagle_500kg",
@@ -1423,7 +1482,7 @@
         "value": "Eagle_500kg_Bomb_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 51
+      "order": 53
     },
     {
       "id": "eagle_gas",
@@ -1453,7 +1512,7 @@
         "value": "Eagle_Gas_Airstrike_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 52
+      "order": 54
     },
     {
       "id": "emp_mine_ap",
@@ -1479,7 +1538,7 @@
         "value": "Anti-Personnel_Minefield_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 53
+      "order": 55
     },
     {
       "id": "emp_mine_inc",
@@ -1506,7 +1565,7 @@
         "value": "Incendiary_Mines_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 54
+      "order": 56
     },
     {
       "id": "emp_mine_at",
@@ -1532,7 +1591,7 @@
         "value": "Anti-Tank_Mines_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 55
+      "order": 57
     },
     {
       "id": "emp_shield",
@@ -1560,7 +1619,7 @@
         "value": "Shield_Generator_Relay_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 56
+      "order": 58
     },
     {
       "id": "emp_hmg",
@@ -1588,7 +1647,7 @@
         "value": "HMG_Emplacement_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 57
+      "order": 59
     },
     {
       "id": "emp_grenadier",
@@ -1615,7 +1674,7 @@
         "value": "Grenadier_Battlement_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 58
+      "order": 60
     },
     {
       "id": "emp_mine_gas",
@@ -1641,7 +1700,7 @@
         "value": "Gas_Mines_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 59
+      "order": 61
     },
     {
       "id": "emp_at",
@@ -1669,7 +1728,7 @@
         "value": "Anti-Tank_Emplacement_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 60
+      "order": 62
     },
     {
       "id": "sen_mg",
@@ -1696,7 +1755,7 @@
         "value": "Machine_Gun_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 61
+      "order": 63
     },
     {
       "id": "sen_gatling",
@@ -1722,7 +1781,7 @@
         "value": "Gatling_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 62
+      "order": 64
     },
     {
       "id": "sen_ac",
@@ -1750,7 +1809,7 @@
         "value": "Autocannon_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 63
+      "order": 65
     },
     {
       "id": "sen_mortar",
@@ -1777,7 +1836,7 @@
         "value": "Mortar_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 64
+      "order": 66
     },
     {
       "id": "sen_rocket",
@@ -1804,7 +1863,7 @@
         "value": "Rocket_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 65
+      "order": 67
     },
     {
       "id": "sen_tesla",
@@ -1833,7 +1892,7 @@
         "value": "Tesla_Tower_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 66
+      "order": 68
     },
     {
       "id": "sen_ems",
@@ -1860,7 +1919,7 @@
         "value": "EMS_Mortar_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 67
+      "order": 69
     },
     {
       "id": "sen_flame",
@@ -1888,7 +1947,7 @@
         "value": "Flame_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 68
+      "order": 70
     },
     {
       "id": "sen_laser",
@@ -1916,7 +1975,7 @@
         "value": "Laser_Sentry_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 69
+      "order": 71
     },
     {
       "id": "sen_gas",
@@ -1943,7 +2002,7 @@
         "value": "AGM-17_Gas_Mortar_Sentry.svg"
       },
       "enabled": true,
-      "order": 70
+      "order": 72
     },
     {
       "id": "pack_supply",
@@ -1972,7 +2031,7 @@
         "value": "Supply_Pack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 71
+      "order": 73
     },
     {
       "id": "pack_jump",
@@ -2000,7 +2059,7 @@
         "value": "Jump_Pack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 72
+      "order": 74
     },
     {
       "id": "pack_ballistic",
@@ -2028,7 +2087,7 @@
         "value": "Ballistic_Shield_Backpack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 73
+      "order": 75
     },
     {
       "id": "pack_guard",
@@ -2056,7 +2115,7 @@
         "value": "Guard_Dog_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 74
+      "order": 76
     },
     {
       "id": "pack_rover",
@@ -2084,7 +2143,7 @@
         "value": "Rover_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 75
+      "order": 77
     },
     {
       "id": "pack_shield",
@@ -2113,7 +2172,7 @@
         "value": "Shield_Generator_Pack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 76
+      "order": 78
     },
     {
       "id": "pack_dir_shield",
@@ -2141,7 +2200,7 @@
         "value": "Directional_Shield_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 77
+      "order": 79
     },
     {
       "id": "pack_hotdog",
@@ -2170,7 +2229,7 @@
         "value": "Hot_Dog_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 78
+      "order": 80
     },
     {
       "id": "pack_portable_hb",
@@ -2197,7 +2256,7 @@
         "value": "Portable_Hellbomb_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 79
+      "order": 81
     },
     {
       "id": "pack_k9",
@@ -2225,7 +2284,7 @@
         "value": "K-9_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 80
+      "order": 82
     },
     {
       "id": "pack_hover",
@@ -2253,7 +2312,7 @@
         "value": "Hover_Pack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 81
+      "order": 83
     },
     {
       "id": "pack_dog_breath",
@@ -2281,7 +2340,7 @@
         "value": "Dog_Breath_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 82
+      "order": 84
     },
     {
       "id": "pack_warp",
@@ -2309,7 +2368,7 @@
         "value": "Warp_Pack_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 83
+      "order": 85
     },
     {
       "id": "veh_patriot",
@@ -2338,7 +2397,7 @@
         "value": "Patriot_Exosuit_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 84
+      "order": 86
     },
     {
       "id": "veh_emancipator",
@@ -2367,7 +2426,7 @@
         "value": "Emancipator_Exosuit_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 85
+      "order": 87
     },
     {
       "id": "veh_Breakthrough",
@@ -2396,7 +2455,7 @@
         "value": "Breakthrough_Exosuit_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 86
+      "order": 88
     },
     {
       "id": "veh_Lumberer",
@@ -2425,7 +2484,7 @@
         "value": "Lumberer_Exosuit_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 87
+      "order": 89
     },
     {
       "id": "veh_recon",
@@ -2455,7 +2514,7 @@
         "value": "Fast_Recon_Vehicle_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 88
+      "order": 90
     },
     {
       "id": "veh_supply",
@@ -2485,7 +2544,7 @@
         "value": "Supply_FRV_Stratagem_Icon_Background.svg"
       },
       "enabled": true,
-      "order": 89
+      "order": 91
     },
     {
       "id": "veh_incinerator",
@@ -2515,7 +2574,7 @@
         "value": "Incinerator_FRV_Stratagem_Icon_Background.svg"
       },
       "enabled": true,
-      "order": 90
+      "order": 92
     },
     {
       "id": "veh_bastion",
@@ -2547,7 +2606,7 @@
         "value": "Bastion_MK_XVI_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 91
+      "order": 93
     },
     {
       "id": "veh_fb",
@@ -2579,7 +2638,7 @@
         "value": "Maelstrom_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 92
+      "order": 94
     },
     {
       "id": "mis_sos",
@@ -2604,7 +2663,7 @@
         "value": "SOS_Beacon_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 93
+      "order": 95
     },
     {
       "id": "mis_resupply",
@@ -2628,7 +2687,7 @@
         "value": "Resupply_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 94
+      "order": 96
     },
     {
       "id": "mis_reinforce",
@@ -2654,7 +2713,7 @@
         "value": "Reinforce_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 95
+      "order": 97
     },
     {
       "id": "mis_hellbomb",
@@ -2683,7 +2742,7 @@
         "value": "Hellbomb_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 96
+      "order": 98
     },
     {
       "id": "mis_flag",
@@ -2707,7 +2766,7 @@
         "value": "Super_Earth_Flag_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 97
+      "order": 99
     },
     {
       "id": "mis_eagleresupply",
@@ -2733,7 +2792,7 @@
         "value": "Eagle_Rearm_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 98
+      "order": 100
     },
     {
       "id": "mis_seafartillery",
@@ -2757,7 +2816,7 @@
         "value": "SEAF_Artillery_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 99
+      "order": 101
     },
     {
       "id": "mis_callinsys",
@@ -2785,7 +2844,7 @@
         "value": "Call_In_Super_Destroyer_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 100
+      "order": 102
     },
     {
       "id": "mis_cargo",
@@ -2811,7 +2870,7 @@
         "value": "Cargo_Container_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 101
+      "order": 103
     },
     {
       "id": "mis_updd",
@@ -2837,7 +2896,7 @@
         "value": "Start_Upload_Stratagem_Icon.svg"
       },
       "enabled": true,
-      "order": 102
+      "order": 104
     }
   ]
 }
