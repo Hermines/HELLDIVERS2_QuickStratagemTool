@@ -765,7 +765,12 @@ fn snapshot_pressed_inputs() -> PressedInputs {
 fn reconcile_pressed_inputs(capture_all: bool, current_key: &str) {
     if capture_all {
         for virtual_key in 0_u32..=254 {
-            if matches!(virtual_key, 0x10..=0x12) {
+            // Generic modifier VKs are shared by both physical sides, and
+            // VK_RETURN is shared by main Enter and NumpadEnter. Reconciling
+            // them from the shared async state would cross-map the exact
+            // per-key bits tracked from hook edges, so both stay edge-only
+            // here just like in shortcut calibration.
+            if matches!(virtual_key, 0x0d | 0x10..=0x12) {
                 continue;
             }
             let Some(name) = key_name(virtual_key, 0, 0) else {
@@ -1723,6 +1728,29 @@ mod tests {
         assert!(!numpad_enter.required.contains(pressed_inputs(&["Enter"])));
         assert_eq!(main_calibration, InputFilter::default());
         assert_eq!(numpad_calibration, InputFilter::default());
+    }
+
+    #[test]
+    fn capture_all_reconcile_leaves_enter_bits_to_exact_edges() {
+        let _state_guard = FILTER_UPDATE_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        reset_pressed_inputs();
+
+        // Simulate the exact hook edges for both physical Enter keys.
+        assert!(mark_key_pressed(0x0d));
+        assert!(mark_key_pressed(PRESSED_NUMPAD_ENTER));
+
+        // GetAsyncKeyState exposes one VK_RETURN state for both physical
+        // Enter keys, so the capture-all sweep must skip it entirely instead
+        // of clearing the main Enter bit or adding it next to NumpadEnter.
+        reconcile_pressed_inputs(true, "Digit1");
+
+        let snapshot = snapshot_pressed_inputs();
+        assert!(snapshot.contains(pressed_inputs(&["Enter"])));
+        assert!(snapshot.contains(pressed_inputs(&["NumpadEnter"])));
+
+        reset_pressed_inputs();
     }
 
     #[test]
