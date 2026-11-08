@@ -156,6 +156,14 @@ assert.match(
   /html\[data-theme="light"\] \.arrow-img \{ filter: invert\(1\)/,
   "the white direction arrows must be inverted on the light theme",
 );
+// The shared tertiary fill (3% black) is nearly invisible over the 82%-white
+// loadout card: the light theme must pin a clearly darker drag gutter on
+// filled rows at rest, while leaving empty rows and the hover accent alone.
+assert.match(
+  indexSource,
+  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[\s\S]{0,120}\.row-icon-box \{[\s\S]{0,120}background: rgba\(0, 0, 0, 0\.08\);[\s\S]{0,80}border-right-color: rgba\(0, 0, 0, 0\.18\);/,
+  "light-theme filled rows must keep a clearly darker drag gutter and separator at rest so the handle reads against the near-white card",
+);
 assert.match(
   tokensSource,
   /--slider-track:/,
