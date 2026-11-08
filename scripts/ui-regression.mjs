@@ -156,6 +156,45 @@ assert.match(
   /html\[data-theme="light"\] \.arrow-img \{ filter: invert\(1\)/,
   "the white direction arrows must be inverted on the light theme",
 );
+// 主题切换必须整窗同步瞬时完成：守卫类在翻转期间禁用所有过渡，防止
+// 不透明势井等大跨度表面在整体变色后慢一拍地追赶 167ms 过渡。
+assert.match(
+  indexSource,
+  /html\.theme-switching,\s*\n\s*html\.theme-switching \*,\s*\n\s*html\.theme-switching \*::before,\s*\n\s*html\.theme-switching \*::after \{\s*\n\s*transition: none !important;/,
+  "theme switches must globally suppress transitions while the guard class is present",
+);
+assert.match(
+  indexSource,
+  /window\.toggleTheme = \(\) => \{[\s\S]{0,600}classList\.add\('theme-switching'\);/,
+  "toggleTheme must arm the theme-switching guard before the flip",
+);
+assert.match(
+  indexSource,
+  /window\.toggleTheme = \(\) => \{[\s\S]{0,900}classList\.remove\('theme-switching'\), 200\);/,
+  "toggleTheme must release the theme-switching guard 200ms after the flip",
+);
+// 主题切换的圆形扩散揭示：视图过渡旧/新快照分层 + 以按钮为圆心的
+// clip-path 动画；不支持视图过渡或偏好减少动画时必须走瞬时回退路径。
+assert.match(
+  indexSource,
+  /::view-transition-old\(root\),\s*\n\s*::view-transition-new\(root\) \{[\s\S]{0,80}animation: none;[\s\S]{0,60}mix-blend-mode: normal;/,
+  "the view transition snapshots must disable the default cross-fade so the clip-path reveal owns the motion",
+);
+assert.match(
+  indexSource,
+  /::view-transition-new\(root\) \{ z-index: 2147483646; \}/,
+  "the new theme snapshot must stack above the old one for the circular reveal",
+);
+assert.match(
+  indexSource,
+  /typeof document\.startViewTransition !== 'function' \|\| reducedMotion/,
+  "the circular reveal must fall back to an instant switch without View Transitions or under reduced motion",
+);
+assert.match(
+  indexSource,
+  /pseudoElement: '::view-transition-new\(root\)'/,
+  "the reveal animation must drive the new theme snapshot's clip-path",
+);
 // 装配行常态势井（拖拽手柄、图标槽、绑定按钮，含空置行手柄）共享同一
 // row-well 填充：两种主题下都深于 tertiary、浅于 control hover，保持
 // rest < hover < pressed 的层次。任何主题限定规则不得单独加深其中一处。

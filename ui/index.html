@@ -36,6 +36,30 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
         }
 
+        /* 主题切换必须整窗同步瞬时完成：data-theme 翻转时变量即时生效，但
+           带 transition: all 的表面（装配行手柄/绑定按钮等 18 处）会追赶
+           167ms，不透明势井的大跨度色变让这种慢一拍肉眼可见。toggleTheme
+           在翻转前后挂上守卫类全局禁用过渡，200ms（长于最长过渡）后移除。 */
+        html.theme-switching,
+        html.theme-switching *,
+        html.theme-switching *::before,
+        html.theme-switching *::after {
+            transition: none !important;
+        }
+
+        /* 主题切换的圆形扩散揭示（View Transitions）：旧快照在下、新快照
+           在上，由 toggleTheme 以切换按钮为圆心驱动 clip-path 动画揭示。
+           禁用默认交叉淡入让揭示动画独占运动；伪层不拦截点击。不支持视
+           图过渡或偏好减少动画时，toggleTheme 走瞬时回退路径。 */
+        ::view-transition { pointer-events: none; }
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+            mix-blend-mode: normal;
+        }
+        ::view-transition-old(root) { z-index: 1; }
+        ::view-transition-new(root) { z-index: 2147483646; }
+
         /* Keep the unlocalized HTML shell out of the first painted frame. */
         html[data-ui-ready="false"] body > * {
             visibility: hidden;
@@ -2095,9 +2119,44 @@
 
         window.toggleTheme = () => {
             gameSettings.theme = gameSettings.theme === 'light' ? 'dark' : 'light';
-            applyTheme();
-            updateThemeButton();
-            persistSettings();
+            // 翻转期间挂守卫类禁用全局过渡（见 CSS 中 theme-switching 规则），
+            // 保证 DOM 翻转瞬时提交；圆形扩散揭示由视图过渡快照呈现。
+            const root = document.documentElement;
+            root.classList.add('theme-switching');
+            const apply = () => { applyTheme(); updateThemeButton(); };
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (typeof document.startViewTransition !== 'function' || reducedMotion) {
+                // 回退路径：不支持视图过渡或偏好减少动画，瞬时切换。
+                apply();
+                persistSettings();
+                setTimeout(() => root.classList.remove('theme-switching'), 200);
+                return;
+            }
+            const button = document.getElementById('btn-theme');
+            const buttonRect = button ? button.getBoundingClientRect() : null;
+            const originX = buttonRect ? buttonRect.x + buttonRect.width / 2 : window.innerWidth / 2;
+            const originY = buttonRect ? buttonRect.y + buttonRect.height / 2 : window.innerHeight / 2;
+            const endRadius = Math.hypot(
+                Math.max(originX, window.innerWidth - originX),
+                Math.max(originY, window.innerHeight - originY)
+            );
+            const motion = getComputedStyle(root);
+            const duration = parseFloat(motion.getPropertyValue('--motion-duration-normal')) || 333;
+            const easing = motion.getPropertyValue('--motion-decelerate').trim() || 'ease-out';
+            const transition = document.startViewTransition(() => {
+                apply();
+                persistSettings();
+            });
+            const release = () => root.classList.remove('theme-switching');
+            transition.ready.then(() => {
+                document.documentElement.animate(
+                    { clipPath: [`circle(0px at ${originX}px ${originY}px)`, `circle(${endRadius}px at ${originX}px ${originY}px)`] },
+                    { duration: duration, easing: easing, pseudoElement: '::view-transition-new(root)' }
+                );
+            }).catch(() => {});
+            transition.finished.finally(release);
+            // 兜底：视图过渡异常未结束时也必须解除守卫，避免交互过渡被永久禁用。
+            setTimeout(release, 800);
         }
 
         function updateI18n() {
