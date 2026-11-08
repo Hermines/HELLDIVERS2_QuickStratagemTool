@@ -161,13 +161,13 @@ assert.match(
 // rest < hover < pressed 的层次。任何主题限定规则不得单独加深其中一处。
 assert.match(
   tokensSource,
-  /--row-well-fill: rgba\(255, 255, 255, 0\.05\);/,
-  "the dark theme must define the shared row well fill between tertiary and control hover",
+  /--row-well-fill: #343434;/,
+  "the dark theme must define the opaque shared row well fill",
 );
 assert.match(
   tokensSource,
-  /--row-well-fill: rgba\(0, 0, 0, 0\.055\);/,
-  "the light theme must define the shared row well fill between tertiary and control hover",
+  /--row-well-fill: #F0F0F0;/,
+  "the light theme must define the opaque shared row well fill",
 );
 assert.match(
   indexSource,
