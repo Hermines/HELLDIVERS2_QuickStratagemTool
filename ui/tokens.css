@@ -39,6 +39,11 @@
     --fill-control: rgba(255, 255, 255, 0.0605);
     --fill-control-hover: rgba(255, 255, 255, 0.0837);
     --fill-control-tertiary: rgba(255, 255, 255, 0.0314);
+    /* Loadout row rest-state wells: the drag handle, icon slot, and bind
+       button share one depth (the empty row's handle included). Deeper than
+       the tertiary fill, lighter than the control hover so the rest < hover
+       < pressed ramp stays ordered. */
+    --row-well-fill: rgba(255, 255, 255, 0.05);
     --fill-control-pressed: rgba(255, 255, 255, 0.0314);
     --titlebar-bg: rgba(32, 32, 32, 0.85);
     --sidebar-bg: rgba(26, 26, 26, 0.55);
@@ -140,6 +145,7 @@ html[data-theme="light"] {
        invisible against the near-white window and card surfaces. */
     --fill-control-hover: rgba(0, 0, 0, 0.065);
     --fill-control-tertiary: rgba(0, 0, 0, 0.03);
+    --row-well-fill: rgba(0, 0, 0, 0.055);
     --fill-control-pressed: rgba(0, 0, 0, 0.09);
     --titlebar-bg: rgba(243, 243, 243, 0.88);
     --sidebar-bg: rgba(234, 234, 234, 0.55);

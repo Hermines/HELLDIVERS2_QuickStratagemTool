@@ -156,19 +156,38 @@ assert.match(
   /html\[data-theme="light"\] \.arrow-img \{ filter: invert\(1\)/,
   "the white direction arrows must be inverted on the light theme",
 );
-// The shared tertiary fill (3% black) is nearly invisible over the 82%-white
-// loadout card: the light theme must pin a clearly darker drag gutter on
-// filled rows at rest, while leaving empty rows and the hover accent alone.
-// The gutter darkens by fill only — its default divider stays untouched.
+// 装配行常态势井（拖拽手柄、图标槽、绑定按钮，含空置行手柄）共享同一
+// row-well 填充：两种主题下都深于 tertiary、浅于 control hover，保持
+// rest < hover < pressed 的层次。任何主题限定规则不得单独加深其中一处。
+assert.match(
+  tokensSource,
+  /--row-well-fill: rgba\(255, 255, 255, 0\.05\);/,
+  "the dark theme must define the shared row well fill between tertiary and control hover",
+);
+assert.match(
+  tokensSource,
+  /--row-well-fill: rgba\(0, 0, 0, 0\.055\);/,
+  "the light theme must define the shared row well fill between tertiary and control hover",
+);
 assert.match(
   indexSource,
-  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[\s\S]{0,120}\.row-icon-box \{[\s\S]{0,80}background: rgba\(0, 0, 0, 0\.08\);/,
-  "light-theme filled rows must keep a clearly darker drag gutter at rest so the handle reads against the near-white card",
+  /\.drag-handle \{[^}]*background: var\(--row-well-fill\)/,
+  "the drag handle must use the shared row well fill",
+);
+assert.match(
+  indexSource,
+  /\.row-icon-box \{[^}]*background: var\(--row-well-fill\)/,
+  "the row icon slot must use the shared row well fill",
+);
+assert.match(
+  indexSource,
+  /\.bind-btn \{[^}]*background: var\(--row-well-fill\)/,
+  "the bind button must use the shared row well fill",
 );
 assert.doesNotMatch(
   indexSource,
-  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[^{]*\{[^}]*border-right-color/,
-  "the light-theme loadout gutter must not override the default divider color",
+  /html\[data-theme="light"\][^{]*\.(drag-handle|row-icon-box|bind-btn)[^{]*\{[^}]*background/,
+  "no theme-scoped override may darken one row well independently; adjust the shared token",
 );
 assert.match(
   tokensSource,
