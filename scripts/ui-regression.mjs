@@ -159,10 +159,16 @@ assert.match(
 // The shared tertiary fill (3% black) is nearly invisible over the 82%-white
 // loadout card: the light theme must pin a clearly darker drag gutter on
 // filled rows at rest, while leaving empty rows and the hover accent alone.
+// The gutter darkens by fill only — its default divider stays untouched.
 assert.match(
   indexSource,
-  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[\s\S]{0,120}\.row-icon-box \{[\s\S]{0,120}background: rgba\(0, 0, 0, 0\.08\);[\s\S]{0,80}border-right-color: rgba\(0, 0, 0, 0\.18\);/,
-  "light-theme filled rows must keep a clearly darker drag gutter and separator at rest so the handle reads against the near-white card",
+  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[\s\S]{0,120}\.row-icon-box \{[\s\S]{0,80}background: rgba\(0, 0, 0, 0\.08\);/,
+  "light-theme filled rows must keep a clearly darker drag gutter at rest so the handle reads against the near-white card",
+);
+assert.doesNotMatch(
+  indexSource,
+  /html\[data-theme="light"\] \.list-row:not\(\.empty\):not\(:hover\) \.drag-handle,[^{]*\{[^}]*border-right-color/,
+  "the light-theme loadout gutter must not override the default divider color",
 );
 assert.match(
   tokensSource,

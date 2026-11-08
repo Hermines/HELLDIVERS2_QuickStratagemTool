@@ -160,12 +160,11 @@
         .list-row:hover .drag-handle { background: var(--accent-soft); }
         .list-row:hover .drag-handle::after { color: var(--accent-text); }
         /* 浅色主题的三级填充(3% 黑)叠在 82% 白的卡片上几乎不可见：装配行
-           的拖拽手柄与图标槽需要一条明显更深的沟槽和分隔线，才能在常态下
-           读出把手区域。空置行与悬停态（accent 反馈）不受影响。 */
+           的拖拽手柄与图标槽在常态下需要一条明显更深的沟槽才能读出把手
+           区域。分隔线保持默认，空置行与悬停态（accent 反馈）不受影响。 */
         html[data-theme="light"] .list-row:not(.empty):not(:hover) .drag-handle,
         html[data-theme="light"] .list-row:not(.empty):not(:hover) .row-icon-box {
             background: rgba(0, 0, 0, 0.08);
-            border-right-color: rgba(0, 0, 0, 0.18);
         }
 
         .empty-click-area {
